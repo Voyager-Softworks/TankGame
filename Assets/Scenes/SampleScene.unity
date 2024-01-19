@@ -11327,7 +11327,17 @@ MonoBehaviour:
   m_sprintSpeedMultiplier: 1.5
   m_crouchSpeedMulti: 0.75
   m_crouchHeightMulti: 0.5
+  m_crouchDownTime: 0.5
+  m_crouchUpTime: 1
+  m_currentHeight: 1
+  m_normalHeight: 1
   m_mouseSensitivity: 0.05
+  stepHeight: 0.05
+  stepLength: 0.5
+  distanceTraveled: 0
+  Step:
+    m_PersistentCalls:
+      m_Calls: []
   m_gravity: -12
   m_fallMultiplier: 2
   m_lowJumpMultiplier: 1.5
