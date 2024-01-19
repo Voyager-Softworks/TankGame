@@ -71,7 +71,34 @@ public class Player_Movement : MonoBehaviour
         // mouse look
         Vector2 mouseDelta = InputManager.PlayerLook.Move.ReadValue<Vector2>();
         transform.Rotate(Vector3.up * mouseDelta.x * m_mouseSensitivity);
-        m_cam.transform.Rotate(Vector3.left * mouseDelta.y * m_mouseSensitivity);
+
+        // limit vertical look to 89 degrees up and down
+        Vector3 currentRotation = m_cam.transform.localRotation.eulerAngles;
+        currentRotation.z = 0;
+        if (currentRotation.x > 180)
+        {
+            currentRotation.x -= 360;
+        }
+
+        if (currentRotation.x > 89)
+        {
+            // forbid looking down
+            if (mouseDelta.y < 0)
+            {
+                mouseDelta.y = 0;
+            }
+        }
+        else if (currentRotation.x < -89)
+        {
+            // forbid looking up
+            if (mouseDelta.y > 0)
+            {
+                mouseDelta.y = 0;
+            }
+        }
+
+        currentRotation.x += -mouseDelta.y * m_mouseSensitivity;
+        m_cam.transform.localRotation = Quaternion.Euler(currentRotation);
 
         // Ground Check
         m_isGrounded = Physics.CheckSphere(m_groundCheck.position, m_groundDistance, m_groundMask);
