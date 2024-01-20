@@ -8,6 +8,7 @@ public static class InputManager
 
     public static InputMap.PlayerLookActions PlayerLook { get { return m_inputMap.PlayerLook; } }
     public static InputMap.PlayerMoveActions PlayerMove { get { return m_inputMap.PlayerMove; } }
+    public static InputMap.TankDriveActions TankDrive { get { return m_inputMap.TankDrive; } }
 
     static InputManager()
     {
@@ -20,5 +21,6 @@ public static class InputManager
 
         m_inputMap.PlayerLook.Enable();
         m_inputMap.PlayerMove.Enable();
+        m_inputMap.TankDrive.Enable();
     }
 }
