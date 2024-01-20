@@ -182,6 +182,160 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""TankDrive"",
+            ""id"": ""a2f70446-5942-44bd-b311-88ba3fccf78d"",
+            ""actions"": [
+                {
+                    ""name"": ""Throttle"",
+                    ""type"": ""Value"",
+                    ""id"": ""1aca5be9-2e42-4598-9d58-253c73c6f360"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Brake"",
+                    ""type"": ""Value"",
+                    ""id"": ""0c2dcde7-b296-4369-a115-d9789cd96acc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ClutchLeft"",
+                    ""type"": ""Value"",
+                    ""id"": ""5f4cb91a-6344-4689-9f64-f015a575cb92"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ClutchRight"",
+                    ""type"": ""Value"",
+                    ""id"": ""a71eab4e-a3b5-42b8-8d89-6c432f643074"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""730ab919-5753-4d13-87cb-732404f31452"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throttle"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""efc201ef-7ed3-44a2-80b7-0bf5e86cecc4"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throttle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""a8897c50-d18b-4dc4-8967-0f7aa23c0925"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throttle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b70cbd4-9f7a-498b-b5f2-868dd5afb084"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Brake"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""03e55901-27e0-4293-8280-ccf2345b8520"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchLeft"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""74f88843-800e-4dd9-848c-d4b3bd0bca3b"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b2b71546-7a8e-4d4f-a2e0-2070b538b3bf"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""f4e2e578-ac2c-474f-9a2c-cfc0b4222964"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchRight"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""3e586dd0-b454-4a13-8d13-6dec534f75c4"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""4fb9a0c0-220e-4e91-b973-cc8be3d9be73"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClutchRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -195,6 +349,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // PlayerLook
         m_PlayerLook = asset.FindActionMap("PlayerLook", throwIfNotFound: true);
         m_PlayerLook_Move = m_PlayerLook.FindAction("Move", throwIfNotFound: true);
+        // TankDrive
+        m_TankDrive = asset.FindActionMap("TankDrive", throwIfNotFound: true);
+        m_TankDrive_Throttle = m_TankDrive.FindAction("Throttle", throwIfNotFound: true);
+        m_TankDrive_Brake = m_TankDrive.FindAction("Brake", throwIfNotFound: true);
+        m_TankDrive_ClutchLeft = m_TankDrive.FindAction("ClutchLeft", throwIfNotFound: true);
+        m_TankDrive_ClutchRight = m_TankDrive.FindAction("ClutchRight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -368,6 +528,76 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         }
     }
     public PlayerLookActions @PlayerLook => new PlayerLookActions(this);
+
+    // TankDrive
+    private readonly InputActionMap m_TankDrive;
+    private List<ITankDriveActions> m_TankDriveActionsCallbackInterfaces = new List<ITankDriveActions>();
+    private readonly InputAction m_TankDrive_Throttle;
+    private readonly InputAction m_TankDrive_Brake;
+    private readonly InputAction m_TankDrive_ClutchLeft;
+    private readonly InputAction m_TankDrive_ClutchRight;
+    public struct TankDriveActions
+    {
+        private @InputMap m_Wrapper;
+        public TankDriveActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Throttle => m_Wrapper.m_TankDrive_Throttle;
+        public InputAction @Brake => m_Wrapper.m_TankDrive_Brake;
+        public InputAction @ClutchLeft => m_Wrapper.m_TankDrive_ClutchLeft;
+        public InputAction @ClutchRight => m_Wrapper.m_TankDrive_ClutchRight;
+        public InputActionMap Get() { return m_Wrapper.m_TankDrive; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TankDriveActions set) { return set.Get(); }
+        public void AddCallbacks(ITankDriveActions instance)
+        {
+            if (instance == null || m_Wrapper.m_TankDriveActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_TankDriveActionsCallbackInterfaces.Add(instance);
+            @Throttle.started += instance.OnThrottle;
+            @Throttle.performed += instance.OnThrottle;
+            @Throttle.canceled += instance.OnThrottle;
+            @Brake.started += instance.OnBrake;
+            @Brake.performed += instance.OnBrake;
+            @Brake.canceled += instance.OnBrake;
+            @ClutchLeft.started += instance.OnClutchLeft;
+            @ClutchLeft.performed += instance.OnClutchLeft;
+            @ClutchLeft.canceled += instance.OnClutchLeft;
+            @ClutchRight.started += instance.OnClutchRight;
+            @ClutchRight.performed += instance.OnClutchRight;
+            @ClutchRight.canceled += instance.OnClutchRight;
+        }
+
+        private void UnregisterCallbacks(ITankDriveActions instance)
+        {
+            @Throttle.started -= instance.OnThrottle;
+            @Throttle.performed -= instance.OnThrottle;
+            @Throttle.canceled -= instance.OnThrottle;
+            @Brake.started -= instance.OnBrake;
+            @Brake.performed -= instance.OnBrake;
+            @Brake.canceled -= instance.OnBrake;
+            @ClutchLeft.started -= instance.OnClutchLeft;
+            @ClutchLeft.performed -= instance.OnClutchLeft;
+            @ClutchLeft.canceled -= instance.OnClutchLeft;
+            @ClutchRight.started -= instance.OnClutchRight;
+            @ClutchRight.performed -= instance.OnClutchRight;
+            @ClutchRight.canceled -= instance.OnClutchRight;
+        }
+
+        public void RemoveCallbacks(ITankDriveActions instance)
+        {
+            if (m_Wrapper.m_TankDriveActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ITankDriveActions instance)
+        {
+            foreach (var item in m_Wrapper.m_TankDriveActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_TankDriveActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public TankDriveActions @TankDrive => new TankDriveActions(this);
     public interface IPlayerMoveActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -378,5 +608,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     public interface IPlayerLookActions
     {
         void OnMove(InputAction.CallbackContext context);
+    }
+    public interface ITankDriveActions
+    {
+        void OnThrottle(InputAction.CallbackContext context);
+        void OnBrake(InputAction.CallbackContext context);
+        void OnClutchLeft(InputAction.CallbackContext context);
+        void OnClutchRight(InputAction.CallbackContext context);
     }
 }

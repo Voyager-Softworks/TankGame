@@ -27,8 +27,8 @@ public class Player_Movement : MonoBehaviour
     public float m_crouchHeightMulti = 0.5f;
     public float m_crouchDownTime = 0.25f;
     public float m_crouchUpTime = 0.5f;
-    public float m_currentHeight = 1f;
-    public float m_normalHeight = 1f;
+    [Utils.ReadOnly, SerializeField] public float m_currentHeight = 1f;
+    [Utils.ReadOnly, SerializeField] private float m_normalHeight = 1f;
 
     [Header("Look")]
     public float m_mouseSensitivity = 1f;
@@ -64,6 +64,9 @@ public class Player_Movement : MonoBehaviour
     private void Start()
     {
         m_camY = m_cam.transform.localPosition.y;
+
+        m_normalHeight = transform.localScale.y;
+        m_currentHeight = m_normalHeight;
     }
 
     private void Update()
@@ -122,7 +125,7 @@ public class Player_Movement : MonoBehaviour
             if (currentHeight > m_normalHeight * m_crouchHeightMulti)
             {
                 // subtract from current height (after m_crouchDownTime seconds, we should be at m_normalHeight * m_crouchHeightMulti)
-                float toSubtract = (m_normalHeight - (m_normalHeight * m_crouchHeightMulti)) / m_crouchDownTime * Time.deltaTime;
+                float toSubtract = m_normalHeight * m_crouchHeightMulti / m_crouchDownTime * Time.deltaTime;
                 m_currentHeight -= toSubtract;
 
                 // move player down
@@ -136,7 +139,7 @@ public class Player_Movement : MonoBehaviour
             if (currentHeight < m_normalHeight)
             {
                 // add to current height (after m_crouchUpTime seconds, we should be at m_normalHeight)
-                float toAdd = (m_normalHeight - currentHeight) / m_crouchUpTime * Time.deltaTime;
+                float toAdd = m_normalHeight / m_crouchUpTime * Time.deltaTime;
                 m_currentHeight += toAdd;
 
                 // move player up
@@ -146,7 +149,7 @@ public class Player_Movement : MonoBehaviour
 
         // Apply Height
         Vector3 currentScale = transform.localScale;
-        currentScale.y = m_currentHeight;
+        currentScale.y = Mathf.Clamp(m_currentHeight, m_normalHeight * m_crouchHeightMulti, m_normalHeight);
         transform.localScale = currentScale;
 
         Vector3 moveVector = moveDir * m_moveSpeed * Time.deltaTime;
