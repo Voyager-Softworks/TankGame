@@ -8,7 +8,7 @@ using UnityEditor;
 
 /// <summary>
 /// Allows the player to enter and exit the tank.
-/// @TODO might need re-name when more interactables on tank are added.
+/// @TODO re-do this with Ash's input system (each hatch is an interactable object!)
 /// </summary>
 public class Interactable_Tank : MonoBehaviour
 {
@@ -96,6 +96,7 @@ public class Interactable_Tank : MonoBehaviour
         // check if player is trying to enter
         if (!Tank.Instance.m_isPlayerInside && IsPlayerInRange())
         {
+            // [E Key]
             if (InputManager.PlayerSpecial.Interact.triggered)
             {
                 Tank.Instance.OnPlayerEnter();
