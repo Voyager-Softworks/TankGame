@@ -99,6 +99,7 @@ public class Interactable_Tank : MonoBehaviour
             // [E Key]
             if (InputManager.PlayerSpecial.Interact.triggered)
             {
+                // @ASH: Yoink this code and put it in the interactable object script for the hatches
                 Tank.Instance.OnPlayerEnter();
                 Player.Instance.DisablePlayer();
             }
