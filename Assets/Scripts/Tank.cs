@@ -67,6 +67,7 @@ public class Tank : MonoBehaviour
                 Player.Instance.m_movement.m_controller.enabled = true;
                 // look same direction as tank (but not up/down)
                 Player.Instance.transform.eulerAngles = new Vector3(0, transform.rotation.eulerAngles.y, 0);
+
             }
         }
     }
@@ -96,7 +97,7 @@ public class Tank : MonoBehaviour
     {
         // enable tank movement
         m_movement.enabled = true;
-        m_interactable.enabled = false;
+        //m_interactable.enabled = false;  @Keane : removed for the mean time so the player can hope in and out of the tank :)
         m_camera.enabled = true;
 
         // wheels on
@@ -113,7 +114,7 @@ public class Tank : MonoBehaviour
     {
         // disable tank movement
         m_movement.enabled = false;
-        m_interactable.enabled = true;
+        //m_interactable.enabled = true;
         m_camera.enabled = false;
 
         // wheels off

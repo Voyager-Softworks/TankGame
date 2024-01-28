@@ -2,19 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseItem : MonoBehaviour
+public class Interactable : MonoBehaviour
 {
+    [SerializeField] private Collider mCollider;
 
-    Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public virtual void Interact()
+    {
+        Debug.Log("Atempting Interaction");
     }
 }

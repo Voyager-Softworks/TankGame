@@ -63,6 +63,7 @@ public class Interactable_Tank : MonoBehaviour
     [Header("References")]
     public List<InteractPoint> m_interactPoints;
 
+
     private void OnDrawGizmos() {
         foreach (InteractPoint point in m_interactPoints)
         {
@@ -75,6 +76,7 @@ public class Interactable_Tank : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(point.m_transform.position, point.m_radius);
         }
+
     }
 
     private void Awake()
@@ -93,15 +95,14 @@ public class Interactable_Tank : MonoBehaviour
             return;
         }
 
-        // check if player is trying to enter
-        if (!Tank.Instance.m_isPlayerInside && IsPlayerInRange())
+        // check if player is trying to Exit
+        if (Tank.Instance.m_isPlayerInside)
         {
             // [E Key]
             if (InputManager.PlayerSpecial.Interact.triggered)
-            {
-                // @ASH: Yoink this code and put it in the interactable object script for the hatches
-                Tank.Instance.OnPlayerEnter();
-                Player.Instance.DisablePlayer();
+            { 
+                Tank.Instance.OnPlayerExit();
+                Player.Instance.EnablePlayer();
             }
         }
     }

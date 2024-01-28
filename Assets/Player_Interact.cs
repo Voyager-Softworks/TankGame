@@ -21,15 +21,26 @@ public class Player_Interact : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckInteractable();
+        ProcessInput();
+    }
+
+    void ProcessInput()
+    {
+        if (InputManager.PlayerSpecial.Interact.triggered)
+        {
+            CheckInteractable();
+        }
     }
 
     void CheckInteractable()
     {
         RaycastHit hit;
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, interactRayDistance, interactableLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, interactRayDistance, interactableLayerMask, QueryTriggerInteraction.Collide))
         {
-            Debug.Log("hit Object" + hit.transform.name);
+            Interactable selectedInteractableObject = hit.collider.GetComponent<Interactable>();
+            if(selectedInteractableObject != null) {
+                selectedInteractableObject.Interact();
+            }
         }
     }
 
