@@ -55,13 +55,13 @@ public class Tank : MonoBehaviour
     {
         if (m_isPlayerInside)
         {
-            // check if player is trying to exit
+            // check if player is trying to exit [O Key]
             if (InputManager.TankSpecial.Exit.triggered)
             {
                 OnPlayerExit();
                 Player.Instance.EnablePlayer();
 
-                // move player to exit point (world space
+                // move player to exit point (world space)
                 Player.Instance.m_movement.m_controller.enabled = false;
                 Player.Instance.transform.position = m_playerExitPoint.position;
                 Player.Instance.m_movement.m_controller.enabled = true;

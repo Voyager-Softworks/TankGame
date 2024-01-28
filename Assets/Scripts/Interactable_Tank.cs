@@ -96,6 +96,7 @@ public class Interactable_Tank : MonoBehaviour
         // check if player is trying to enter
         if (!Tank.Instance.m_isPlayerInside && IsPlayerInRange())
         {
+            // [E Key]
             if (InputManager.PlayerSpecial.Interact.triggered)
             {
                 Tank.Instance.OnPlayerEnter();
