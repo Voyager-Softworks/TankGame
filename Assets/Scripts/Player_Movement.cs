@@ -71,6 +71,11 @@ public class Player_Movement : MonoBehaviour
 
     private void Update()
     {
+        UpdateMovement();
+    }
+
+    private void UpdateMovement()
+    {
         // mouse look
         Vector2 mouseDelta = InputManager.PlayerLook.Move.ReadValue<Vector2>();
         transform.Rotate(Vector3.up * mouseDelta.x * m_mouseSensitivity);

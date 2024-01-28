@@ -314,6 +314,62 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "PlayerSpecial",
+            "id": "4c52e338-1a7c-4499-86ca-4d2c1686d9a6",
+            "actions": [
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "4e00e768-3c63-4e8c-821a-66954e3bd53b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9c4e715b-7d51-45e3-8566-f0a9321ea3b4",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "TankSpecial",
+            "id": "7e4835fb-5773-4fa0-97ea-c9a18581e8dc",
+            "actions": [
+                {
+                    "name": "Exit",
+                    "type": "Button",
+                    "id": "54ba5ebb-907c-473a-9ac1-57fdf1288d63",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "81f28a89-73a5-44ce-8317-5c602bc0cbca",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Exit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

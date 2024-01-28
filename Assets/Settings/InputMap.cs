@@ -336,6 +336,62 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""PlayerSpecial"",
+            ""id"": ""4c52e338-1a7c-4499-86ca-4d2c1686d9a6"",
+            ""actions"": [
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e00e768-3c63-4e8c-821a-66954e3bd53b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9c4e715b-7d51-45e3-8566-f0a9321ea3b4"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""TankSpecial"",
+            ""id"": ""7e4835fb-5773-4fa0-97ea-c9a18581e8dc"",
+            ""actions"": [
+                {
+                    ""name"": ""Exit"",
+                    ""type"": ""Button"",
+                    ""id"": ""54ba5ebb-907c-473a-9ac1-57fdf1288d63"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""81f28a89-73a5-44ce-8317-5c602bc0cbca"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Exit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -355,6 +411,12 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_TankDrive_Brake = m_TankDrive.FindAction("Brake", throwIfNotFound: true);
         m_TankDrive_ClutchLeft = m_TankDrive.FindAction("ClutchLeft", throwIfNotFound: true);
         m_TankDrive_ClutchRight = m_TankDrive.FindAction("ClutchRight", throwIfNotFound: true);
+        // PlayerSpecial
+        m_PlayerSpecial = asset.FindActionMap("PlayerSpecial", throwIfNotFound: true);
+        m_PlayerSpecial_Interact = m_PlayerSpecial.FindAction("Interact", throwIfNotFound: true);
+        // TankSpecial
+        m_TankSpecial = asset.FindActionMap("TankSpecial", throwIfNotFound: true);
+        m_TankSpecial_Exit = m_TankSpecial.FindAction("Exit", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -598,6 +660,98 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         }
     }
     public TankDriveActions @TankDrive => new TankDriveActions(this);
+
+    // PlayerSpecial
+    private readonly InputActionMap m_PlayerSpecial;
+    private List<IPlayerSpecialActions> m_PlayerSpecialActionsCallbackInterfaces = new List<IPlayerSpecialActions>();
+    private readonly InputAction m_PlayerSpecial_Interact;
+    public struct PlayerSpecialActions
+    {
+        private @InputMap m_Wrapper;
+        public PlayerSpecialActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Interact => m_Wrapper.m_PlayerSpecial_Interact;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerSpecial; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerSpecialActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerSpecialActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerSpecialActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerSpecialActionsCallbackInterfaces.Add(instance);
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
+        }
+
+        private void UnregisterCallbacks(IPlayerSpecialActions instance)
+        {
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
+        }
+
+        public void RemoveCallbacks(IPlayerSpecialActions instance)
+        {
+            if (m_Wrapper.m_PlayerSpecialActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPlayerSpecialActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerSpecialActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerSpecialActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PlayerSpecialActions @PlayerSpecial => new PlayerSpecialActions(this);
+
+    // TankSpecial
+    private readonly InputActionMap m_TankSpecial;
+    private List<ITankSpecialActions> m_TankSpecialActionsCallbackInterfaces = new List<ITankSpecialActions>();
+    private readonly InputAction m_TankSpecial_Exit;
+    public struct TankSpecialActions
+    {
+        private @InputMap m_Wrapper;
+        public TankSpecialActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Exit => m_Wrapper.m_TankSpecial_Exit;
+        public InputActionMap Get() { return m_Wrapper.m_TankSpecial; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TankSpecialActions set) { return set.Get(); }
+        public void AddCallbacks(ITankSpecialActions instance)
+        {
+            if (instance == null || m_Wrapper.m_TankSpecialActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_TankSpecialActionsCallbackInterfaces.Add(instance);
+            @Exit.started += instance.OnExit;
+            @Exit.performed += instance.OnExit;
+            @Exit.canceled += instance.OnExit;
+        }
+
+        private void UnregisterCallbacks(ITankSpecialActions instance)
+        {
+            @Exit.started -= instance.OnExit;
+            @Exit.performed -= instance.OnExit;
+            @Exit.canceled -= instance.OnExit;
+        }
+
+        public void RemoveCallbacks(ITankSpecialActions instance)
+        {
+            if (m_Wrapper.m_TankSpecialActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ITankSpecialActions instance)
+        {
+            foreach (var item in m_Wrapper.m_TankSpecialActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_TankSpecialActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public TankSpecialActions @TankSpecial => new TankSpecialActions(this);
     public interface IPlayerMoveActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -615,5 +769,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnBrake(InputAction.CallbackContext context);
         void OnClutchLeft(InputAction.CallbackContext context);
         void OnClutchRight(InputAction.CallbackContext context);
+    }
+    public interface IPlayerSpecialActions
+    {
+        void OnInteract(InputAction.CallbackContext context);
+    }
+    public interface ITankSpecialActions
+    {
+        void OnExit(InputAction.CallbackContext context);
     }
 }
