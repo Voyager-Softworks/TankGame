@@ -439,7 +439,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 535459876301222617}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a01c8c06b90284d45bb46e921e3aabef, type: 3}
   m_Name: 
@@ -454,8 +454,6 @@ MonoBehaviour:
   - m_name: TopRight
     m_transform: {fileID: 6701800506499851884}
     m_radius: 0.5
-  m_ExitPoints:
-  - {fileID: 6176266607787229335}
 --- !u!114 &8662869474792530690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3359,7 +3357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3893700854467577594
 Transform:
   m_ObjectHideFlags: 0
@@ -3382,7 +3380,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8532530279541175386}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}

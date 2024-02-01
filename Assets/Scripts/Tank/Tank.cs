@@ -13,7 +13,6 @@ public class Tank : MonoBehaviour
 
     [Header("References")]
     public Tank_Movement m_movement;
-    public Interactable_Tank m_interactable;
     public Camera m_camera;
     public Transform m_playerExitPoint;
     public Collider m_fullCollider;
@@ -37,10 +36,6 @@ public class Tank : MonoBehaviour
         if (m_movement == null)
         {
             Debug.LogError("Tank.Awake | Movement not assigned!");
-        }
-        if (m_interactable == null)
-        {
-            Debug.LogError("Tank.Awake | Interactable not assigned!");
         }
     }
 
@@ -97,8 +92,7 @@ public class Tank : MonoBehaviour
     {
         // enable tank movement
         m_movement.enabled = true;
-        //m_interactable.enabled = false;  @Keane : removed for the mean time so the player can hope in and out of the tank :)
-        m_camera.enabled = true;
+        m_camera.gameObject.SetActive(true);
 
         // wheels on
         EnableWheelColliders();
@@ -114,8 +108,7 @@ public class Tank : MonoBehaviour
     {
         // disable tank movement
         m_movement.enabled = false;
-        //m_interactable.enabled = true;
-        m_camera.enabled = false;
+        m_camera.gameObject.SetActive(false);
 
         // wheels off
         DisableWheelColliders();
