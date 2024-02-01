@@ -13,10 +13,23 @@ public class Player_Gun : MonoBehaviour
 
     [Header("Settings")]
     public bool m_followCam = false;
+    private Vector3 m_originalCamPos;
+    private Vector3 m_originalPlayerPos;
 
     // Start is called before the first frame update
     void Start()
     {
+        // null checks
+        if (Player.Instance == null)
+        {
+            Debug.LogError("Player_Gun.Awake | Player instance not found!");
+            return;
+        }
+        Player_Movement movement = Player.Instance.m_movement;
+
+        // set original positions
+        m_originalCamPos = transform.position - movement.m_cam.transform.position;
+        m_originalPlayerPos = transform.position - Player.Instance.transform.position;
     }
 
     // Update is called once per frame
@@ -38,7 +51,26 @@ public class Player_Gun : MonoBehaviour
     {
         if (!m_followCam)
         {
+            // parent to camera if not already
+            if (transform.parent != Player.Instance.m_movement.m_cam.transform)
+            {
+                transform.SetParent(Player.Instance.m_movement.m_cam.transform);
+                // reset position and rotation
+                transform.localPosition = m_originalCamPos;
+                transform.localRotation = Quaternion.identity;
+            }
             return;
+        }
+        else
+        {
+            // parent to player if not already
+            if (transform.parent != Player.Instance.transform)
+            {
+                transform.SetParent(Player.Instance.transform);
+                // reset position and rotation
+                transform.localPosition = m_originalPlayerPos;
+                transform.localRotation = Quaternion.identity;
+            }
         }
 
         // null checks
