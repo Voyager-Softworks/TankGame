@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Trimble.TVW.Audio;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -199,6 +200,7 @@ public class Player_Movement : MonoBehaviour
                 oneStep = false;
                 // footstepNoise.m_noise = (isSneaking ? sneakFootstep : normalFootstep);
                 // footstepNoise.PlayNoise();
+                AudioManager.SpawnSound<AutoSound_Footstep>(transform.position);
                 Step.Invoke();
             }
         }
