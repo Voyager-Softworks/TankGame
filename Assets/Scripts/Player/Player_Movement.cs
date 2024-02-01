@@ -110,7 +110,12 @@ public class Player_Movement : MonoBehaviour
         m_cam.transform.localRotation = Quaternion.Euler(currentRotation);
 
         // Ground Check
+        bool wasGrounded = m_isGrounded;
         m_isGrounded = Physics.CheckSphere(m_groundCheck.position, m_groundDistance, m_groundMask);
+        if (m_isGrounded && !wasGrounded)
+        {
+            AudioManager.SpawnSound<AutoSound_PlayerLand>(transform.position);
+        }
 
         // Movement (relative to camera)
         float x = InputManager.PlayerMove.Move.ReadValue<Vector2>().x;
@@ -165,6 +170,8 @@ public class Player_Movement : MonoBehaviour
         if (InputManager.PlayerMove.Jump.WasPerformedThisFrame() && m_isGrounded)
         {
             m_velocity.y = Mathf.Sqrt(m_jumpForce * -2f * m_gravity);
+
+            AudioManager.SpawnSound<AutoSound_PlayerJump>(transform.position);
         }
 
         // Gravity
