@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
 
     [Header("References")]
     public Player_Movement m_movement;
+    public Player_Gun m_gun;
     public Collider m_collider;
 
     private void Awake()
