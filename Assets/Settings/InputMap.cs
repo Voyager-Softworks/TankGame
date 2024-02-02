@@ -392,6 +392,74 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""PlayerGun"",
+            ""id"": ""a6e0861e-ba99-4cfa-b2b6-50cc204fa259"",
+            ""actions"": [
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""17554160-e22c-4414-ac2f-3d14b9a6cfd9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""36b14872-807d-4c59-aa9f-c86f9ec10d90"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""e60940b0-55a8-40de-9f63-24ea7a5eb67e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""2d93dd5d-0303-4bd5-9e15-fe55666ae076"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""408b95b9-b8b5-4fbe-b189-c11ab809662c"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c692bdce-c16a-4bb0-aa18-8aaebe8c23d3"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -417,6 +485,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // TankSpecial
         m_TankSpecial = asset.FindActionMap("TankSpecial", throwIfNotFound: true);
         m_TankSpecial_Exit = m_TankSpecial.FindAction("Exit", throwIfNotFound: true);
+        // PlayerGun
+        m_PlayerGun = asset.FindActionMap("PlayerGun", throwIfNotFound: true);
+        m_PlayerGun_Shoot = m_PlayerGun.FindAction("Shoot", throwIfNotFound: true);
+        m_PlayerGun_Reload = m_PlayerGun.FindAction("Reload", throwIfNotFound: true);
+        m_PlayerGun_Aim = m_PlayerGun.FindAction("Aim", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -752,6 +825,68 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         }
     }
     public TankSpecialActions @TankSpecial => new TankSpecialActions(this);
+
+    // PlayerGun
+    private readonly InputActionMap m_PlayerGun;
+    private List<IPlayerGunActions> m_PlayerGunActionsCallbackInterfaces = new List<IPlayerGunActions>();
+    private readonly InputAction m_PlayerGun_Shoot;
+    private readonly InputAction m_PlayerGun_Reload;
+    private readonly InputAction m_PlayerGun_Aim;
+    public struct PlayerGunActions
+    {
+        private @InputMap m_Wrapper;
+        public PlayerGunActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Shoot => m_Wrapper.m_PlayerGun_Shoot;
+        public InputAction @Reload => m_Wrapper.m_PlayerGun_Reload;
+        public InputAction @Aim => m_Wrapper.m_PlayerGun_Aim;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerGun; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerGunActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerGunActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerGunActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerGunActionsCallbackInterfaces.Add(instance);
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
+        }
+
+        private void UnregisterCallbacks(IPlayerGunActions instance)
+        {
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
+        }
+
+        public void RemoveCallbacks(IPlayerGunActions instance)
+        {
+            if (m_Wrapper.m_PlayerGunActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPlayerGunActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerGunActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerGunActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PlayerGunActions @PlayerGun => new PlayerGunActions(this);
     public interface IPlayerMoveActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -777,5 +912,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     public interface ITankSpecialActions
     {
         void OnExit(InputAction.CallbackContext context);
+    }
+    public interface IPlayerGunActions
+    {
+        void OnShoot(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
     }
 }

@@ -391,7 +391,7 @@ public class AutoSound : MonoBehaviour
 
         // save vars for later (after scripts are compiled)
         EditorPrefs.SetBool(PREF_ADD_AFTER_COMPILE, true);
-        EditorPrefs.SetString(PREF_TO_ADD_NAME, "Trimble.TVW.Audio." + prefabName);
+        EditorPrefs.SetString(PREF_TO_ADD_NAME, prefabName);
         EditorPrefs.SetInt(PREF_WAITING_PARENT, GetInstanceID());
 
         // set dirty to prevent user leaving

@@ -207,6 +207,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shellPoint: {fileID: 7468519638822311801}
   m_firePoint: {fileID: 2948378921513073827}
+  m_shootTime: 0.5
+  m_boltTime: 2.7
+  m_shellEjectDelay: 1
+  m_canShoot: 1
+  m_readyToEject: 0
+  m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
+  m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_followCam: 0
 --- !u!1 &2585458377940555683
 GameObject:
@@ -664,10 +671,10 @@ MonoBehaviour:
   m_currentHeight: 1
   m_normalHeight: 1
   m_mouseSensitivity: 0.05
-  stepHeight: 0.02
-  stepLength: 0.5
-  distanceTraveled: 0
-  Step:
+  m_stepHeight: 0.02
+  m_stepLength: 0.5
+  m_distanceTraveled: 0
+  OnStep:
     m_PersistentCalls:
       m_Calls: []
   m_gravity: -12

@@ -12,6 +12,19 @@ public class Player_Gun : MonoBehaviour
     public Transform m_firePoint;
 
     [Header("Settings")]
+    public float m_shootTime = 0.5f;
+    public float m_boltTime = 2.5f;
+    public float m_shellEjectDelay = 1.0f;
+
+    [Header("State")]
+    [SerializeField, Utils.ReadOnly] private bool m_canShoot = true;
+    [SerializeField, Utils.ReadOnly] private bool m_readyToEject = false;
+
+    [Header("Prefabs")]
+    public GameObject m_shellPrefab;
+    public GameObject m_fxGunShot;
+
+    [Header("Follow Cam")]
     public bool m_followCam = false;
     private Vector3 m_originalCamPos;
     private Vector3 m_originalPlayerPos;
@@ -42,6 +55,66 @@ public class Player_Gun : MonoBehaviour
         }
 
         FollowCam();
+
+        // shoot
+        if (InputManager.PlayerGun.Shoot.triggered)
+        {
+            StartCoroutine(Shoot());
+        }
+        // when player releases the shoot button, eject shell
+        if (m_readyToEject && InputManager.PlayerGun.Shoot.IsPressed() == false)
+        {
+            StartCoroutine(BoltCoroutine());
+        }
+    }
+
+    private IEnumerator Shoot()
+    {
+        if (!m_canShoot)
+        {
+            yield break;
+        }
+
+        m_canShoot = false;
+
+        // FX
+        Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
+
+        // raycast
+
+        // wait for shoot time
+        yield return new WaitForSeconds(m_shootTime);
+        m_readyToEject = true;
+    }
+
+    private IEnumerator BoltCoroutine()
+    {
+        m_readyToEject = false;
+
+        // audio
+        AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
+        // spawn shell after a delay
+        StartCoroutine(EjectShellCoroutine(m_shellEjectDelay));
+
+        // wait for bolt time
+        yield return new WaitForSeconds(m_boltTime);
+
+        m_canShoot = true;
+    }
+
+    private IEnumerator EjectShellCoroutine(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        GameObject shell = Instantiate(m_shellPrefab, m_shellPoint.position, m_shellPoint.rotation);
+        Rigidbody shellRb = shell.GetComponent<Rigidbody>();
+        if (shellRb != null)
+        {
+            // right and up
+            shellRb.velocity = m_shellPoint.right * 2f + m_shellPoint.up * 2f;
+            // random spin
+            shellRb.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 10f;
+        }
     }
 
     /// <summary>
