@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public Player_Movement m_movement;
     public Player_Gun m_gun;
     public Collider m_collider;
+    public GameObject m_model;
 
     private void Awake()
     {

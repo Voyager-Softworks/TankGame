@@ -36,11 +36,11 @@ public class Player_Movement : MonoBehaviour
     float m_camY = 0;
 
     [Header("Steps")]
-    [SerializeField] float stepHeight = 0.05f;
-    [SerializeField] float stepLength = 1.0f;
-    [SerializeField] float distanceTraveled = 0;
-    public UnityEvent Step;
-    bool oneStep = true;
+    [SerializeField] float m_stepHeight = 0.02f;
+    [SerializeField] float m_stepLength = 0.5f;
+    [SerializeField] float m_distanceTraveled = 0;
+    [HideInInspector] public UnityEvent OnStep;
+    bool m_oneStep = true;
 
     [Header("Gravity")]
     public float m_gravity = -9.81f;
@@ -64,9 +64,22 @@ public class Player_Movement : MonoBehaviour
 
     private void Start()
     {
+        // null checks
+        if (Player.Instance == null)
+        {
+            Debug.LogError("Player_Movement.UpdateMovement | Player.Instance is null!");
+            return;
+        }
+        GameObject model = Player.Instance.m_model;
+        if (model == null)
+        {
+            Debug.LogError("Player_Movement.UpdateMovement | Player.Instance.m_model is null!");
+            return;
+        }
+
         m_camY = m_cam.transform.localPosition.y;
 
-        m_normalHeight = transform.localScale.y;
+        m_normalHeight = model.transform.localScale.y;
         m_currentHeight = m_normalHeight;
     }
 
@@ -77,6 +90,19 @@ public class Player_Movement : MonoBehaviour
 
     private void UpdateMovement()
     {
+        // null checks
+        if (Player.Instance == null)
+        {
+            Debug.LogError("Player_Movement.UpdateMovement | Player.Instance is null!");
+            return;
+        }
+        GameObject model = Player.Instance.m_model;
+        if (model == null)
+        {
+            Debug.LogError("Player_Movement.UpdateMovement | Player.Instance.m_model is null!");
+            return;
+        }
+
         // mouse look
         Vector2 mouseDelta = InputManager.PlayerLook.Move.ReadValue<Vector2>();
         transform.Rotate(Vector3.up * mouseDelta.x * m_mouseSensitivity);
@@ -132,7 +158,7 @@ public class Player_Movement : MonoBehaviour
             moveDir *= m_crouchSpeedMulti;
 
             // crouch down
-            float currentHeight = transform.localScale.y;
+            float currentHeight = model.transform.localScale.y;
             if (currentHeight > m_normalHeight * m_crouchHeightMulti)
             {
                 // subtract from current height (after m_crouchDownTime seconds, we should be at m_normalHeight * m_crouchHeightMulti)
@@ -146,7 +172,7 @@ public class Player_Movement : MonoBehaviour
         else
         {
             // crouch up
-            float currentHeight = transform.localScale.y;
+            float currentHeight = model.transform.localScale.y;
             if (currentHeight < m_normalHeight)
             {
                 // add to current height (after m_crouchUpTime seconds, we should be at m_normalHeight)
@@ -159,9 +185,13 @@ public class Player_Movement : MonoBehaviour
         }
 
         // Apply Height
-        Vector3 currentScale = transform.localScale;
+        Vector3 currentScale = model.transform.localScale;
         currentScale.y = Mathf.Clamp(m_currentHeight, m_normalHeight * m_crouchHeightMulti, m_normalHeight);
-        transform.localScale = currentScale;
+        // cosmetic model (@TODO: Remove when we have a proper player model)
+        model.transform.localScale = currentScale;
+        // collider
+        m_controller.height = currentScale.y * 2f;
+        m_controller.radius = currentScale.x / 2f;
 
         Vector3 moveVector = moveDir * m_moveSpeed * Time.deltaTime;
         m_controller.Move(moveVector);
@@ -193,27 +223,36 @@ public class Player_Movement : MonoBehaviour
         // Steps
         if (m_isGrounded)
         {
-            distanceTraveled += new Vector3(moveVector.x, 0, moveVector.z).magnitude;
+            m_distanceTraveled += new Vector3(moveVector.x, 0, moveVector.z).magnitude;
         }
+        float camScale = m_currentHeight / m_normalHeight;
         m_cam.transform.localPosition =
-            (transform.up * m_camY * (1.0f - Mathf.Sin(distanceTraveled * (1.0f / stepLength))) * stepHeight)
-            + (transform.up * m_camY)
-            + (transform.right * (1.0f - Mathf.Sin(distanceTraveled * (1.0f / stepLength) / 2)) * stepHeight * 0.4f);
+        (
+            // normal height (with crouch)
+            (transform.up * m_camY * camScale)
+            // crouch correction (keep fixed distance from top of head) 
+            + (transform.up * (m_normalHeight - m_currentHeight) * m_normalHeight)
+            // step vert bobbing
+            + (transform.up * m_camY * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight)
+            // step horiz bobbing
+            + (transform.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f)
+        );
 
-        if ((1.0f - Mathf.Sin(distanceTraveled * (1.0f / stepLength))) <= 0.1f)
+        // Check if we are very close to a step (as we will probably not hit the exact distance traveled to trigger a step)
+        if ((1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) <= 0.1f)
         {
-            if (oneStep)
+            // m_oneStep prevents multiple footstep sounds from playing in the same step
+            if (m_oneStep)
             {
-                oneStep = false;
+                m_oneStep = false;
                 // footstepNoise.m_noise = (isSneaking ? sneakFootstep : normalFootstep);
-                // footstepNoise.PlayNoise();
                 AudioManager.SpawnSound<AutoSound_Footstep>(transform.position);
-                Step.Invoke();
+                OnStep?.Invoke();
             }
         }
         else
         {
-            oneStep = true;
+            m_oneStep = true;
         }
 
         // Debug

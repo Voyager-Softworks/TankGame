@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.35929567, g: 0.3617593, b: 0.33154398, a: 1}
+  m_IndirectSpecularColor: {r: 0.1686678, g: 0.14299825, b: 0.10766999, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 4a86af001032efe41906dc8deac1c44b, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -2486,7 +2486,7 @@ GameObject:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
   m_Layer: 0
-  m_Name: Directional Light
+  m_Name: Sun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2504,7 +2504,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.4
+  m_Intensity: 0
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2562,13 +2562,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0084974645, y: 0.22757752, z: 0.0019860228, w: 0.9737209}
+  m_LocalRotation: {x: -0.07583219, y: 0.22689502, z: 0.017723462, w: 0.9708007}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2110357539}
-  m_LocalEulerAnglesHint: {x: -1, y: 26.31, z: 0}
+  m_LocalEulerAnglesHint: {x: -8.933, y: 26.31, z: 0}
 --- !u!1 &743835589
 GameObject:
   m_ObjectHideFlags: 0
@@ -7208,8 +7208,8 @@ Transform:
   m_GameObject: {fileID: 2097160632}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 1000, y: 1, z: 1000}
+  m_LocalPosition: {x: 0, y: -50, z: 0}
+  m_LocalScale: {x: 1000, y: 100, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2110357539}
@@ -7332,7 +7332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8750414136078585202, guid: 59836dc1127ef3a4f904eaf703903f45, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.979
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8750414136078585202, guid: 59836dc1127ef3a4f904eaf703903f45, type: 3}
       propertyPath: m_LocalPosition.z
