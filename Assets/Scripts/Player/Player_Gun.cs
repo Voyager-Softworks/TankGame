@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// The gun of the player.
+/// Controls the gun of the player.
 /// </summary>
 public class Player_Gun : MonoBehaviour
 {
@@ -11,7 +11,11 @@ public class Player_Gun : MonoBehaviour
     public Transform m_shellPoint;
     public Transform m_firePoint;
 
-    [Header("Settings")]
+    [Header("Stats")]
+    public float m_damage = 100.0f;
+    public float m_range = 100.0f;
+
+    [Header("Timers")]
     public float m_shootTime = 0.5f;
     public float m_boltTime = 2.5f;
     public float m_shellEjectDelay = 1.0f;
@@ -80,7 +84,36 @@ public class Player_Gun : MonoBehaviour
         // FX
         Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
 
-        // raycast
+        // // raycast against every objects with Health:
+        // // get all healths
+        // List<Health> healths = new List<Health>(Health.GetAllHealth());
+        // // sort by distance
+        // healths.Sort((a, b) => Vector3.Distance(a.transform.position, m_firePoint.position).CompareTo(Vector3.Distance(b.transform.position, m_firePoint.position)));
+
+        // raycastall to check for hits
+        LayerMask ignoreMask = LayerMask.GetMask("Player");
+        RaycastHit[] hits = Physics.RaycastAll(Player.Instance.m_movement.m_cam.transform.position, Player.Instance.m_movement.m_cam.transform.forward, m_range, ~ignoreMask);
+        // sort hits by distance
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        // loop through hits
+        foreach (RaycastHit hit in hits)
+        {
+            // get health component in child&/parent
+            Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
+            if (health != null)
+            {
+                // generate damage info
+                Health.DamageInfo damageInfo = new Health.DamageInfo(m_damage, gameObject, m_firePoint.position, hit.point, hit.normal);
+
+                // damage health
+                health.Damage(damageInfo);
+            }
+
+            // break after first hit (for now)
+            //@TODO: implement piercing? e.g. StoppingPower stat
+            break;
+        }
 
         // wait for shoot time
         yield return new WaitForSeconds(m_shootTime);

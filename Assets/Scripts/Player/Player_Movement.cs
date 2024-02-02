@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
+/// <summary>
+/// Controls the movement of the player.
+/// </summary>
 public class Player_Movement : MonoBehaviour
 {
     [Header("References")]
@@ -38,7 +40,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] float m_stepHeight = 0.02f;
     [SerializeField] float m_stepLength = 0.5f;
     [SerializeField] float m_distanceTraveled = 0;
-    [HideInInspector] public UnityEvent OnStep;
+    [HideInInspector] public System.Action OnStep;
     bool m_oneStep = true;
 
     [Header("Gravity")]
