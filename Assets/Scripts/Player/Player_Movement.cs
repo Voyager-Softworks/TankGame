@@ -46,8 +46,19 @@ public class Player_Movement : MonoBehaviour
     public float m_fallMultiplier = 2.5f;
     public float m_lowJumpMultiplier = 2f;
 
-    Vector3 m_velocity;
-    Vector2 m_inputDir;
+    [Header("Velocity")]
+    [SerializeField, Utils.ReadOnly] private float m_gravVel;
+    [SerializeField, Utils.ReadOnly] private Vector2 m_moveVel;
+    public Vector3 CalcVelocity()
+    {
+        Vector3 vel = new Vector3
+        (
+            m_moveVel.x, 
+            m_isGrounded && Mathf.Approximately(m_gravVel, -2f) ? 0 : m_gravVel, 
+            m_moveVel.y
+        );
+        return vel;
+    }
 
     private void Awake()
     {
@@ -193,31 +204,38 @@ public class Player_Movement : MonoBehaviour
         m_controller.radius = currentScale.x / 2f;
 
         Vector3 moveVector = moveDir * m_moveSpeed * Time.deltaTime;
+        m_moveVel = new Vector2(moveVector.x, moveVector.z) / Time.deltaTime;
         m_controller.Move(moveVector);
 
         // Jump
         if (InputManager.PlayerMove.Jump.WasPerformedThisFrame() && m_isGrounded)
         {
-            m_velocity.y = Mathf.Sqrt(m_jumpForce * -2f * m_gravity);
+            m_gravVel = Mathf.Sqrt(m_jumpForce * -2f * m_gravity);
 
             AudioManager.SpawnSound<AutoSound_PlayerJump>(transform.position);
         }
 
         // Gravity
-        m_velocity.y += m_gravity * Time.deltaTime;
-
-        // Apply Gravity
-        m_controller.Move(m_velocity * Time.deltaTime);
+        m_gravVel += m_gravity * Time.deltaTime;
 
         // Apply Gravity Multipliers
-        if (m_velocity.y < 0)
+        if (m_gravVel < 0)
         {
-            m_velocity += Vector3.up * m_gravity * (m_fallMultiplier - 1) * Time.deltaTime;
+            m_gravVel += m_gravity * (m_fallMultiplier - 1) * Time.deltaTime;
         }
-        else if (m_velocity.y > 0 && !InputManager.PlayerMove.Jump.IsPressed())
+        else if (m_gravVel > 0 && !InputManager.PlayerMove.Jump.IsPressed())
         {
-            m_velocity += Vector3.up * m_gravity * (m_lowJumpMultiplier - 1) * Time.deltaTime;
+            m_gravVel += m_gravity * (m_lowJumpMultiplier - 1) * Time.deltaTime;
         }
+
+        // if grounded, reset gravity
+        if (m_isGrounded && m_gravVel < 0)
+        {
+            m_gravVel = -2f;
+        }
+
+        // Apply Gravity
+        m_controller.Move(Vector3.up * m_gravVel * Time.deltaTime);
 
         // Steps
         if (m_isGrounded)

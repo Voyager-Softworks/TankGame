@@ -112,6 +112,8 @@ public class Player_Gun : MonoBehaviour
         {
             // right and up
             shellRb.velocity = m_shellPoint.right * 2f + m_shellPoint.up * 2f;
+            // add player vel
+            shellRb.velocity += Player.Instance.m_movement.CalcVelocity();
             // random spin
             shellRb.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 10f;
         }
