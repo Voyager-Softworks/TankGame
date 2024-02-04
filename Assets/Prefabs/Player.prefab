@@ -248,6 +248,7 @@ MonoBehaviour:
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_followCam: 0
+  m_originalCamPos: {x: 0, y: 0, z: 0}
 --- !u!1 &2585458377940555683
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +745,9 @@ MonoBehaviour:
   m_lowJumpMultiplier: 1.5
   m_gravVel: 0
   m_moveVel: {x: 0, y: 0}
+  m_moveGun: 1
+  m_gunMoveAmount: 2
+  m_gunMoveSprintAmount: 4
 --- !u!143 &865843682631846252
 CharacterController:
   m_ObjectHideFlags: 0
@@ -903,6 +907,7 @@ MonoBehaviour:
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_followCam: 0
+  m_originalCamPos: {x: 0, y: 0, z: 0}
 --- !u!4 &5570317507101240831 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8373209996527918974, guid: 6e0f868262e299a4eaa48e71fe8a471f, type: 3}

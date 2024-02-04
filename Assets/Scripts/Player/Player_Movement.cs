@@ -51,6 +51,12 @@ public class Player_Movement : MonoBehaviour
     [Header("Velocity")]
     [SerializeField, Utils.ReadOnly] private float m_gravVel;
     [SerializeField, Utils.ReadOnly] private Vector2 m_moveVel;
+
+    [Header("Debug")]
+    public bool m_moveGun = true;
+    public float m_gunMoveAmount = 2f;
+    public float m_gunMoveSprintAmount = 4f;
+
     public Vector3 CalcVelocity()
     {
         Vector3 vel = new Vector3
@@ -256,6 +262,25 @@ public class Player_Movement : MonoBehaviour
             // step horiz bobbing
             + (transform.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f)
         );
+
+        // apply steps to the gun too
+        if (m_moveGun)
+        {
+            Player_Gun gun = Player.Instance.m_gun;
+            if (gun != null)
+            {
+                Vector3 origPos = gun.m_originalCamPos;
+                gun.transform.localPosition = 
+                (
+                    // normal height (without crouch)
+                    (transform.up * origPos.y)
+                    // step vert bobbing
+                    + (transform.up * origPos.y * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight * (InputManager.PlayerMove.Sprint.IsPressed() ? m_gunMoveSprintAmount : m_gunMoveAmount))
+                    // step horiz bobbing
+                    + (transform.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f * (InputManager.PlayerMove.Sprint.IsPressed() ? m_gunMoveSprintAmount : m_gunMoveAmount))
+                );
+            }
+        }
 
         // Check if we are very close to a step (as we will probably not hit the exact distance traveled to trigger a step)
         if ((1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) <= 0.1f)

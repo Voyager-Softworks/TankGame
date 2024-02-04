@@ -30,7 +30,7 @@ public class Player_Gun : MonoBehaviour
 
     [Header("Follow Cam")]
     public bool m_followCam = false;
-    private Vector3 m_originalCamPos;
+    public Vector3 m_originalCamPos;
     private Vector3 m_originalPlayerPos;
 
     // Start is called before the first frame update
