@@ -23,14 +23,16 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Sprint")]
     public float m_sprintSpeedMultiplier = 1.5f;
+    [Utils.ReadOnly, SerializeField] private bool m_isSprinting = false;
 
     [Header("Crouch")]
-    public float m_crouchSpeedMulti = 0.75f;
+    public float m_crouchSpeedMultiplier = 0.75f;
     public float m_crouchHeightMulti = 0.5f;
     public float m_crouchDownTime = 0.25f;
     public float m_crouchUpTime = 0.5f;
     [Utils.ReadOnly, SerializeField] public float m_currentHeight = 1f;
     [Utils.ReadOnly, SerializeField] private float m_normalHeight = 1f;
+    [Utils.ReadOnly, SerializeField] private bool m_isCrouching = false;
 
     [Header("Look")]
     public float m_mouseSensitivity = 1f;
@@ -169,11 +171,18 @@ public class Player_Movement : MonoBehaviour
         // Sprint & Crouch
         if (InputManager.PlayerMove.Sprint.IsPressed())
         {
+            m_isSprinting = true;
             moveDir *= m_sprintSpeedMultiplier;
         }
-        else if (InputManager.PlayerMove.Crouch.IsPressed())
+        else
         {
-            moveDir *= m_crouchSpeedMulti;
+            m_isSprinting = false;
+        }
+        
+        if (!m_isSprinting && InputManager.PlayerMove.Crouch.IsPressed())
+        {
+            m_isCrouching = true;
+            moveDir *= m_crouchSpeedMultiplier;
 
             // crouch down
             float currentHeight = model.transform.localScale.y;
@@ -189,6 +198,8 @@ public class Player_Movement : MonoBehaviour
         }
         else
         {
+            m_isCrouching = false;
+
             // crouch up
             float currentHeight = model.transform.localScale.y;
             if (currentHeight < m_normalHeight)
