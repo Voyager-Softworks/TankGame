@@ -15,56 +15,66 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Ground Check")]
     public float m_groundDistance = 0.4f;
-    public bool m_isGrounded;
+    public bool m_isGrounded = true;
+    [Utils.ReadOnly, SerializeField] private float m_airTime = 0f;
+    [Utils.ReadOnly, SerializeField] private float m_groundedTime = 0f;
 
     [Header("Movement")]
-    public float m_moveSpeed = 10f;
-    public float m_jumpForce = 10f;
+    public float m_moveSpeed = 5f;
 
     [Header("Sprint")]
     public float m_sprintSpeedMultiplier = 1.5f;
+    public float m_sprintUpTime = 0.5f;
+    public float m_sprintDownTime = 0.25f;
+    [Utils.ReadOnly, SerializeField] private float m_sprintAmount = 0f;
     [Utils.ReadOnly, SerializeField] private bool m_isSprinting = false;
 
     [Header("Crouch")]
     public float m_crouchSpeedMultiplier = 0.75f;
     public float m_crouchHeightMulti = 0.5f;
-    public float m_crouchDownTime = 0.25f;
-    public float m_crouchUpTime = 0.5f;
+    public float m_crouchDownTime = 0.5f;
+    public float m_crouchUpTime = 1.0f;
     [Utils.ReadOnly, SerializeField] public float m_currentHeight = 1f;
     [Utils.ReadOnly, SerializeField] private float m_normalHeight = 1f;
+    [Utils.ReadOnly, SerializeField] private float m_crouchAmount = 0f;
     [Utils.ReadOnly, SerializeField] private bool m_isCrouching = false;
 
     [Header("Look")]
-    public float m_mouseSensitivity = 1f;
-    float m_camY = 0;
+    public float m_mouseSensitivity = 0.05f;
+    float m_camOrigHeight = 0;
 
     [Header("Steps")]
-    [SerializeField] float m_stepHeight = 0.02f;
-    [SerializeField] float m_stepLength = 0.5f;
-    [SerializeField] float m_distanceTraveled = 0;
+    [SerializeField] private float m_stepHeight = 0.02f;
+    [SerializeField] private float m_stepLength = 0.5f;
+    [Utils.ReadOnly, SerializeField] private float m_distanceTraveled = 0;
     [HideInInspector] public System.Action OnStep;
-    bool m_oneStep = true;
+    private bool m_oneStep = true;
 
     [Header("Gravity")]
-    public float m_gravity = -9.81f;
-    public float m_fallMultiplier = 2.5f;
-    public float m_lowJumpMultiplier = 2f;
+    public float m_gravity = -12f;
+    public float m_groundedGravity = -12f;
+    public float m_fallMultiplier = 2f;
+    public float m_lowJumpMultiplier = 1.5f;
+    public float m_jumpForce = 1f;
+    public bool m_canJump = false;
 
     [Header("Velocity")]
     [SerializeField, Utils.ReadOnly] private float m_gravVel;
     [SerializeField, Utils.ReadOnly] private Vector2 m_moveVel;
 
-    [Header("Debug")]
+    [Header("Gun Movement")]
     public bool m_moveGun = true;
+    public float m_gunLerpSpeed = 10f;
     public float m_gunMoveAmount = 2f;
     public float m_gunMoveSprintAmount = 4f;
+    public float m_airTransitionTime = 0.5f;
 
     public Vector3 CalcVelocity()
     {
         Vector3 vel = new Vector3
         (
             m_moveVel.x, 
-            m_isGrounded && Mathf.Approximately(m_gravVel, -2f) ? 0 : m_gravVel, 
+            m_isGrounded && Mathf.Approximately(m_gravVel, m_groundedGravity) ? 0 : m_gravVel, 
             m_moveVel.y
         );
         return vel;
@@ -97,7 +107,7 @@ public class Player_Movement : MonoBehaviour
             return;
         }
 
-        m_camY = m_cam.transform.localPosition.y;
+        m_camOrigHeight = m_cam.transform.localPosition.y;
 
         m_normalHeight = model.transform.localScale.y;
         m_currentHeight = m_normalHeight;
@@ -158,9 +168,21 @@ public class Player_Movement : MonoBehaviour
         // Ground Check
         bool wasGrounded = m_isGrounded;
         m_isGrounded = Physics.CheckSphere(m_groundCheck.position, m_groundDistance, m_groundMask);
+        // spawn landing sound
         if (m_isGrounded && !wasGrounded)
         {
             AudioManager.SpawnSound<AutoSound_PlayerLand>(transform.position);
+        }
+        // count air/ground time
+        if (m_isGrounded)
+        {
+            m_airTime = 0f;
+            m_groundedTime += Time.deltaTime;
+        }
+        else
+        {
+            m_airTime += Time.deltaTime;
+            m_groundedTime = 0f;
         }
 
         // Movement (relative to camera)
@@ -172,46 +194,37 @@ public class Player_Movement : MonoBehaviour
         if (InputManager.PlayerMove.Sprint.IsPressed())
         {
             m_isSprinting = true;
-            moveDir *= m_sprintSpeedMultiplier;
+            m_sprintAmount = Mathf.Clamp(m_sprintAmount + Time.deltaTime / m_sprintUpTime, 0, 1);
         }
         else
         {
             m_isSprinting = false;
+            m_sprintAmount = Mathf.Clamp(m_sprintAmount - Time.deltaTime / m_sprintDownTime, 0, 1);
         }
         
         if (!m_isSprinting && InputManager.PlayerMove.Crouch.IsPressed())
         {
             m_isCrouching = true;
-            moveDir *= m_crouchSpeedMultiplier;
-
-            // crouch down
-            float currentHeight = model.transform.localScale.y;
-            if (currentHeight > m_normalHeight * m_crouchHeightMulti)
-            {
-                // subtract from current height (after m_crouchDownTime seconds, we should be at m_normalHeight * m_crouchHeightMulti)
-                float toSubtract = m_normalHeight * m_crouchHeightMulti / m_crouchDownTime * Time.deltaTime;
-                m_currentHeight -= toSubtract;
-
-                // move player down
-                m_controller.Move(Vector3.down * toSubtract * 2f);
-            }
+            m_crouchAmount = Mathf.Clamp(m_crouchAmount + Time.deltaTime / m_crouchDownTime, 0, 1);
         }
         else
         {
             m_isCrouching = false;
-
-            // crouch up
-            float currentHeight = model.transform.localScale.y;
-            if (currentHeight < m_normalHeight)
-            {
-                // add to current height (after m_crouchUpTime seconds, we should be at m_normalHeight)
-                float toAdd = m_normalHeight / m_crouchUpTime * Time.deltaTime;
-                m_currentHeight += toAdd;
-
-                // move player up
-                m_controller.Move(Vector3.up * toAdd * 2f);
-            }
+            m_crouchAmount = Mathf.Clamp(m_crouchAmount - Time.deltaTime / m_crouchUpTime, 0, 1);
         }
+
+        float currentHeight = model.transform.localScale.y;
+        float targetHeight = Mathf.Lerp(m_normalHeight, m_normalHeight * m_crouchHeightMulti, m_crouchAmount);
+        float toChange = (targetHeight - currentHeight);
+        if (toChange != 0)
+        {
+            m_currentHeight += toChange;
+            m_controller.Move(Vector3.up * toChange * 2f);
+        }
+        
+        // Apply Speed Multipliers
+        moveDir *= Mathf.Lerp(1, m_sprintSpeedMultiplier, m_sprintAmount);
+        moveDir *= Mathf.Lerp(1, m_crouchSpeedMultiplier, (m_normalHeight - m_currentHeight) / (m_normalHeight * m_crouchHeightMulti)); 
 
         // Apply Height
         Vector3 currentScale = model.transform.localScale;
@@ -227,7 +240,7 @@ public class Player_Movement : MonoBehaviour
         m_controller.Move(moveVector);
 
         // Jump
-        if (InputManager.PlayerMove.Jump.WasPerformedThisFrame() && m_isGrounded)
+        if (m_canJump && InputManager.PlayerMove.Jump.WasPerformedThisFrame() && m_isGrounded)
         {
             m_gravVel = Mathf.Sqrt(m_jumpForce * -2f * m_gravity);
 
@@ -250,7 +263,7 @@ public class Player_Movement : MonoBehaviour
         // if grounded, reset gravity
         if (m_isGrounded && m_gravVel < 0)
         {
-            m_gravVel = -2f;
+            m_gravVel = m_groundedGravity;
         }
 
         // Apply Gravity
@@ -265,11 +278,11 @@ public class Player_Movement : MonoBehaviour
         m_cam.transform.localPosition =
         (
             // normal height (with crouch)
-            (transform.up * m_camY * camScale)
+            (transform.up * m_camOrigHeight * camScale)
             // crouch correction (keep fixed distance from top of head) 
             + (transform.up * (m_normalHeight - m_currentHeight) * m_normalHeight)
             // step vert bobbing
-            + (transform.up * m_camY * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight)
+            + (transform.up * m_camOrigHeight * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight)
             // step horiz bobbing
             + (transform.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f)
         );
@@ -281,15 +294,55 @@ public class Player_Movement : MonoBehaviour
             if (gun != null)
             {
                 Vector3 origPos = gun.m_originalCamPos;
-                gun.transform.localPosition = 
+                Vector3 targetLocalPos = 
                 (
                     // normal height (without crouch)
-                    (transform.up * origPos.y)
+                    (Vector3.up * origPos.y)
                     // step vert bobbing
-                    + (transform.up * origPos.y * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight * (InputManager.PlayerMove.Sprint.IsPressed() ? m_gunMoveSprintAmount : m_gunMoveAmount))
+                    + (Vector3.up * origPos.y * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight * Mathf.Lerp(m_gunMoveAmount, m_gunMoveSprintAmount, m_sprintAmount))
                     // step horiz bobbing
-                    + (transform.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f * (InputManager.PlayerMove.Sprint.IsPressed() ? m_gunMoveSprintAmount : m_gunMoveAmount))
+                    + (Vector3.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f * Mathf.Lerp(m_gunMoveAmount, m_gunMoveSprintAmount, m_sprintAmount))
                 );
+
+                // if we are grounded, lerp to the target position
+                if (m_isGrounded)
+                {
+                    gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, targetLocalPos, Time.deltaTime * m_gunLerpSpeed);
+                }
+                // if we are not grounded, lerp to the original position
+                else
+                {
+                    gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, origPos, Time.deltaTime * m_gunLerpSpeed);
+                }
+
+                #region Unused Air Transition
+                /*Feels less nice, but only lerps when transitioning
+                // if we are grounded, move to the target position
+                if (m_isGrounded)
+                {
+                    if (m_groundedTime < m_airTransitionTime)
+                    {
+                        gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, targetLocalPos, Time.deltaTime * 10f);
+                    }
+                    else
+                    {
+                        gun.transform.localPosition = targetLocalPos;
+                    }
+                }
+                // if we are not grounded, move back to the original position
+                else if (!m_isGrounded)
+                {
+                    if (m_airTime < m_airTransitionTime)
+                    {
+                        gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, origPos, Time.deltaTime * 10f);
+                    }
+                    else
+                    {
+                        gun.transform.localPosition = origPos;
+                    }
+                }
+                */
+                #endregion
             }
         }
 

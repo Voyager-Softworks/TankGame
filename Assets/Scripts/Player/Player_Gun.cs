@@ -125,7 +125,8 @@ public class Player_Gun : MonoBehaviour
         m_readyToEject = false;
 
         // audio
-        AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
+        AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
+        reloadSound.transform.parent = m_shellPoint;
         // spawn shell after a delay
         StartCoroutine(EjectShellCoroutine(m_shellEjectDelay));
 

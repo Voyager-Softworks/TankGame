@@ -727,27 +727,39 @@ MonoBehaviour:
     m_Bits: 55
   m_groundDistance: 0.4
   m_isGrounded: 1
+  m_airTime: 0
+  m_groundedTime: 0
   m_moveSpeed: 5
-  m_jumpForce: 1
   m_sprintSpeedMultiplier: 1.5
-  m_crouchSpeedMulti: 0.75
+  m_sprintUpTime: 0.5
+  m_sprintDownTime: 0.25
+  m_sprintAmount: 0
+  m_isSprinting: 0
+  m_crouchSpeedMultiplier: 0.75
   m_crouchHeightMulti: 0.5
   m_crouchDownTime: 0.5
-  m_crouchUpTime: 1
+  m_crouchUpTime: 0.75
   m_currentHeight: 1
   m_normalHeight: 1
+  m_crouchAmount: 0
+  m_isCrouching: 0
   m_mouseSensitivity: 0.05
   m_stepHeight: 0.02
   m_stepLength: 0.5
   m_distanceTraveled: 0
   m_gravity: -12
+  m_groundedGravity: -12
   m_fallMultiplier: 2
   m_lowJumpMultiplier: 1.5
+  m_jumpForce: 1
+  m_canJump: 0
   m_gravVel: 0
   m_moveVel: {x: 0, y: 0}
   m_moveGun: 1
+  m_gunLerpSpeed: 10
   m_gunMoveAmount: 2
   m_gunMoveSprintAmount: 4
+  m_airTransitionTime: 0.5
 --- !u!143 &865843682631846252
 CharacterController:
   m_ObjectHideFlags: 0
@@ -769,7 +781,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.425
-  m_SlopeLimit: 20
+  m_SlopeLimit: 35
   m_StepOffset: 0.15
   m_SkinWidth: 0.01
   m_MinMoveDistance: 0.001
