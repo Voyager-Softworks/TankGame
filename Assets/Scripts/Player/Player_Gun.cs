@@ -10,6 +10,7 @@ public class Player_Gun : MonoBehaviour
     [Header("References")]
     public Transform m_shellPoint;
     public Transform m_firePoint;
+    public Animator m_animator;
 
     [Header("Stats")]
     public float m_damage = 100.0f;
@@ -27,6 +28,7 @@ public class Player_Gun : MonoBehaviour
     [Header("Prefabs")]
     public GameObject m_shellPrefab;
     public GameObject m_fxGunShot;
+    public GameObject m_fxSmokeTrail;
 
     [Header("Follow Cam")]
     public bool m_followCam = false;
@@ -81,8 +83,11 @@ public class Player_Gun : MonoBehaviour
 
         m_canShoot = false;
 
+        m_animator.SetTrigger("Shoot");
+
         // FX
         Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
+        Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
 
         // // raycast against every objects with Health:
         // // get all healths
@@ -123,6 +128,8 @@ public class Player_Gun : MonoBehaviour
     private IEnumerator BoltCoroutine()
     {
         m_readyToEject = false;
+
+        m_animator.SetTrigger("Bolt");
 
         // audio
         AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);

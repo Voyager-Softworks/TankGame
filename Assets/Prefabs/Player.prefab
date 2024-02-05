@@ -238,6 +238,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shellPoint: {fileID: 7468519638822311801}
   m_firePoint: {fileID: 2948378921513073827}
+  m_animator: {fileID: 0}
   m_damage: 100
   m_range: 100
   m_shootTime: 0.5
@@ -247,6 +248,7 @@ MonoBehaviour:
   m_readyToEject: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
+  m_fxSmokeTrail: {fileID: 0}
   m_followCam: 0
   m_originalCamPos: {x: 0, y: 0, z: 0}
 --- !u!1 &2585458377940555683
@@ -737,8 +739,8 @@ MonoBehaviour:
   m_isSprinting: 0
   m_crouchSpeedMultiplier: 0.75
   m_crouchHeightMulti: 0.5
-  m_crouchDownTime: 0.5
-  m_crouchUpTime: 0.75
+  m_crouchDownTime: 0.25
+  m_crouchUpTime: 0.4
   m_currentHeight: 1
   m_normalHeight: 1
   m_crouchAmount: 0
@@ -933,8 +935,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shellPoint: {fileID: 5544990022989524341}
   m_firePoint: {fileID: 2609202203605322683}
+  m_animator: {fileID: 4078422581800914685}
   m_damage: 100
-  m_range: 100
+  m_range: 500
   m_shootTime: 0.5
   m_boltTime: 2.7
   m_shellEjectDelay: 1
@@ -942,6 +945,7 @@ MonoBehaviour:
   m_readyToEject: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
+  m_fxSmokeTrail: {fileID: 8678575543433451504, guid: 3cb48cb25cbf0c746bd8b6832c4a1805, type: 3}
   m_followCam: 0
   m_originalCamPos: {x: 0, y: 0, z: 0}
 --- !u!4 &5570317507101240831 stripped
