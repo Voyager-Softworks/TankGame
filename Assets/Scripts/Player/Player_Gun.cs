@@ -7,6 +7,15 @@ using UnityEngine;
 /// </summary>
 public class Player_Gun : MonoBehaviour
 {
+    public enum ShellType
+    {
+        Live,
+        Dirty,
+        Spent,
+        SpentDirty,
+        None
+    }
+
     [Header("References")]
     public Transform m_shellPoint;
     public Transform m_firePoint;
@@ -16,14 +25,26 @@ public class Player_Gun : MonoBehaviour
     public float m_damage = 100.0f;
     public float m_range = 100.0f;
 
+    [Header("Ammo")]
+    [SerializeField] private int m_clipSize = 5;
+    [SerializeField] private int m_clipAmmo = 5;
+    [SerializeField] private int m_totalAmmo = 20;
+
     [Header("Timers")]
     public float m_shootTime = 0.5f;
+    public float m_dryFireTime = 0.5f;
     public float m_boltTime = 2.5f;
     public float m_shellEjectDelay = 1.0f;
+    public float m_reloadTime = 3.0f;
 
     [Header("State")]
+    [SerializeField, Utils.ReadOnly] private ShellType m_shellInChamber = ShellType.Live;
     [SerializeField, Utils.ReadOnly] private bool m_canShoot = true;
-    [SerializeField, Utils.ReadOnly] private bool m_readyToEject = false;
+    [SerializeField, Utils.ReadOnly] private bool m_isShooting = false;
+    [SerializeField, Utils.ReadOnly] private bool m_canBolt = false;
+    [SerializeField, Utils.ReadOnly] private bool m_isBolting = false;
+    [SerializeField, Utils.ReadOnly] private bool m_canReload = true;
+    [SerializeField, Utils.ReadOnly] private bool m_isReloading = false;
 
     [Header("Prefabs")]
     public GameObject m_shellPrefab;
@@ -65,69 +86,131 @@ public class Player_Gun : MonoBehaviour
         // shoot
         if (InputManager.PlayerGun.Shoot.triggered)
         {
-            StartCoroutine(Shoot());
+            StartCoroutine(TryShoot());
         }
         // when player releases the shoot button, eject shell
-        if (m_readyToEject && InputManager.PlayerGun.Shoot.IsPressed() == false)
+        if (InputManager.PlayerGun.Shoot.IsPressed() == false)
         {
-            StartCoroutine(BoltCoroutine());
+            StartCoroutine(TryBolt());
+        }
+        // reload
+        if (InputManager.PlayerGun.Reload.triggered)
+        {
+            StartCoroutine(Reload());
         }
     }
 
-    private IEnumerator Shoot()
+    /// <summary>
+    /// Shoot without doing bolt.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator TryShoot()
     {
         if (!m_canShoot)
         {
             yield break;
         }
 
+        m_isShooting = true;
         m_canShoot = false;
+        m_canReload = false;
+        m_canBolt = false;
 
-        m_animator.SetTrigger("Shoot");
+        // reduce ammo
+        bool hasAmmo = m_clipAmmo > 0;
 
-        // FX
-        Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
-        Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
-
-        // // raycast against every objects with Health:
-        // // get all healths
-        // List<Health> healths = new List<Health>(Health.GetAllHealth());
-        // // sort by distance
-        // healths.Sort((a, b) => Vector3.Distance(a.transform.position, m_firePoint.position).CompareTo(Vector3.Distance(b.transform.position, m_firePoint.position)));
-
-        // raycastall to check for hits
-        LayerMask ignoreMask = LayerMask.GetMask("Player");
-        RaycastHit[] hits = Physics.RaycastAll(Player.Instance.m_movement.m_cam.transform.position, Player.Instance.m_movement.m_cam.transform.forward, m_range, ~ignoreMask);
-        // sort hits by distance
-        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-        // loop through hits
-        foreach (RaycastHit hit in hits)
+        // Normal shoot
+        if (hasAmmo && m_shellInChamber == ShellType.Live)
         {
-            // get health component in child&/parent
-            Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
-            if (health != null)
-            {
-                // generate damage info
-                Health.DamageInfo damageInfo = new Health.DamageInfo(m_damage, gameObject, m_firePoint.position, hit.point, hit.normal);
+            m_clipAmmo--;
+            m_shellInChamber = ShellType.Spent;
 
-                // damage health
-                health.Damage(damageInfo);
+            m_animator.SetTrigger("Shoot");
+
+            // FX
+            Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
+            Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
+
+            // raycastall to check for hits
+            LayerMask ignoreMask = LayerMask.GetMask("Player");
+            RaycastHit[] hits = Physics.RaycastAll(Player.Instance.m_movement.m_cam.transform.position, Player.Instance.m_movement.m_cam.transform.forward, m_range, ~ignoreMask);
+            // sort hits by distance
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+            // loop through hits
+            foreach (RaycastHit hit in hits)
+            {
+                // get health component in child&/parent
+                Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
+                if (health != null)
+                {
+                    // generate damage info
+                    Health.DamageInfo damageInfo = new Health.DamageInfo(m_damage, gameObject, m_firePoint.position, hit.point, hit.normal);
+
+                    // damage health
+                    health.Damage(damageInfo);
+                }
+
+                // break after first hit (for now)
+                //@TODO: implement piercing? e.g. StoppingPower stat
+                break;
             }
 
-            // break after first hit (for now)
-            //@TODO: implement piercing? e.g. StoppingPower stat
-            break;
+            // wait for shoot time
+            yield return new WaitForSeconds(m_shootTime);
+
+            // is shell, need to bolt
+            m_canBolt = true;
+        }
+        // dirty shoot (blank shot, no damage)
+        else if (hasAmmo && m_shellInChamber == ShellType.Dirty)
+        {
+            m_clipAmmo--;
+            m_shellInChamber = ShellType.SpentDirty;
+
+            m_animator.SetTrigger("Shoot");
+
+            // FX
+            Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
+            Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
+
+            // wait for shoot time
+            yield return new WaitForSeconds(m_shootTime);
+
+            // is shell, need to bolt
+            m_canBolt = true;
+        }
+        // dry fire
+        else
+        {
+            AudioManager.SpawnSound<AutoSound_Footstep>(m_firePoint.position); // Temp sound
+
+            // wait for dry fire time
+            yield return new WaitForSeconds(m_dryFireTime);
+
+            // no shell, wont bolt
+            m_canShoot = true;
+            m_canReload = true;
         }
 
-        // wait for shoot time
-        yield return new WaitForSeconds(m_shootTime);
-        m_readyToEject = true;
+        m_isShooting = false;
     }
 
-    private IEnumerator BoltCoroutine()
+    /// <summary>
+    /// Bolt the gun.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator TryBolt()
     {
-        m_readyToEject = false;
+        if (!m_canBolt)
+        {
+            yield break;
+        }
+        
+        m_isBolting = true;
+        m_canShoot = false;
+        m_canBolt = false;
+        m_canReload = false;
 
         m_animator.SetTrigger("Bolt");
 
@@ -135,15 +218,33 @@ public class Player_Gun : MonoBehaviour
         AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
         reloadSound.transform.parent = m_shellPoint;
         // spawn shell after a delay
-        StartCoroutine(EjectShellCoroutine(m_shellEjectDelay));
+        StartCoroutine(CosmeticEjectShell(m_shellEjectDelay));
 
         // wait for bolt time
         yield return new WaitForSeconds(m_boltTime);
 
+        bool hasAmmo = m_clipAmmo > 0;
+        if (hasAmmo)
+        {
+            m_shellInChamber = ShellType.Live; //@TODO: implement dirty shells
+        }
+        else
+        {
+            m_shellInChamber = ShellType.None;
+        }
+
         m_canShoot = true;
+        m_canReload = true;
+        m_isBolting = false;
     }
 
-    private IEnumerator EjectShellCoroutine(float delay)
+    /// <summary>
+    /// Ejects a shell from the gun.
+    /// @TODO: Implement shell types
+    /// </summary>
+    /// <param name="delay"></param>
+    /// <returns></returns>
+    private IEnumerator CosmeticEjectShell(float delay)
     {
         yield return new WaitForSeconds(delay);
         
@@ -158,6 +259,63 @@ public class Player_Gun : MonoBehaviour
             // random spin
             shellRb.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 10f;
         }
+    }
+
+    /// <summary>
+    /// Reload a clip of ammo.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator Reload()
+    {
+        if (!m_canReload)
+        {
+            yield break;
+        }
+
+        m_isReloading = true;
+        m_canShoot = false;
+        m_canBolt = false;
+        m_canReload = false;
+
+        // reload check
+        int ammoNeeded = m_clipSize - m_clipAmmo;
+        int ammoAvailable = Mathf.Min(ammoNeeded, m_totalAmmo);
+
+        bool shouldReload = ammoAvailable > 0;
+        if (shouldReload)
+        {
+            m_animator.SetTrigger("Reload");
+
+            // audio
+            AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
+            reloadSound.transform.parent = m_shellPoint;
+
+            // wait for reload time
+            yield return new WaitForSeconds(m_reloadTime);
+
+            m_clipAmmo += ammoAvailable;
+            m_totalAmmo -= ammoAvailable;
+
+            // re-chamber
+            bool hasAmmo = m_clipAmmo > 0;
+            if (hasAmmo)
+            {
+                m_shellInChamber = ShellType.Live; //@TODO: implement dirty shells
+            }
+            else
+            {
+                m_shellInChamber = ShellType.None;
+            }
+        }
+        // out of ammo or clip is full
+        else
+        {
+            AudioManager.SpawnSound<AutoSound_Footstep>(m_firePoint.position); // Temp sound
+        }
+
+        m_canShoot = true;
+        m_canReload = true;
+        m_isReloading = false;
     }
 
     /// <summary>
