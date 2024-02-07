@@ -31,6 +31,9 @@ public class Player_Gun : MonoBehaviour
     [SerializeField] private int m_totalAmmo = 20;
 
     [Header("Timers")]
+    public float m_aimTime = 0.5f;
+    public float m_unaimTime = 0.5f;
+    [SerializeField, Utils.ReadOnly] private float m_aimAount = 0.0f;
     public float m_shootTime = 0.5f;
     public float m_dryFireTime = 0.5f;
     public float m_boltTime = 2.5f;
@@ -39,6 +42,9 @@ public class Player_Gun : MonoBehaviour
 
     [Header("State")]
     [SerializeField, Utils.ReadOnly] private ShellType m_shellInChamber = ShellType.Live;
+    [SerializeField, Utils.ReadOnly] private bool m_canAim = true;
+    [SerializeField, Utils.ReadOnly] private bool m_isAiming = false;
+    [SerializeField, Utils.ReadOnly] private bool m_canUnAim = false;
     [SerializeField, Utils.ReadOnly] private bool m_canShoot = true;
     [SerializeField, Utils.ReadOnly] private bool m_isShooting = false;
     [SerializeField, Utils.ReadOnly] private bool m_canBolt = false;
@@ -83,6 +89,8 @@ public class Player_Gun : MonoBehaviour
 
         FollowCam();
 
+        // aim (continuous)
+        UpdateAim();
         // shoot
         if (InputManager.PlayerGun.Shoot.triggered)
         {
@@ -97,6 +105,52 @@ public class Player_Gun : MonoBehaviour
         if (InputManager.PlayerGun.Reload.triggered)
         {
             StartCoroutine(Reload());
+        }
+    }
+
+    /// <summary>
+    /// Aims the gun.
+    /// <br/>Since aiming is continuous and can be interrupted, this method is called every frame, and doesnt use coroutines.
+    /// </summary>
+    private void UpdateAim()
+    {
+        bool wantsToAim = InputManager.PlayerGun.Aim.IsPressed();
+
+        // aim
+        if (wantsToAim && m_canAim)
+        {
+            m_canUnAim = true;
+            m_isAiming = true;
+
+            // begin aim animation
+            m_animator.SetBool("Aiming", true);
+
+            // increment aim amount
+            m_aimAount = Mathf.Clamp01(m_aimAount + Time.deltaTime / m_aimTime);
+
+            // if fully aimed, set state
+            if (m_aimAount >= 1.0f)
+            {
+                m_canAim = false;
+            }
+        }
+        // unaim
+        else if (!wantsToAim && m_canUnAim)
+        {
+            m_canAim = true;
+            m_isAiming = false;
+
+            // begin unaim animation
+            m_animator.SetBool("Aiming", false);
+
+            // decrement aim amount
+            m_aimAount = Mathf.Clamp01(m_aimAount - Time.deltaTime / m_unaimTime);
+
+            // if fully unaimed, set state
+            if (m_aimAount <= 0.0f)
+            {
+                m_canUnAim = false;
+            }
         }
     }
 
@@ -125,7 +179,16 @@ public class Player_Gun : MonoBehaviour
             m_clipAmmo--;
             m_shellInChamber = ShellType.Spent;
 
-            m_animator.SetTrigger("Shoot");
+            if (m_isAiming)
+            {
+                m_animator.SetTrigger("Shoot_Aim");
+                m_animator.ResetTrigger("Shoot_Hip");
+            }
+            else
+            {
+                m_animator.SetTrigger("Shoot_Hip");
+                m_animator.ResetTrigger("Shoot_Aim");
+            }
 
             // FX
             Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
@@ -183,7 +246,7 @@ public class Player_Gun : MonoBehaviour
         // dry fire
         else
         {
-            AudioManager.SpawnSound<AutoSound_Footstep>(m_firePoint.position); // Temp sound
+            AudioManager.SpawnSound<AutoSound_GunEmpty>(m_firePoint.position); // Temp sound
 
             // wait for dry fire time
             yield return new WaitForSeconds(m_dryFireTime);
@@ -310,7 +373,7 @@ public class Player_Gun : MonoBehaviour
         // out of ammo or clip is full
         else
         {
-            AudioManager.SpawnSound<AutoSound_Footstep>(m_firePoint.position); // Temp sound
+            AudioManager.SpawnSound<AutoSound_GunEmpty>(m_firePoint.position); // Temp sound
         }
 
         m_canShoot = true;
