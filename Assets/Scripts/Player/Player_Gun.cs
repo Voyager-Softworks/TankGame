@@ -33,7 +33,7 @@ public class Player_Gun : MonoBehaviour
     [Header("Timers")]
     public float m_aimTime = 0.5f;
     public float m_unaimTime = 0.5f;
-    [SerializeField, Utils.ReadOnly] private float m_aimAount = 0.0f;
+    [SerializeField, Utils.ReadOnly] private float m_aimAount = 0.0f;                          public float AimAmount { get { return m_aimAount; } }
     public float m_shootTime = 0.5f;
     public float m_dryFireTime = 0.5f;
     public float m_boltTime = 2.5f;
@@ -41,16 +41,17 @@ public class Player_Gun : MonoBehaviour
     public float m_reloadTime = 3.0f;
 
     [Header("State")]
-    [SerializeField, Utils.ReadOnly] private ShellType m_shellInChamber = ShellType.Live;
-    [SerializeField, Utils.ReadOnly] private bool m_canAim = true;
-    [SerializeField, Utils.ReadOnly] private bool m_isAiming = false;
-    [SerializeField, Utils.ReadOnly] private bool m_canUnAim = false;
-    [SerializeField, Utils.ReadOnly] private bool m_canShoot = true;
-    [SerializeField, Utils.ReadOnly] private bool m_isShooting = false;
-    [SerializeField, Utils.ReadOnly] private bool m_canBolt = false;
-    [SerializeField, Utils.ReadOnly] private bool m_isBolting = false;
-    [SerializeField, Utils.ReadOnly] private bool m_canReload = true;
-    [SerializeField, Utils.ReadOnly] private bool m_isReloading = false;
+    
+    [SerializeField, Utils.ReadOnly] private ShellType m_shellInChamber = ShellType.Live;       public ShellType ShellInChamber { get { return m_shellInChamber; } }
+    [SerializeField, Utils.ReadOnly] private bool m_canAim = true;                              public bool CanAim { get { return m_canAim; } }
+    [SerializeField, Utils.ReadOnly] private bool m_isAiming = false;                           public bool IsAiming { get { return m_isAiming; } }         
+    [SerializeField, Utils.ReadOnly] private bool m_canUnAim = false;                           public bool CanUnAim { get { return m_canUnAim; } }
+    [SerializeField, Utils.ReadOnly] private bool m_canShoot = true;                            public bool CanShoot { get { return m_canShoot; } }
+    [SerializeField, Utils.ReadOnly] private bool m_isShooting = false;                         public bool IsShooting { get { return m_isShooting; } }
+    [SerializeField, Utils.ReadOnly] private bool m_canBolt = false;                            public bool CanBolt { get { return m_canBolt; } }
+    [SerializeField, Utils.ReadOnly] private bool m_isBolting = false;                          public bool IsBolting { get { return m_isBolting; } }
+    [SerializeField, Utils.ReadOnly] private bool m_canReload = true;                           public bool CanReload { get { return m_canReload; } }
+    [SerializeField, Utils.ReadOnly] private bool m_isReloading = false;                        public bool IsReloading { get { return m_isReloading; } }
 
     [Header("Prefabs")]
     public GameObject m_shellPrefab;
