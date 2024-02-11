@@ -44,9 +44,9 @@ public class Player_Interact : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(cameraTransform.position, cameraTransform.forward * interactRayDistance);
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawRay(cameraTransform.position, cameraTransform.forward * interactRayDistance);
+    // }
 }
