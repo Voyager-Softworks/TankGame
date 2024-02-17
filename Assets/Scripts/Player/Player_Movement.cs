@@ -41,7 +41,10 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Look")]
     public float m_mouseSensitivity = 0.05f;
+    public float m_mouseSensitivityMulti = 1f;
     float m_camOrigHeight = 0;
+    private float m_defaultFOV = 60f;
+    public float DefaultFOV { get { return m_defaultFOV; } }
 
     [Header("Steps")]
     [SerializeField] private float m_stepHeight = 0.02f;
@@ -91,6 +94,8 @@ public class Player_Movement : MonoBehaviour
         // lock and hide cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        m_defaultFOV = m_cam.fieldOfView;
     }
 
     private void Start()

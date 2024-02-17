@@ -19,6 +19,7 @@ public class Player_Gun : MonoBehaviour
     [Header("References")]
     public Transform m_shellPoint;
     public Transform m_firePoint;
+    public Transform m_aimPoint;
     public Animator m_animator;
 
     [Header("Stats")]
@@ -33,7 +34,9 @@ public class Player_Gun : MonoBehaviour
     [Header("Timers")]
     public float m_aimTime = 0.5f;
     public float m_unaimTime = 0.5f;
-    [SerializeField, Utils.ReadOnly] private float m_aimAount = 0.0f;                          public float AimAmount { get { return m_aimAount; } }
+    [SerializeField, Utils.ReadOnly] private float m_aimAmount = 0.0f;                          public float AimAmount { get { return m_aimAmount; } }
+    [Tooltip("How far into the aim amount till we are using the sights")] public float m_aimSightThreshold = 0.3f;
+    public float m_aimFovMulti = 0.75f;
     public float m_shootTime = 0.5f;
     public float m_dryFireTime = 0.5f;
     public float m_boltTime = 2.5f;
@@ -41,7 +44,6 @@ public class Player_Gun : MonoBehaviour
     public float m_reloadTime = 3.0f;
 
     [Header("State")]
-    
     [SerializeField, Utils.ReadOnly] private ShellType m_shellInChamber = ShellType.Live;       public ShellType ShellInChamber { get { return m_shellInChamber; } }
     [SerializeField, Utils.ReadOnly] private bool m_canAim = true;                              public bool CanAim { get { return m_canAim; } }
     [SerializeField, Utils.ReadOnly] private bool m_isAiming = false;                           public bool IsAiming { get { return m_isAiming; } }         
@@ -62,6 +64,9 @@ public class Player_Gun : MonoBehaviour
     public bool m_followCam = false;
     public Vector3 m_originalCamPos;
     private Vector3 m_originalPlayerPos;
+
+    [Header("Debug")]
+    private Vector3 m_aimDir = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -127,10 +132,10 @@ public class Player_Gun : MonoBehaviour
             m_animator.SetBool("Aiming", true);
 
             // increment aim amount
-            m_aimAount = Mathf.Clamp01(m_aimAount + Time.deltaTime / m_aimTime);
+            m_aimAmount = Mathf.Clamp01(m_aimAmount + Time.deltaTime / m_aimTime);
 
             // if fully aimed, set state
-            if (m_aimAount >= 1.0f)
+            if (m_aimAmount >= 1.0f)
             {
                 m_canAim = false;
             }
@@ -145,14 +150,35 @@ public class Player_Gun : MonoBehaviour
             m_animator.SetBool("Aiming", false);
 
             // decrement aim amount
-            m_aimAount = Mathf.Clamp01(m_aimAount - Time.deltaTime / m_unaimTime);
+            m_aimAmount = Mathf.Clamp01(m_aimAmount - Time.deltaTime / m_unaimTime);
 
             // if fully unaimed, set state
-            if (m_aimAount <= 0.0f)
+            if (m_aimAmount <= 0.0f)
             {
                 m_canUnAim = false;
             }
         }
+
+        Player_Movement movement = Player.Instance.m_movement;
+        Camera cam = movement.m_cam;
+        bool useAimPoint = m_aimAmount > m_aimSightThreshold;
+        m_aimDir = useAimPoint ? m_aimPoint.position - cam.transform.position : cam.transform.forward;
+        // draw debug line
+        Debug.DrawRay(cam.transform.position, m_aimDir * m_range, useAimPoint ? Color.green : Color.red);
+
+        // use the aim amount to update the FOV
+        float fov = movement.DefaultFOV;
+        if (IsAiming)
+        {
+            fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, m_aimAmount / m_aimSightThreshold);
+        }
+        else
+        {
+            fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, 1f - (1f - m_aimAmount) / m_aimSightThreshold);
+        }
+        cam.fieldOfView = fov;
+        // update sensitivity (current fov / default fov)
+        movement.m_mouseSensitivityMulti = fov / movement.DefaultFOV;
     }
 
     /// <summary>
@@ -160,7 +186,7 @@ public class Player_Gun : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     private IEnumerator TryShoot()
-    {
+    {   
         if (!m_canShoot)
         {
             yield break;
@@ -195,9 +221,13 @@ public class Player_Gun : MonoBehaviour
             Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
             Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
 
+            // if aiming, use aim point, else use cam forward
+            Player_Movement movement = Player.Instance.m_movement;
+            Camera cam = movement.m_cam;
+
             // raycastall to check for hits
             LayerMask ignoreMask = LayerMask.GetMask("Player");
-            RaycastHit[] hits = Physics.RaycastAll(Player.Instance.m_movement.m_cam.transform.position, Player.Instance.m_movement.m_cam.transform.forward, m_range, ~ignoreMask);
+            RaycastHit[] hits = Physics.RaycastAll(cam.transform.position, m_aimDir, m_range, ~ignoreMask);
             // sort hits by distance
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 

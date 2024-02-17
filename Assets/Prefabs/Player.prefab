@@ -126,12 +126,12 @@ GameObject:
   - component: {fileID: 226740053737990137}
   - component: {fileID: 2812712717997767144}
   m_Layer: 10
-  m_Name: Image
+  m_Name: Crosshair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4330086912155924521
 RectTransform:
   m_ObjectHideFlags: 0
@@ -238,6 +238,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shellPoint: {fileID: 7468519638822311801}
   m_firePoint: {fileID: 2948378921513073827}
+  m_aimPoint: {fileID: 0}
   m_animator: {fileID: 0}
   m_damage: 100
   m_range: 100
@@ -246,7 +247,9 @@ MonoBehaviour:
   m_totalAmmo: 20
   m_aimTime: 0.5
   m_unaimTime: 0.5
-  m_aimAount: 0
+  m_aimAmount: 0
+  m_aimSightThreshold: 0.3
+  m_aimFovMulti: 0.75
   m_shootTime: 0.5
   m_dryFireTime: 0.5
   m_boltTime: 2.7
@@ -664,7 +667,7 @@ Transform:
   m_GameObject: {fileID: 8003125190359445034}
   serializedVersion: 2
   m_LocalRotation: {x: -0.58499146, y: -0.0016937961, z: -0.011168928, w: 0.8109608}
-  m_LocalPosition: {x: -0.00024216603, y: 1.0105345, z: 0.26408273}
+  m_LocalPosition: {x: 0, y: 1.0105345, z: 0.26408273}
   m_LocalScale: {x: 0.82377785, y: 0.82377774, z: 0.8237775}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -748,12 +751,12 @@ MonoBehaviour:
   m_airTime: 0
   m_groundedTime: 0
   m_moveSpeed: 5
-  m_sprintSpeedMultiplier: 1.5
+  m_sprintSpeedMultiplier: 1.75
   m_sprintUpTime: 0.5
   m_sprintDownTime: 0.25
   m_sprintAmount: 0
   m_isSprinting: 0
-  m_crouchSpeedMultiplier: 0.75
+  m_crouchSpeedMultiplier: 0.6
   m_crouchHeightMulti: 0.5
   m_crouchDownTime: 0.25
   m_crouchUpTime: 0.4
@@ -762,6 +765,7 @@ MonoBehaviour:
   m_crouchAmount: 0
   m_isCrouching: 0
   m_mouseSensitivity: 0.05
+  m_mouseSensitivityMulti: 1
   m_stepHeight: 0.02
   m_stepLength: 0.5
   m_distanceTraveled: 0
@@ -777,6 +781,7 @@ MonoBehaviour:
   m_gunLerpSpeed: 10
   m_gunMoveAmount: 2
   m_gunMoveSprintAmount: 4
+  m_gunMoveAimAmount: 0
   m_airTransitionTime: 0.5
 --- !u!143 &865843682631846252
 CharacterController:
@@ -821,6 +826,37 @@ MonoBehaviour:
   interactableLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!1 &9075315504972782301
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6946304045853137485}
+  m_Layer: 0
+  m_Name: AimPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6946304045853137485
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9075315504972782301}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.58499146, y: -0.0016937961, z: -0.011168928, w: 0.8109608}
+  m_LocalPosition: {x: 0, y: 0.98502, z: 0.22762}
+  m_LocalScale: {x: 0.82377785, y: 0.82377774, z: 0.8237775}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521886213516409804}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5080587722332867965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1575,6 +1611,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3378478402700916401, guid: 6e0f868262e299a4eaa48e71fe8a471f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2609202203605322683}
+    - targetCorrespondingSourceObject: {fileID: 3378478402700916401, guid: 6e0f868262e299a4eaa48e71fe8a471f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6946304045853137485}
     - targetCorrespondingSourceObject: {fileID: -8373209996527918974, guid: 6e0f868262e299a4eaa48e71fe8a471f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5544990022989524341}
@@ -1631,6 +1670,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shellPoint: {fileID: 5544990022989524341}
   m_firePoint: {fileID: 2609202203605322683}
+  m_aimPoint: {fileID: 6946304045853137485}
   m_animator: {fileID: 4078422581800914685}
   m_damage: 100
   m_range: 500
@@ -1639,7 +1679,9 @@ MonoBehaviour:
   m_totalAmmo: 20
   m_aimTime: 0.7916667
   m_unaimTime: 0.4583333
-  m_aimAount: 0
+  m_aimAmount: 0
+  m_aimSightThreshold: 0.3
+  m_aimFovMulti: 0.75
   m_shootTime: 0.48
   m_dryFireTime: 0.25
   m_boltTime: 1.02
