@@ -55,7 +55,7 @@ MonoBehaviour:
   m_isDistancePaused: 0
   m_minVolume: 0.9
   m_maxVolume: 1.1
-  m_targetVolume: 0.16873848
+  m_targetVolume: 1.0214357
   m_volumeMultiplier: 1
   m_zoneVolumeMultiplier: 1
   m_minPitch: 0.9
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_minTimeBetweenPlays: 0
   m_maxTimeBetweenPlays: 0
   clips:
-  - {fileID: 8300000, guid: 8d442f935f8341644953b19648ff6ca7, type: 3}
+  - {fileID: 8300000, guid: 0a3709abfdf2d0f4ca2527cbf6e9a0a9, type: 3}
   audioSource: {fileID: 3107313251738698647}
   m_countdownTimer: 0
 --- !u!82 &3107313251738698647
@@ -77,10 +77,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -4260829564531396747, guid: 1159e5e544c8c7345bebec05e35f918d, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 228b67cc5918e694197967536042588e, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 0a3709abfdf2d0f4ca2527cbf6e9a0a9, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.16873848
-  m_Pitch: 1.0706136
+  m_Volume: 1
+  m_Pitch: 0.92831725
   Loop: 0
   Mute: 0
   Spatialize: 0

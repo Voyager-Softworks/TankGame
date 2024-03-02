@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3107313251738698641}
   - component: {fileID: 3107313251738698640}
   - component: {fileID: 3107313251738698647}
-  - component: {fileID: 276741757003573418}
+  - component: {fileID: -270874361276619267}
   m_Layer: 0
-  m_Name: AutoSound_Gunshot
+  m_Name: AutoSound_GunBolt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,17 +54,17 @@ MonoBehaviour:
   m_maxTimeBeforeStart: 0
   m_isDistancePaused: 0
   m_minVolume: 0.9
-  m_maxVolume: 1
-  m_targetVolume: 0.92103255
+  m_maxVolume: 1.1
+  m_targetVolume: 1.0214357
   m_volumeMultiplier: 1
   m_zoneVolumeMultiplier: 1
   m_minPitch: 0.9
-  m_maxPitch: 1.1
+  m_maxPitch: 1
   m_playChance: 1
   m_minTimeBetweenPlays: 0
   m_maxTimeBetweenPlays: 0
   clips:
-  - {fileID: 8300000, guid: 222cae6c754315041a7346b8a2594e06, type: 3}
+  - {fileID: 8300000, guid: 214b86918d0804e4189fd5079b872582, type: 3}
   audioSource: {fileID: 3107313251738698647}
   m_countdownTimer: 0
 --- !u!82 &3107313251738698647
@@ -77,10 +77,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -4260829564531396747, guid: 1159e5e544c8c7345bebec05e35f918d, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 228b67cc5918e694197967536042588e, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 0a3709abfdf2d0f4ca2527cbf6e9a0a9, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 0.8780179
+  m_Pitch: 0.92831725
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -163,7 +163,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &276741757003573418
+--- !u!114 &-270874361276619267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3107313251738698642}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b4c155835c01f74bb0ea99fed8f1445, type: 3}
+  m_Script: {fileID: 11500000, guid: cf8b6a46e9f275a4984f025c31e44e4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_autoSound: {fileID: 3107313251738698640}

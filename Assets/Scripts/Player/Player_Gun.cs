@@ -309,7 +309,7 @@ public class Player_Gun : MonoBehaviour
         m_animator.SetTrigger("Bolt");
 
         // audio
-        AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
+        AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPoint.position);
         reloadSound.transform.parent = m_shellPoint;
         // spawn shell after a delay
         StartCoroutine(CosmeticEjectShell(m_shellEjectDelay));
