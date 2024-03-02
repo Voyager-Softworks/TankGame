@@ -74,6 +74,11 @@ public class Tank_Movement : MonoBehaviour {
         UpdateAudio();
     }
 
+    private void FixedUpdate()
+    {
+        UpdateWheels();
+    }
+
     public void UpdateAudio()
     {
         // engine audio
@@ -148,11 +153,6 @@ public class Tank_Movement : MonoBehaviour {
         {
             m_rightBrake = Mathf.Clamp(m_rightBrake - Time.deltaTime * m_rightBrakeRate * 2f, 0f, 1f);
         }
-    }
-
-    private void FixedUpdate()
-    {
-        UpdateWheels();
     }
 
     public void UpdateWheels()
