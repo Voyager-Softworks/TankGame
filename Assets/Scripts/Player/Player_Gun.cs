@@ -343,6 +343,7 @@ public class Player_Gun : MonoBehaviour
         yield return new WaitForSeconds(delay);
         
         GameObject shell = Instantiate(m_shellPrefab, m_shellPoint.position, m_shellPoint.rotation);
+        AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
         Rigidbody shellRb = shell.GetComponent<Rigidbody>();
         if (shellRb != null)
         {
