@@ -40,6 +40,7 @@ public class Player_Gun : MonoBehaviour
 	public class ClipData
 	{
 		private int m_maxSize = 5;
+		public int MaxSize { get { return m_maxSize; } }
 		/// <summary>
 		/// i=0 is the bottom of the clip, i=last is the top of the clip.
 		/// </summary>
@@ -223,7 +224,7 @@ public class Player_Gun : MonoBehaviour
 			}
 		}
 		// unaim
-		else if (!wantsToAim && m_canUnAim)
+		else if ((!wantsToAim && m_canUnAim) || m_isBolting)
 		{
 			m_canAim = true;
 			m_isAiming = false;
@@ -232,7 +233,7 @@ public class Player_Gun : MonoBehaviour
 			m_animator.SetBool("Aiming", false);
 
 			// decrement aim amount
-			m_aimAmount = Mathf.Clamp01(m_aimAmount - Time.deltaTime / m_unaimTime);
+			m_aimAmount = Mathf.Clamp01(m_aimAmount - Time.deltaTime / (m_unaimTime * 0.5f));
 
 			// if fully unaimed, set state
 			if (m_aimAmount <= 0.0f)
@@ -306,7 +307,6 @@ public class Player_Gun : MonoBehaviour
 
 			// no shell, wont bolt
 			m_canShoot = true;
-			m_canReload = true;
 		}
 		// Dirty or spent shell, dry fire
 		else if (m_shellInChamber.m_isDirty || m_shellInChamber.m_isSpent)
@@ -327,7 +327,8 @@ public class Player_Gun : MonoBehaviour
 		{
 			m_shellInChamber.m_isSpent = true;
 
-			if (m_isAiming)
+			// are we aiming enough to use sights
+			if (m_isAiming && m_aimAmount > m_aimSightThreshold)
 			{
 				m_animator.SetTrigger("Shoot_Aim");
 				m_animator.ResetTrigger("Shoot_Hip");
@@ -379,6 +380,7 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		m_isShooting = false;
+		m_canReload = true;
 	}
 
 	/// <summary>
@@ -396,6 +398,8 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = false;
 		m_canBolt = false;
 		m_canReload = false;
+
+		m_aimAmount = 0.0f;
 
 		m_animator.SetTrigger("Bolt");
 
@@ -465,12 +469,58 @@ public class Player_Gun : MonoBehaviour
 			AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
 			reloadSound.transform.parent = m_shellPoint;
 
+			// if there is a shell in the chamber, it gets ejected
+			if (m_shellInChamber != null)
+			{
+				// spawn shell after a delay
+				StartCoroutine(CosmeticEjectShell(m_shellEjectDelay));
+				m_shellInChamber = null;
+			}
+
+			int remainingShells = m_currentClip?.m_shells.Count ?? 0;
+			int moved = 0;
+			// if no clip, use first clip 
+			if (remainingShells == 0)
+			{
+				m_currentClip = m_totalClips[0];
+				moved = m_currentClip.m_shells.Count;
+				m_totalClips.RemoveAt(0);
+			}
+			else
+			{
+				ClipData nextClip = m_totalClips[0];
+				int neededShells = m_currentClip.MaxSize - remainingShells;
+				// transfer shells from next clip to current clip
+				for (int i = 0; i < neededShells; i++)
+				{
+					ShellData shell = nextClip.Top(_remove: true);
+					if (shell != null)
+					{
+						m_currentClip.Add(shell);
+						moved++;
+					}
+				}
+
+				BalanceClips();
+			}
+
+			// show only moved shells in animation
+			for (int i = 0; i < m_clipShells.Count; i++)
+			{
+				Transform shell = m_clipShells[i];
+				if (i < m_clipShells.Count - moved)
+				{
+					shell.localScale = Vector3.zero;
+				}
+				else
+				{
+					shell.localScale = Vector3.one;
+				}
+			}
+
 			// wait for reload time
 			yield return new WaitForSeconds(m_reloadTime);
 
-			// use first clip
-			m_currentClip = m_totalClips[0];
-			m_totalClips.RemoveAt(0);
 
 			// re-chamber using top shell in clip
 			m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
@@ -537,6 +587,63 @@ public class Player_Gun : MonoBehaviour
 
 		// move gun to look at hit point
 		transform.LookAt(hitPoint);
+	}
+
+	/// <summary>
+	/// Balances available clips so that all clips are full.
+	/// </summary>
+	private void BalanceClips()
+	{
+		// sort clips by size (biggest first)
+		m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
+
+		// empty all shells
+		List<ShellData> shells = new List<ShellData>();
+		foreach (ClipData clip in m_totalClips)
+		{
+			shells.AddRange(clip.m_shells);
+			clip.m_shells.Clear();
+		}
+
+		// fill all clips with shells
+		foreach (ClipData clip in m_totalClips)
+		{
+			for (int i = 0; i < clip.MaxSize; i++)
+			{
+				if (shells.Count > 0)
+				{
+					clip.Add(shells[0]);
+					shells.RemoveAt(0);
+				}
+			}
+		}
+
+		// add remaining shells to new clips
+		while (shells.Count > 0)
+		{
+			ClipData clip = new ClipData();
+			for (int i = 0; i < clip.MaxSize; i++)
+			{
+				if (shells.Count > 0)
+				{
+					clip.Add(shells[0]);
+					shells.RemoveAt(0);
+				}
+			}
+			m_totalClips.Add(clip);
+		}
+
+		// sort clips by size (biggest first)
+		m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
+
+		// remove any empty clips
+		for (int i = m_totalClips.Count - 1; i >= 0; i--)
+		{
+			if (m_totalClips[i].m_shells.Count == 0)
+			{
+				m_totalClips.RemoveAt(i);
+			}
+		}
 	}
 
 	#region Custom Editor
