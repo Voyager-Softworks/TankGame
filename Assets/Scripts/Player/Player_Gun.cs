@@ -233,7 +233,7 @@ public class Player_Gun : MonoBehaviour
             }
 
             // FX
-            Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation);
+            Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation, m_firePoint);
             Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
 
             // if aiming, use aim point, else use cam forward
