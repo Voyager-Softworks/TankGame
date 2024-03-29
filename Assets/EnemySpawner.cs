@@ -47,12 +47,12 @@ public class EnemySpawner : MonoBehaviour
                 m_enemies.RemoveAt(i);
             }
             // destroyed
-            if (m_enemies[i].m_gameObject == null)
+            else if (m_enemies[i].m_gameObject == null)
             {
                 m_enemies.RemoveAt(i);
             }
             // dead
-            if (m_enemies[i].m_gameObject.GetComponent<Health_Test>().IsDead)
+            else if (m_enemies[i].m_gameObject.GetComponent<Health_Test>().IsDead)
             {
                 Destroy(m_enemies[i].m_gameObject, 1f);
                 m_enemies.RemoveAt(i);

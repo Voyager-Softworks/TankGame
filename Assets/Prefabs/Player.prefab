@@ -209,11 +209,8 @@ MonoBehaviour:
   m_firePoint: {fileID: 2948378921513073827}
   m_aimPoint: {fileID: 0}
   m_animator: {fileID: 0}
-  m_damage: 100
-  m_range: 100
-  m_clipSize: 5
-  m_clipAmmo: 5
-  m_totalAmmo: 20
+  m_clipShells: []
+  m_startingClips: 5
   m_aimTime: 0.5
   m_unaimTime: 0.5
   m_aimAmount: 0
@@ -225,7 +222,6 @@ MonoBehaviour:
   m_boltTime: 2.7
   m_shellEjectDelay: 1
   m_reloadTime: 3
-  m_shellInChamber: 0
   m_canAim: 1
   m_isAiming: 0
   m_canUnAim: 0
@@ -729,7 +725,6 @@ MonoBehaviour:
   m_gun: {fileID: 3356277461121661146}
   m_collider: {fileID: 865843682631846252}
   m_model: {fileID: 7746806413395705571}
-  m_targetFPS: 60
 --- !u!114 &92752061796145002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1615,6 +1610,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3356277461121661146}
   m_SourcePrefab: {fileID: 100100000, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+--- !u!4 &882224089713116431 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1968097718256507403, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1217349782259267823 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
@@ -1662,11 +1662,13 @@ MonoBehaviour:
   m_firePoint: {fileID: 8423286623282046454}
   m_aimPoint: {fileID: 8496004436485074266}
   m_animator: {fileID: 1557326575293953827}
-  m_damage: 100
-  m_range: 500
-  m_clipSize: 5
-  m_clipAmmo: 5
-  m_totalAmmo: 20
+  m_clipShells:
+  - {fileID: 2024327103611652033}
+  - {fileID: 882224089713116431}
+  - {fileID: 4091127010822929744}
+  - {fileID: 2620131858870753855}
+  - {fileID: 8940662298495562316}
+  m_startingClips: 5
   m_aimTime: 0.7916667
   m_unaimTime: 0.4583333
   m_aimAmount: 0
@@ -1678,7 +1680,6 @@ MonoBehaviour:
   m_boltTime: 1.02
   m_shellEjectDelay: 0.45833334
   m_reloadTime: 3
-  m_shellInChamber: 0
   m_canAim: 1
   m_isAiming: 0
   m_canUnAim: 0
@@ -1693,13 +1694,33 @@ MonoBehaviour:
   m_fxSmokeTrail: {fileID: 8678575543433451504, guid: 3cb48cb25cbf0c746bd8b6832c4a1805, type: 3}
   m_followCam: 0
   m_originalCamPos: {x: 0, y: 0, z: 0}
+--- !u!4 &2024327103611652033 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8396532049913259835, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2063279264408485766 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8373209996527918974, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
   m_PrefabInstance: {fileID: 1688388409586556676}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2620131858870753855 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5534140698700823237, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4091127010822929744 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5789159587226574252, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4146856917368187317 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3378478402700916401, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8940662298495562316 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -1477813251251819192, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
   m_PrefabInstance: {fileID: 1688388409586556676}
   m_PrefabAsset: {fileID: 0}
