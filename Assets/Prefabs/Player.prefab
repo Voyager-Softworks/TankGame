@@ -219,6 +219,7 @@ MonoBehaviour:
   m_aimAmount: 0
   m_aimSightThreshold: 0.3
   m_aimFovMulti: 0.75
+  m_aimFovSpeed: 10
   m_shootTime: 0.5
   m_dryFireTime: 0.5
   m_boltTime: 2.7
@@ -728,6 +729,7 @@ MonoBehaviour:
   m_gun: {fileID: 3356277461121661146}
   m_collider: {fileID: 865843682631846252}
   m_model: {fileID: 7746806413395705571}
+  m_targetFPS: 60
 --- !u!114 &92752061796145002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1670,6 +1672,7 @@ MonoBehaviour:
   m_aimAmount: 0
   m_aimSightThreshold: 0.3
   m_aimFovMulti: 0.75
+  m_aimFovSpeed: 50
   m_shootTime: 0.48
   m_dryFireTime: 0.25
   m_boltTime: 1.02

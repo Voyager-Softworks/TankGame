@@ -54,6 +54,7 @@ public abstract class Health : MonoBehaviour
 
     [Header("State")]
     [SerializeField, Utils.ReadOnly] protected bool m_isDead = false;
+    public bool IsDead { get { return m_isDead; } }
 
     [Header("References")]
     public GameObject m_damageFX = null;

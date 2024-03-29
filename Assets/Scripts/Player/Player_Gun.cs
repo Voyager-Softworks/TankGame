@@ -37,6 +37,7 @@ public class Player_Gun : MonoBehaviour
     [SerializeField, Utils.ReadOnly] private float m_aimAmount = 0.0f;                          public float AimAmount { get { return m_aimAmount; } }
     [Tooltip("How far into the aim amount till we are using the sights")] public float m_aimSightThreshold = 0.3f;
     public float m_aimFovMulti = 0.75f;
+    public float m_aimFovSpeed = 50.0f;
     public float m_shootTime = 0.5f;
     public float m_dryFireTime = 0.5f;
     public float m_boltTime = 2.5f;
@@ -122,8 +123,8 @@ public class Player_Gun : MonoBehaviour
     {
         bool wantsToAim = InputManager.PlayerGun.Aim.IsPressed();
 
-        // aim
-        if (wantsToAim && m_canAim)
+        // aim (+ can only start if can shoot)
+        if (wantsToAim && m_canAim && m_canShoot)
         {
             m_canUnAim = true;
             m_isAiming = true;
@@ -167,18 +168,32 @@ public class Player_Gun : MonoBehaviour
         Debug.DrawRay(cam.transform.position, m_aimDir * m_range, useAimPoint ? Color.green : Color.red);
 
         // use the aim amount to update the FOV
-        float fov = movement.DefaultFOV;
+        // float fov = movement.DefaultFOV;
+        // if (IsAiming)
+        // {
+        //     fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, m_aimAmount / m_aimSightThreshold);
+        // }
+        // else
+        // {
+        //     fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, 1f - (1f - m_aimAmount) / m_aimSightThreshold);
+        // }
+        // cam.fieldOfView = fov;
+
+        // just use delta time for now
+        float currentFov = cam.fieldOfView;
+        float newFov = currentFov;
         if (IsAiming)
         {
-            fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, m_aimAmount / m_aimSightThreshold);
+            newFov = Mathf.Clamp(currentFov - Time.deltaTime * m_aimFovSpeed, movement.DefaultFOV * m_aimFovMulti, movement.DefaultFOV);
         }
         else
         {
-            fov = Mathf.Lerp(movement.DefaultFOV, movement.DefaultFOV * m_aimFovMulti, 1f - (1f - m_aimAmount) / m_aimSightThreshold);
+            newFov = Mathf.Clamp(currentFov + Time.deltaTime * m_aimFovSpeed, movement.DefaultFOV * m_aimFovMulti, movement.DefaultFOV);
         }
-        cam.fieldOfView = fov;
+        cam.fieldOfView = newFov;
+
         // update sensitivity (current fov / default fov)
-        movement.m_mouseSensitivityMulti = fov / movement.DefaultFOV;
+        movement.m_mouseSensitivityMulti = newFov / movement.DefaultFOV;
     }
 
     /// <summary>
