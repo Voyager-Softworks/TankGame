@@ -117,6 +117,8 @@ public class Player_Gun : MonoBehaviour
 	public float m_boltTime = 2.5f;
 	public float m_shellEjectDelay = 1.0f;
 	public float m_reloadTime = 3.0f;
+	public float m_checkChamberTime = 1.0f;
+	public float m_uncheckChamberTime = 1.0f;
 
 	[Header("State")]
 	[SerializeField, Utils.ReadOnly] private bool m_canAim = true; public bool CanAim { get { return m_canAim; } }
@@ -128,6 +130,8 @@ public class Player_Gun : MonoBehaviour
 	[SerializeField, Utils.ReadOnly] private bool m_isBolting = false; public bool IsBolting { get { return m_isBolting; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canReload = true; public bool CanReload { get { return m_canReload; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isReloading = false; public bool IsReloading { get { return m_isReloading; } }
+	[SerializeField, Utils.ReadOnly] private bool m_canCheckChamber = true; public bool CanCheckChamber { get { return m_canCheckChamber; } }
+	[SerializeField, Utils.ReadOnly] private bool m_isCheckingChamber = false; public bool IsCheckingChamber { get { return m_isCheckingChamber; } }
 
 	[Header("Prefabs")]
 	public GameObject m_shellPrefab;
@@ -180,6 +184,9 @@ public class Player_Gun : MonoBehaviour
 
 		// aim (continuous)
 		UpdateAim();
+		// // check chamber (continuous)
+		// UpdateCheckChamber();
+
 		// shoot
 		if (InputManager.PlayerGun.Shoot.triggered)
 		{
@@ -194,6 +201,11 @@ public class Player_Gun : MonoBehaviour
 		if (InputManager.PlayerGun.Reload.triggered)
 		{
 			StartCoroutine(TryReload());
+		}
+		// check chamber
+		if (InputManager.PlayerGun.CheckChamber.triggered)
+		{
+			StartCoroutine(TryCheckChamber());
 		}
 	}
 
@@ -224,7 +236,7 @@ public class Player_Gun : MonoBehaviour
 			}
 		}
 		// unaim
-		else if ((!wantsToAim && m_canUnAim) || m_isBolting)
+		else if ((!wantsToAim && m_canUnAim) || m_isBolting || m_isReloading || m_isCheckingChamber)
 		{
 			m_canAim = true;
 			m_isAiming = false;
@@ -279,6 +291,11 @@ public class Player_Gun : MonoBehaviour
 		movement.m_mouseSensitivityMulti = newFov / movement.DefaultFOV;
 	}
 
+	// private void UpdateCheckChamber()
+	// {
+
+	// }
+
 	/// <summary>
 	/// Shoot without doing bolt.
 	/// </summary>
@@ -294,6 +311,7 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = false;
 		m_canReload = false;
 		m_canBolt = false;
+		m_canCheckChamber = false;
 
 		// Normal shoot
 		// No shell, dry fire
@@ -307,6 +325,7 @@ public class Player_Gun : MonoBehaviour
 
 			// no shell, wont bolt
 			m_canShoot = true;
+			m_canCheckChamber = true;
 		}
 		// Dirty or spent shell, dry fire
 		else if (m_shellInChamber.m_isDirty || m_shellInChamber.m_isSpent)
@@ -398,6 +417,7 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = false;
 		m_canBolt = false;
 		m_canReload = false;
+		m_canCheckChamber = false;
 
 		m_aimAmount = 0.0f;
 
@@ -418,10 +438,12 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = true;
 		m_canReload = true;
 		m_isBolting = false;
+		m_canCheckChamber = true;
 	}
 
 	/// <summary>
-	/// Ejects a shell from the gun.
+	/// Ejects a shell from the gun. <br/>
+	/// !Call before changing the current shell in chamber! <br/>
 	/// @TODO: Implement shell types
 	/// </summary>
 	/// <param name="delay"></param>
@@ -430,7 +452,7 @@ public class Player_Gun : MonoBehaviour
 	{
 		yield return new WaitForSeconds(delay);
 
-		GameObject shell = Instantiate(m_shellPrefab, m_shellPoint.position, m_shellPoint.rotation);
+		GameObject shell = InstantiateCosmeticShell(m_shellPoint);
 		AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
 		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
 		if (shellRb != null)
@@ -442,6 +464,31 @@ public class Player_Gun : MonoBehaviour
 			// random spin
 			shellRb.angularVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)) * 10f;
 		}
+	}
+
+	private GameObject InstantiateCosmeticShell(Transform _pos, bool _parent = false)
+	{
+		GameObject shell = Instantiate(m_shellPrefab, _pos.position, _pos.rotation, _parent ? _pos : null);
+
+		// no physics if parented
+		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
+		if (shellRb != null && _parent)
+		{
+			Destroy(shellRb);
+		}
+
+		// update look
+		MosinShell mosinShell = shell.GetComponent<MosinShell>();
+		if (mosinShell != null)
+		{
+			// if the current shell is spent, hide the bullet
+			if (m_shellInChamber != null && m_shellInChamber.m_isSpent)
+			{
+				mosinShell.m_bullet.localScale = Vector3.zero;
+			}
+		}
+
+		return shell;
 	}
 
 	/// <summary>
@@ -459,6 +506,7 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = false;
 		m_canBolt = false;
 		m_canReload = false;
+		m_canCheckChamber = false;
 
 		// do we have any clips
 		if (m_totalClips.Count > 0)
@@ -515,6 +563,9 @@ public class Player_Gun : MonoBehaviour
 				else
 				{
 					shell.localScale = Vector3.one;
+					//@TODO: Does not work corr
+					GameObject tempShell = InstantiateCosmeticShell(shell.parent, _parent: true);
+					tempShell.transform.position = shell.position;
 				}
 			}
 
@@ -534,6 +585,61 @@ public class Player_Gun : MonoBehaviour
 		m_canShoot = true;
 		m_canReload = true;
 		m_isReloading = false;
+		m_canCheckChamber = true;
+	}
+
+	private IEnumerator TryCheckChamber()
+	{
+		if (!m_canCheckChamber)
+		{
+			yield break;
+		}
+
+		m_isCheckingChamber = true;
+		m_canShoot = false;
+		m_canBolt = false;
+		m_canReload = false;
+		m_canCheckChamber = false;
+
+		// spawn shell 
+		GameObject shell = null;
+		if (m_shellInChamber != null)
+		{
+			shell = InstantiateCosmeticShell(m_shellPoint, _parent: true);
+		}
+
+		// animation
+		m_animator.SetBool("Check_Chamber", true);
+
+		// audio
+		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position); // Temp sound
+		reloadSound.transform.parent = m_shellPoint;
+
+		// wait for check chamber time
+		yield return new WaitForSeconds(m_checkChamberTime);
+
+		// wait for user to release the check chamber button
+		while (InputManager.PlayerGun.CheckChamber.IsPressed())
+		{
+			yield return null;
+		}
+
+		// animation
+		m_animator.SetBool("Check_Chamber", false);
+
+		// wait for uncheck chamber time
+		yield return new WaitForSeconds(m_uncheckChamberTime);
+
+		// destroy shell
+		if (shell != null)
+		{
+			Destroy(shell);
+		}
+
+		m_canShoot = true;
+		m_canReload = true;
+		m_isCheckingChamber = false;
+		m_canCheckChamber = true;
 	}
 
 	/// <summary>

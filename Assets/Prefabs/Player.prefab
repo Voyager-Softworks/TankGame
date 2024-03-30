@@ -222,6 +222,8 @@ MonoBehaviour:
   m_boltTime: 2.7
   m_shellEjectDelay: 1
   m_reloadTime: 3
+  m_checkChamberTime: 1
+  m_uncheckChamberTime: 1
   m_canAim: 1
   m_isAiming: 0
   m_canUnAim: 0
@@ -231,6 +233,8 @@ MonoBehaviour:
   m_isBolting: 0
   m_canReload: 1
   m_isReloading: 0
+  m_canCheckChamber: 1
+  m_isCheckingChamber: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_fxSmokeTrail: {fileID: 0}
@@ -1677,9 +1681,11 @@ MonoBehaviour:
   m_aimFovSpeed: 50
   m_shootTime: 0.48
   m_dryFireTime: 0.25
-  m_boltTime: 1.02
+  m_boltTime: 1.375
   m_shellEjectDelay: 0.45833334
-  m_reloadTime: 3
+  m_reloadTime: 2.5833333
+  m_checkChamberTime: 0.625
+  m_uncheckChamberTime: 0.6666667
   m_canAim: 1
   m_isAiming: 0
   m_canUnAim: 0
@@ -1689,6 +1695,8 @@ MonoBehaviour:
   m_isBolting: 0
   m_canReload: 1
   m_isReloading: 0
+  m_canCheckChamber: 1
+  m_isCheckingChamber: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_fxSmokeTrail: {fileID: 8678575543433451504, guid: 3cb48cb25cbf0c746bd8b6832c4a1805, type: 3}
