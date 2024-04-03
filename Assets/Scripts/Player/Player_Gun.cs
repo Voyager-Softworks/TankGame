@@ -20,6 +20,7 @@ public class Player_Gun : MonoBehaviour
 	{
 		public float m_damage = 100.0f;
 		public float m_range = 100.0f;
+		public float m_hitForce = 1.0f;
 		public bool m_isDirty = false;
 		public bool m_isSpent = false;
 
@@ -28,6 +29,7 @@ public class Player_Gun : MonoBehaviour
 			// default values
 			m_damage = 100.0f;
 			m_range = 100.0f;
+			m_hitForce = 1.0f;
 			m_isDirty = false;
 			m_isSpent = false;
 		}
@@ -89,7 +91,8 @@ public class Player_Gun : MonoBehaviour
 	}
 
 	[Header("References")]
-	public Transform m_shellPoint;
+	public Transform m_shellPointChamber;
+	public Transform m_shellPointMag;
 	public Transform m_firePoint;
 	public Transform m_aimPoint;
 	public Animator m_animator;
@@ -375,15 +378,24 @@ public class Player_Gun : MonoBehaviour
 			// loop through hits
 			foreach (RaycastHit hit in hits)
 			{
+				// generate damage info
+				Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.m_damage, gameObject, m_firePoint.position, hit.point, hit.normal, m_shellInChamber.m_hitForce);
+				
 				// get health component in child&/parent
 				Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
 				if (health != null)
 				{
-					// generate damage info
-					Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.m_damage, gameObject, m_firePoint.position, hit.point, hit.normal);
-
 					// damage health
 					health.Damage(damageInfo);
+				}
+
+				// get rigidbody
+				Rigidbody rb = hit.collider.attachedRigidbody;
+				if (rb != null)
+				{
+					// add force
+					Vector3 force = damageInfo.Direction * damageInfo.m_hitForce;
+					rb.AddForceAtPosition(force, damageInfo.m_hitPoint, ForceMode.Impulse);
 				}
 
 				// break after first hit (for now)
@@ -424,16 +436,29 @@ public class Player_Gun : MonoBehaviour
 		m_animator.SetTrigger("Bolt");
 
 		// audio
-		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPoint.position);
-		reloadSound.transform.parent = m_shellPoint;
-		// spawn shell after a delay
+		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPointChamber.position);
+		reloadSound.transform.parent = m_shellPointChamber;
+		// spawn ejected shell after a delay
 		StartCoroutine(CosmeticEjectShell(m_shellEjectDelay));
+
+		// spawn new mag shell
+		GameObject shell = null;
+		if (m_currentClip?.Top() != null)
+		{
+			shell = InstantiateCosmeticShell(m_currentClip.Top(), m_shellPointMag, _parent: true);
+		}
 
 		// wait for bolt time
 		yield return new WaitForSeconds(m_boltTime);
 
 		// re-chamber using top shell in clip
 		m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
+
+		// destroy chambered shell
+		if (shell != null)
+		{
+			Destroy(shell);
+		}
 
 		m_canShoot = true;
 		m_canReload = true;
@@ -452,13 +477,13 @@ public class Player_Gun : MonoBehaviour
 	{
 		yield return new WaitForSeconds(delay);
 
-		GameObject shell = InstantiateCosmeticShell(m_shellPoint);
-		AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
+		GameObject shell = InstantiateCosmeticShell(m_shellInChamber, m_shellPointChamber);
+		//AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
 		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
 		if (shellRb != null)
 		{
 			// right and up
-			shellRb.velocity = m_shellPoint.right * 2f + m_shellPoint.up * 2f;
+			shellRb.velocity = m_shellPointChamber.right * 2f + m_shellPointChamber.up * 2f;
 			// add player vel
 			shellRb.velocity += Player.Instance.m_movement.CalcVelocity();
 			// random spin
@@ -466,7 +491,7 @@ public class Player_Gun : MonoBehaviour
 		}
 	}
 
-	private GameObject InstantiateCosmeticShell(Transform _pos, bool _parent = false)
+	private GameObject InstantiateCosmeticShell(ShellData _toCopy, Transform _pos, bool _parent = false)
 	{
 		GameObject shell = Instantiate(m_shellPrefab, _pos.position, _pos.rotation, _parent ? _pos : null);
 
@@ -475,6 +500,12 @@ public class Player_Gun : MonoBehaviour
 		if (shellRb != null && _parent)
 		{
 			Destroy(shellRb);
+			// destroy all colliders
+			Collider[] colliders = shell.GetComponentsInChildren<Collider>();
+			for (int i = colliders.Length - 1; i >= 0; i--)
+			{
+				Destroy(colliders[i]);
+			}
 		}
 
 		// update look
@@ -482,7 +513,7 @@ public class Player_Gun : MonoBehaviour
 		if (mosinShell != null)
 		{
 			// if the current shell is spent, hide the bullet
-			if (m_shellInChamber != null && m_shellInChamber.m_isSpent)
+			if (_toCopy != null && _toCopy.m_isSpent)
 			{
 				mosinShell.m_bullet.localScale = Vector3.zero;
 			}
@@ -514,8 +545,8 @@ public class Player_Gun : MonoBehaviour
 			m_animator.SetTrigger("Reload");
 
 			// audio
-			AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position);
-			reloadSound.transform.parent = m_shellPoint;
+			AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPointChamber.position);
+			reloadSound.transform.parent = m_shellPointChamber;
 
 			// if there is a shell in the chamber, it gets ejected
 			if (m_shellInChamber != null)
@@ -564,7 +595,7 @@ public class Player_Gun : MonoBehaviour
 				{
 					shell.localScale = Vector3.one;
 					//@TODO: Does not work corr
-					GameObject tempShell = InstantiateCosmeticShell(shell.parent, _parent: true);
+					GameObject tempShell = InstantiateCosmeticShell(m_shellInChamber, shell.parent, _parent: true);
 					tempShell.transform.position = shell.position;
 				}
 			}
@@ -605,15 +636,15 @@ public class Player_Gun : MonoBehaviour
 		GameObject shell = null;
 		if (m_shellInChamber != null)
 		{
-			shell = InstantiateCosmeticShell(m_shellPoint, _parent: true);
+			shell = InstantiateCosmeticShell(m_shellInChamber, m_shellPointChamber, _parent: true);
 		}
 
 		// animation
 		m_animator.SetBool("Check_Chamber", true);
 
 		// audio
-		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPoint.position); // Temp sound
-		reloadSound.transform.parent = m_shellPoint;
+		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPointChamber.position); // Temp sound
+		reloadSound.transform.parent = m_shellPointChamber;
 
 		// wait for check chamber time
 		yield return new WaitForSeconds(m_checkChamberTime);

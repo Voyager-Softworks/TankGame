@@ -205,7 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e16bcffacfb09498446b91f7f372c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shellPoint: {fileID: 7468519638822311801}
+  m_shellPointChamber: {fileID: 0}
+  m_shellPointMag: {fileID: 0}
   m_firePoint: {fileID: 2948378921513073827}
   m_aimPoint: {fileID: 0}
   m_animator: {fileID: 0}
@@ -365,6 +366,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 59319778267268227}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3313952674116544954
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6604638747899505292}
+  m_Layer: 0
+  m_Name: ShellPoint_Mag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6604638747899505292
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3313952674116544954}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.68416065, y: -0.0000004842877, z: -0.00000013411044, w: 0.7293315}
+  m_LocalPosition: {x: 0, y: 0.1426, z: -0.0004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4146856917368187317}
+  m_LocalEulerAnglesHint: {x: -86.339, y: 0, z: 0}
 --- !u!1 &3397705876523384272
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +869,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8425314197282886768}
   m_Layer: 0
-  m_Name: ShellPoint
+  m_Name: ShellPoint_Chamber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -852,7 +884,7 @@ Transform:
   m_GameObject: {fileID: 9025367291846097375}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.12, z: 0}
+  m_LocalPosition: {x: 0, y: 0.12, z: -0.005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1603,6 +1635,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3378478402700916401, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8496004436485074266}
+    - targetCorrespondingSourceObject: {fileID: 3378478402700916401, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6604638747899505292}
     - targetCorrespondingSourceObject: {fileID: -8373209996527918974, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8425314197282886768}
@@ -1662,7 +1697,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e16bcffacfb09498446b91f7f372c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shellPoint: {fileID: 8425314197282886768}
+  m_shellPointChamber: {fileID: 8425314197282886768}
+  m_shellPointMag: {fileID: 6604638747899505292}
   m_firePoint: {fileID: 8423286623282046454}
   m_aimPoint: {fileID: 8496004436485074266}
   m_animator: {fileID: 1557326575293953827}

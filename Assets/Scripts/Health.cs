@@ -21,6 +21,7 @@ public abstract class Health : MonoBehaviour
         public Vector3 m_originPoint;
         public Vector3 m_hitPoint;
         public Vector3 m_hitNormal;
+        public float m_hitForce;
 
         public float m_time;
 
@@ -32,13 +33,14 @@ public abstract class Health : MonoBehaviour
             }
         }
 
-        public DamageInfo(float damage, GameObject sourceObject, Vector3 originPoint, Vector3 hitPoint, Vector3 hitNormal)
+        public DamageInfo(float damage, GameObject sourceObject, Vector3 originPoint, Vector3 hitPoint, Vector3 hitNormal, float hitForce)
         {
             m_damage = damage;
             m_sourceObject = sourceObject;
             m_originPoint = originPoint;
             m_hitPoint = hitPoint;
             m_hitNormal = hitNormal;
+            m_hitForce = hitForce;
             m_time = Time.time;
         }
     }
@@ -244,7 +246,7 @@ public abstract class Health : MonoBehaviour
 
             if (GUILayout.Button("Damage 10"))
             {
-                health.Damage(new DamageInfo(10.0f, null, Vector3.zero, Vector3.zero, Vector3.zero));
+                health.Damage(new DamageInfo(10.0f, null, Vector3.zero, Vector3.zero, Vector3.zero, 0f));
             }
 
             if (GUILayout.Button("Heal 10"))

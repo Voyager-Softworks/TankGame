@@ -26,10 +26,6 @@ public class Health_Test : Health
 
         base.Damage(damageInfo);
 
-        // apply force at hit point (AFTER base.Damage() call to unlock rigidbody)
-        Vector3 force = damageInfo.Direction * m_force;
-        m_rb.AddForceAtPosition(force, damageInfo.m_hitPoint, ForceMode.Impulse);
-
         // change material color from Red to Black based on health
         float healthPercent = m_currentHealth / m_maxHealth;
         Color color = Color.Lerp(Color.black, Color.red, healthPercent);
