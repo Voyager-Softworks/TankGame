@@ -205,6 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e16bcffacfb09498446b91f7f372c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_clip: {fileID: 0}
   m_shellPointChamber: {fileID: 0}
   m_shellPointMag: {fileID: 0}
   m_firePoint: {fileID: 2948378921513073827}
@@ -236,6 +237,7 @@ MonoBehaviour:
   m_isReloading: 0
   m_canCheckChamber: 1
   m_isCheckingChamber: 0
+  m_canAutoBolt: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_fxSmokeTrail: {fileID: 0}
@@ -1697,6 +1699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e16bcffacfb09498446b91f7f372c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_clip: {fileID: 6746714073339589724}
   m_shellPointChamber: {fileID: 8425314197282886768}
   m_shellPointMag: {fileID: 6604638747899505292}
   m_firePoint: {fileID: 8423286623282046454}
@@ -1718,8 +1721,8 @@ MonoBehaviour:
   m_shootTime: 0.48
   m_dryFireTime: 0.25
   m_boltTime: 1.375
-  m_shellEjectDelay: 0.45833334
-  m_reloadTime: 2.5833333
+  m_shellEjectDelay: 0.4583333
+  m_reloadTime: 2.583333
   m_checkChamberTime: 0.625
   m_uncheckChamberTime: 0.6666667
   m_canAim: 1
@@ -1727,12 +1730,13 @@ MonoBehaviour:
   m_canUnAim: 0
   m_canShoot: 1
   m_isShooting: 0
-  m_canBolt: 0
+  m_canBolt: 1
   m_isBolting: 0
   m_canReload: 1
   m_isReloading: 0
   m_canCheckChamber: 1
   m_isCheckingChamber: 0
+  m_canAutoBolt: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
   m_fxSmokeTrail: {fileID: 8678575543433451504, guid: 3cb48cb25cbf0c746bd8b6832c4a1805, type: 3}
@@ -1761,6 +1765,11 @@ Transform:
 --- !u!4 &4146856917368187317 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3378478402700916401, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
+  m_PrefabInstance: {fileID: 1688388409586556676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6746714073339589724 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5390660200082697048, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}
   m_PrefabInstance: {fileID: 1688388409586556676}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8940662298495562316 stripped

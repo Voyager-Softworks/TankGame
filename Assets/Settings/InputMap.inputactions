@@ -410,6 +410,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Bolt",
+                    "type": "Button",
+                    "id": "1efab203-0dd4-421d-92fc-2187ddcac002",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -454,6 +463,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "CheckChamber",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68d080c4-9b33-4c65-a010-a00e85230966",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Bolt",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -432,6 +432,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Bolt"",
+                    ""type"": ""Button"",
+                    ""id"": ""1efab203-0dd4-421d-92fc-2187ddcac002"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -478,6 +487,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""CheckChamber"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68d080c4-9b33-4c65-a010-a00e85230966"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Bolt"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -511,6 +531,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_PlayerGun_Reload = m_PlayerGun.FindAction("Reload", throwIfNotFound: true);
         m_PlayerGun_Aim = m_PlayerGun.FindAction("Aim", throwIfNotFound: true);
         m_PlayerGun_CheckChamber = m_PlayerGun.FindAction("CheckChamber", throwIfNotFound: true);
+        m_PlayerGun_Bolt = m_PlayerGun.FindAction("Bolt", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -854,6 +875,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerGun_Reload;
     private readonly InputAction m_PlayerGun_Aim;
     private readonly InputAction m_PlayerGun_CheckChamber;
+    private readonly InputAction m_PlayerGun_Bolt;
     public struct PlayerGunActions
     {
         private @InputMap m_Wrapper;
@@ -862,6 +884,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         public InputAction @Reload => m_Wrapper.m_PlayerGun_Reload;
         public InputAction @Aim => m_Wrapper.m_PlayerGun_Aim;
         public InputAction @CheckChamber => m_Wrapper.m_PlayerGun_CheckChamber;
+        public InputAction @Bolt => m_Wrapper.m_PlayerGun_Bolt;
         public InputActionMap Get() { return m_Wrapper.m_PlayerGun; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -883,6 +906,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @CheckChamber.started += instance.OnCheckChamber;
             @CheckChamber.performed += instance.OnCheckChamber;
             @CheckChamber.canceled += instance.OnCheckChamber;
+            @Bolt.started += instance.OnBolt;
+            @Bolt.performed += instance.OnBolt;
+            @Bolt.canceled += instance.OnBolt;
         }
 
         private void UnregisterCallbacks(IPlayerGunActions instance)
@@ -899,6 +925,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @CheckChamber.started -= instance.OnCheckChamber;
             @CheckChamber.performed -= instance.OnCheckChamber;
             @CheckChamber.canceled -= instance.OnCheckChamber;
+            @Bolt.started -= instance.OnBolt;
+            @Bolt.performed -= instance.OnBolt;
+            @Bolt.canceled -= instance.OnBolt;
         }
 
         public void RemoveCallbacks(IPlayerGunActions instance)
@@ -948,5 +977,6 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnReload(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnCheckChamber(InputAction.CallbackContext context);
+        void OnBolt(InputAction.CallbackContext context);
     }
 }

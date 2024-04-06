@@ -18,20 +18,113 @@ public class Player_Gun : MonoBehaviour
 	[System.Serializable]
 	public class ShellData
 	{
-		public float m_damage = 100.0f;
-		public float m_range = 100.0f;
-		public float m_hitForce = 1.0f;
-		public bool m_isDirty = false;
-		public bool m_isSpent = false;
+		public static Color DIRTY_COLOR = Color.red;
+		public static Color BRASS_COLOR = new Color(0.8f, 0.6f, 0.2f); // brass
+		public static Color COPPER_COLOR = new Color(0.72f, 0.45f, 0.2f); // copper
+		public static float s_dirtyChance = 1.0f;
+		public static float s_dirtyDryFireChance = 0.5f;
+		public static float s_maxSpendTries = 5;
+
+		private float m_damage = 100.0f;
+		public float Damage { get { return m_damage; } }
+		private float m_range = 500.0f;
+		public float Range { get { return m_range; } }
+		private float m_hitForce = 1.0f;
+		public float HitForce { get { return m_hitForce; } }
+		private bool m_isDirty = false;
+		public bool IsDirty { get { return m_isDirty; } }
+		private bool m_isSpent = false;
+		public bool IsSpent { get { return m_isSpent; } }
+		
+		private int m_spendTries = 0;
+
+		public System.Action OnDirty;
+		public System.Action OnSpend;
 
 		public ShellData()
 		{
-			// default values
-			m_damage = 100.0f;
-			m_range = 100.0f;
-			m_hitForce = 1.0f;
-			m_isDirty = false;
-			m_isSpent = false;
+			// all values are initialized to default
+
+			// randomize dirty
+			m_isDirty = UnityEngine.Random.value < s_dirtyChance;
+		}
+
+		/// <summary>
+		/// Makes the shell dirty.
+		/// </summary>
+		/// <param name="_dirty"></param>
+		public void SetDirty(bool _dirty)
+		{
+			// no change
+			if (m_isDirty == _dirty)
+			{
+				return;
+			}
+
+			m_isDirty = _dirty;
+
+			// if made dirty, invoke event
+			if (m_isDirty)
+			{
+				OnDirty?.Invoke();
+			}
+		}
+
+		/// <summary>
+		/// Tries to spend the shell.
+		/// </summary>
+		/// <returns>True if the shell was spent, false if dry fired.</returns>
+		public bool TrySpend()
+		{
+			// no change
+			if (m_isSpent)
+			{
+				return false;
+			}
+
+			// dirty
+			if (m_isDirty)
+			{
+				bool canDryFire = m_spendTries < s_maxSpendTries;
+				bool shouldDryFire = UnityEngine.Random.value < s_dirtyDryFireChance;
+				// dry fire
+				if (canDryFire && shouldDryFire)
+				{
+					m_spendTries++;
+					return false;
+				}
+			}
+
+
+			m_isSpent = true;
+
+			// invoke event
+			OnSpend?.Invoke();
+
+			return true;
+		}
+
+		/// <summary>
+		/// <inheritdoc cref="GetShellString(ShellData)"/>
+		/// </summary>
+		/// <returns></returns>
+		public string GetShellString()
+		{
+			return GetShellString(this);
+		}
+
+		/// <summary>
+		/// Get a string representation of the shell.<br/>
+		/// Spent/Live = S/L, Clean/Dirty = C/D, null = _
+		/// </summary>
+		/// <returns></returns>
+		public static string GetShellString(ShellData _shell)
+		{
+			if (_shell == null)
+			{
+				return "_";
+			}
+			return (_shell.m_isSpent ? "S" : "L") + "" + (_shell.m_isDirty ? "D" : "C");
 		}
 	}
 
@@ -88,9 +181,32 @@ public class Player_Gun : MonoBehaviour
 			}
 			return shell;
 		}
+
+		/// <summary>
+		/// Get a string representation of the clip.<br/>
+		/// [
+		/// </summary>
+		/// <param name="_clip"></param>
+		/// <returns></returns>
+		public static string GetClipString(ClipData _clip)
+		{
+			if (_clip == null)
+			{
+				return "_";
+			}
+
+			string clipString = "";
+			for (int i = 0; i < _clip.MaxSize; i++)
+			{
+				clipString += ShellData.GetShellString(i < _clip.m_shells.Count ? _clip.m_shells[i] : null);
+				clipString += i < _clip.MaxSize - 1 ? "|" : "";
+			}
+			return clipString;
+		}
 	}
 
 	[Header("References")]
+	public Transform m_clip;
 	public Transform m_shellPointChamber;
 	public Transform m_shellPointMag;
 	public Transform m_firePoint;
@@ -109,19 +225,19 @@ public class Player_Gun : MonoBehaviour
 	public List<ClipData> TotalClips { get { return m_totalClips; } }
 
 	[Header("Timers")]
-	public float m_aimTime = 0.5f;
-	public float m_unaimTime = 0.5f;
+	public float m_aimTime = 0.7916667f;
+	public float m_unaimTime = 0.4583333f;
 	[SerializeField, Utils.ReadOnly] private float m_aimAmount = 0.0f; public float AimAmount { get { return m_aimAmount; } }
 	[Tooltip("How far into the aim amount till we are using the sights")] public float m_aimSightThreshold = 0.3f;
 	public float m_aimFovMulti = 0.75f;
 	public float m_aimFovSpeed = 50.0f;
-	public float m_shootTime = 0.5f;
-	public float m_dryFireTime = 0.5f;
-	public float m_boltTime = 2.5f;
-	public float m_shellEjectDelay = 1.0f;
-	public float m_reloadTime = 3.0f;
-	public float m_checkChamberTime = 1.0f;
-	public float m_uncheckChamberTime = 1.0f;
+	public float m_shootTime = 0.48f;
+	public float m_dryFireTime = 0.25f;
+	public float m_boltTime = 1.375f;
+	public float m_shellEjectDelay = 0.4583333f;
+	public float m_reloadTime = 2.583333f;
+	public float m_checkChamberTime = 0.625f;
+	public float m_uncheckChamberTime = 0.6666667f;
 
 	[Header("State")]
 	[SerializeField, Utils.ReadOnly] private bool m_canAim = true; public bool CanAim { get { return m_canAim; } }
@@ -129,12 +245,14 @@ public class Player_Gun : MonoBehaviour
 	[SerializeField, Utils.ReadOnly] private bool m_canUnAim = false; public bool CanUnAim { get { return m_canUnAim; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canShoot = true; public bool CanShoot { get { return m_canShoot; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isShooting = false; public bool IsShooting { get { return m_isShooting; } }
-	[SerializeField, Utils.ReadOnly] private bool m_canBolt = false; public bool CanBolt { get { return m_canBolt; } }
+	[SerializeField, Utils.ReadOnly] private bool m_canBolt = true; public bool CanBolt { get { return m_canBolt; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isBolting = false; public bool IsBolting { get { return m_isBolting; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canReload = true; public bool CanReload { get { return m_canReload; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isReloading = false; public bool IsReloading { get { return m_isReloading; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canCheckChamber = true; public bool CanCheckChamber { get { return m_canCheckChamber; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isCheckingChamber = false; public bool IsCheckingChamber { get { return m_isCheckingChamber; } }
+
+	[SerializeField, Utils.ReadOnly] private bool m_canAutoBolt = false; public bool CanAutoBolt { get { return m_canAutoBolt; } }
 
 	[Header("Prefabs")]
 	public GameObject m_shellPrefab;
@@ -195,8 +313,8 @@ public class Player_Gun : MonoBehaviour
 		{
 			StartCoroutine(TryShoot());
 		}
-		// when player releases the shoot button, eject shell
-		if (InputManager.PlayerGun.Shoot.IsPressed() == false)
+		// auto bolt after shoot
+		if (InputManager.PlayerGun.Shoot.IsPressed() == false && m_canAutoBolt)
 		{
 			StartCoroutine(TryBolt());
 		}
@@ -204,6 +322,11 @@ public class Player_Gun : MonoBehaviour
 		if (InputManager.PlayerGun.Reload.triggered)
 		{
 			StartCoroutine(TryReload());
+		}
+		// force bolt
+		if (InputManager.PlayerGun.Bolt.triggered)
+		{
+			StartCoroutine(TryBolt());
 		}
 		// check chamber
 		if (InputManager.PlayerGun.CheckChamber.triggered)
@@ -262,7 +385,7 @@ public class Player_Gun : MonoBehaviour
 		bool useAimPoint = m_aimAmount > m_aimSightThreshold;
 		m_aimDir = useAimPoint ? m_aimPoint.position - cam.transform.position : cam.transform.forward;
 		// draw debug line
-		Debug.DrawRay(cam.transform.position, m_aimDir * (m_shellInChamber != null ? m_shellInChamber.m_range : 100f), useAimPoint ? Color.green : Color.red);
+		Debug.DrawRay(cam.transform.position, m_aimDir * (m_shellInChamber != null ? m_shellInChamber.Range : 100f), useAimPoint ? Color.green : Color.red);
 
 		/* Nicer, but not working during partial aims
 		// use the aim amount to update the FOV
@@ -312,8 +435,8 @@ public class Player_Gun : MonoBehaviour
 
 		m_isShooting = true;
 		m_canShoot = false;
-		m_canReload = false;
 		m_canBolt = false;
+		m_canReload = false;
 		m_canCheckChamber = false;
 
 		// Normal shoot
@@ -330,88 +453,104 @@ public class Player_Gun : MonoBehaviour
 			m_canShoot = true;
 			m_canCheckChamber = true;
 		}
-		// Dirty or spent shell, dry fire
-		else if (m_shellInChamber.m_isDirty || m_shellInChamber.m_isSpent)
+		// spent shell, dry fire
+		else if (m_shellInChamber.IsSpent)
 		{
-			m_shellInChamber.m_isSpent = true;
-
 			// audio
 			AudioManager.SpawnSound<AutoSound_GunEmpty>(m_firePoint.position); // Temp sound
 
 			// wait for dry fire time
 			yield return new WaitForSeconds(m_dryFireTime);
-
-			// is shell, need to bolt
-			m_canBolt = true;
 		}
-		// normal shoot
-		else if (m_shellInChamber != null && !m_shellInChamber.m_isSpent && !m_shellInChamber.m_isDirty)
+		// fireable shell
+		else if (m_shellInChamber != null)
 		{
-			m_shellInChamber.m_isSpent = true;
-
-			// are we aiming enough to use sights
-			if (m_isAiming && m_aimAmount > m_aimSightThreshold)
+			// Try to spend the shell
+			if (!m_shellInChamber.TrySpend())
 			{
-				m_animator.SetTrigger("Shoot_Aim");
-				m_animator.ResetTrigger("Shoot_Hip");
+				// it was dirty, so dry fire
+
+				// audio
+				AudioManager.SpawnSound<AutoSound_GunEmpty>(m_firePoint.position); // Temp sound
+
+				// wait for dry fire time
+				yield return new WaitForSeconds(m_dryFireTime);
+
+				// can shoot again
+				m_canShoot = true;
+				m_canCheckChamber = true;
 			}
+			// it was spent successfully
 			else
 			{
-				m_animator.SetTrigger("Shoot_Hip");
-				m_animator.ResetTrigger("Shoot_Aim");
-			}
-
-			// FX
-			Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation, m_firePoint);
-			Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
-
-			// if aiming, use aim point, else use cam forward
-			Player_Movement movement = Player.Instance.m_movement;
-			Camera cam = movement.m_cam;
-
-			// raycastall to check for hits
-			LayerMask ignoreMask = LayerMask.GetMask("Player");
-			RaycastHit[] hits = Physics.RaycastAll(cam.transform.position, m_aimDir, m_shellInChamber.m_range, ~ignoreMask);
-			// sort hits by distance
-			System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-			// loop through hits
-			foreach (RaycastHit hit in hits)
-			{
-				// generate damage info
-				Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.m_damage, gameObject, m_firePoint.position, hit.point, hit.normal, m_shellInChamber.m_hitForce);
-				
-				// get health component in child&/parent
-				Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
-				if (health != null)
+				// are we aiming enough to use sights
+				if (m_isAiming && m_aimAmount > m_aimSightThreshold)
 				{
-					// damage health
-					health.Damage(damageInfo);
+					m_animator.SetTrigger("Shoot_Aim");
+					m_animator.ResetTrigger("Shoot_Hip");
+				}
+				else
+				{
+					m_animator.SetTrigger("Shoot_Hip");
+					m_animator.ResetTrigger("Shoot_Aim");
 				}
 
-				// get rigidbody
-				Rigidbody rb = hit.collider.attachedRigidbody;
-				if (rb != null)
+				// FX
+				Instantiate(m_fxGunShot, m_firePoint.position, m_firePoint.rotation, m_firePoint);
+				Instantiate(m_fxSmokeTrail, m_firePoint.position, m_firePoint.rotation, m_firePoint);
+
+				// if aiming, use aim point, else use cam forward
+				Player_Movement movement = Player.Instance.m_movement;
+				Camera cam = movement.m_cam;
+
+				// raycastall to check for hits
+				LayerMask ignoreMask = LayerMask.GetMask("Player");
+				RaycastHit[] hits = Physics.RaycastAll(cam.transform.position, m_aimDir, m_shellInChamber.Range, ~ignoreMask);
+				// sort hits by distance
+				System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+				// loop through hits
+				foreach (RaycastHit hit in hits)
 				{
-					// add force
-					Vector3 force = damageInfo.Direction * damageInfo.m_hitForce;
-					rb.AddForceAtPosition(force, damageInfo.m_hitPoint, ForceMode.Impulse);
+					// generate damage info
+					Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.Damage, gameObject, m_firePoint.position, hit.point, hit.normal, m_shellInChamber.HitForce);
+
+					// get health component in child&/parent
+					Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
+					if (health != null)
+					{
+						// damage health
+						health.Damage(damageInfo);
+					}
+
+					// get rigidbody
+					Rigidbody rb = hit.collider.attachedRigidbody;
+					if (rb != null)
+					{
+						// add force
+						Vector3 force = damageInfo.Direction * damageInfo.m_hitForce;
+						rb.AddForceAtPosition(force, damageInfo.m_hitPoint, ForceMode.Impulse);
+					}
+
+					// break after first hit (for now)
+					//@TODO: implement piercing? e.g. StoppingPower stat
+					break;
 				}
 
-				// break after first hit (for now)
-				//@TODO: implement piercing? e.g. StoppingPower stat
-				break;
+				// wait for shoot time
+				yield return new WaitForSeconds(m_shootTime);
 			}
-
-			// wait for shoot time
-			yield return new WaitForSeconds(m_shootTime);
-
-			// is shell, need to bolt
-			m_canBolt = true;
 		}
 
 		m_isShooting = false;
 		m_canReload = true;
+		m_canBolt = true;
+
+		// auto bolt if spent shell
+		if (m_shellInChamber != null && m_shellInChamber.IsSpent)
+		{
+			m_canAutoBolt = true;
+		}
 	}
 
 	/// <summary>
@@ -430,6 +569,7 @@ public class Player_Gun : MonoBehaviour
 		m_canBolt = false;
 		m_canReload = false;
 		m_canCheckChamber = false;
+		m_canAutoBolt = false;
 
 		m_aimAmount = 0.0f;
 
@@ -461,6 +601,7 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		m_canShoot = true;
+		m_canBolt = true;
 		m_canReload = true;
 		m_isBolting = false;
 		m_canCheckChamber = true;
@@ -475,6 +616,12 @@ public class Player_Gun : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator CosmeticEjectShell(float delay)
 	{
+		// if no shell, return
+		if (m_shellInChamber == null)
+		{
+			yield break;
+		}
+
 		yield return new WaitForSeconds(delay);
 
 		GameObject shell = InstantiateCosmeticShell(m_shellInChamber, m_shellPointChamber);
@@ -508,16 +655,9 @@ public class Player_Gun : MonoBehaviour
 			}
 		}
 
-		// update look
+		// update visuals
 		MosinShell mosinShell = shell.GetComponent<MosinShell>();
-		if (mosinShell != null)
-		{
-			// if the current shell is spent, hide the bullet
-			if (_toCopy != null && _toCopy.m_isSpent)
-			{
-				mosinShell.m_bullet.localScale = Vector3.zero;
-			}
-		}
+		mosinShell.SetShellData(_toCopy);
 
 		return shell;
 	}
@@ -538,6 +678,7 @@ public class Player_Gun : MonoBehaviour
 		m_canBolt = false;
 		m_canReload = false;
 		m_canCheckChamber = false;
+		m_canAutoBolt = false;
 
 		// do we have any clips
 		if (m_totalClips.Count > 0)
@@ -583,26 +724,38 @@ public class Player_Gun : MonoBehaviour
 				BalanceClips();
 			}
 
-			// show only moved shells in animation
+			// spawn in cosmetic shells instead of animating
+			List<GameObject> tempShells = new List<GameObject>();
 			for (int i = 0; i < m_clipShells.Count; i++)
 			{
 				Transform shell = m_clipShells[i];
-				if (i < m_clipShells.Count - moved)
+				shell.localScale = Vector3.zero;
+
+				if (i >= m_clipShells.Count - moved)
 				{
-					shell.localScale = Vector3.zero;
-				}
-				else
-				{
-					shell.localScale = Vector3.one;
-					//@TODO: Does not work corr
-					GameObject tempShell = InstantiateCosmeticShell(m_shellInChamber, shell.parent, _parent: true);
+					ShellData shellData = m_currentClip.m_shells[i];
+
+					GameObject tempShell = InstantiateCosmeticShell(shellData, shell.parent, _parent: true);
+					tempShells.Add(tempShell);
+
 					tempShell.transform.position = shell.position;
+					// subtract 90 degrees to x rotation
+					tempShell.transform.rotation = shell.rotation * Quaternion.Euler(-90f, 0f, 0f);
+					tempShell.transform.localScale = Vector3.one;
+
+					StartCoroutine(CosmeticTrackShells(tempShell, shell, m_reloadTime));
 				}
 			}
 
 			// wait for reload time
 			yield return new WaitForSeconds(m_reloadTime);
 
+			// destroy temp shells
+			foreach (GameObject tempShell in tempShells)
+			{
+				Destroy(tempShell);
+			}
+			tempShells.Clear();
 
 			// re-chamber using top shell in clip
 			m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
@@ -614,9 +767,32 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		m_canShoot = true;
+		m_canBolt = true;
 		m_canReload = true;
 		m_isReloading = false;
 		m_canCheckChamber = true;
+	}
+
+	/// <summary>
+	/// Coroutine for temp shells to track the animation.
+	/// </summary>
+	/// <returns></returns>
+	private IEnumerator CosmeticTrackShells(GameObject _shell, Transform _pos, float _time)
+	{
+		// during the time, track the shell to the position
+		float timeStart = Time.time;
+		while (Time.time - timeStart < _time)
+		{
+			// null check
+			if (_shell == null)
+			{
+				yield break;
+			}
+
+			// a little forward of the position
+			_shell.transform.position = _pos.position /* + _shell.forward * 0.1f */;
+			yield return null;
+		}
 	}
 
 	private IEnumerator TryCheckChamber()
@@ -668,6 +844,7 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		m_canShoot = true;
+		m_canBolt = true;
 		m_canReload = true;
 		m_isCheckingChamber = false;
 		m_canCheckChamber = true;
@@ -732,7 +909,7 @@ public class Player_Gun : MonoBehaviour
 	private void BalanceClips()
 	{
 		// sort clips by size (biggest first)
-		m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
+		//m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
 
 		// empty all shells
 		List<ShellData> shells = new List<ShellData>();
@@ -758,7 +935,7 @@ public class Player_Gun : MonoBehaviour
 		// add remaining shells to new clips
 		while (shells.Count > 0)
 		{
-			ClipData clip = new ClipData();
+			ClipData clip = new ClipData(0);
 			for (int i = 0; i < clip.MaxSize; i++)
 			{
 				if (shells.Count > 0)
@@ -794,14 +971,18 @@ public class Player_Gun : MonoBehaviour
 
 			// Begin Ammo vertical
 			GUILayout.BeginVertical("Ammo", "window");
-			// debug ammo
-			EditorGUILayout.LabelField("Shell in Chamber", script.m_shellInChamber != null ?
-				(script.m_shellInChamber.m_isSpent ? "Spent" : "Live") + "," +
-				(script.m_shellInChamber.m_isDirty ? "Dirty" : "Clean")
-				: "None"
-			);
-			EditorGUILayout.LabelField("Current Clip Shells", script.m_currentClip?.m_shells.Count.ToString() ?? "None");
-			EditorGUILayout.LabelField("Total Clips", script.m_totalClips.Count.ToString());
+			// debug ammo, Spent/Live = S/L, Clean/Dirty = C/D, Empty = _
+			// chamber
+			EditorGUILayout.LabelField("Shell in Chamber", ShellData.GetShellString(script.m_shellInChamber));
+			// current clip
+			EditorGUILayout.LabelField("Current Clip", ClipData.GetClipString(script.m_currentClip));
+			// total clips
+			EditorGUILayout.LabelField("Spares", script.m_totalClips.Count.ToString());
+			foreach (ClipData clip in script.m_totalClips)
+			{
+				EditorGUILayout.LabelField("Clip", ClipData.GetClipString(clip));
+			}
+
 			// end Ammo vertical
 			GUILayout.EndVertical();
 
