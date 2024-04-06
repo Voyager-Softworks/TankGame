@@ -21,7 +21,7 @@ public class Player_Gun : MonoBehaviour
 		public static Color DIRTY_COLOR = Color.red;
 		public static Color BRASS_COLOR = new Color(0.8f, 0.6f, 0.2f); // brass
 		public static Color COPPER_COLOR = new Color(0.72f, 0.45f, 0.2f); // copper
-		public static float s_dirtyChance = 1.0f;
+		public static float s_dirtyChance = 0.5f;
 		public static float s_dirtyDryFireChance = 0.5f;
 		public static float s_maxSpendTries = 5;
 
