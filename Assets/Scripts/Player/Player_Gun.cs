@@ -251,6 +251,9 @@ public class Player_Gun : MonoBehaviour
 	[SerializeField, Utils.ReadOnly] private bool m_isReloading = false; public bool IsReloading { get { return m_isReloading; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canCheckChamber = true; public bool CanCheckChamber { get { return m_canCheckChamber; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isCheckingChamber = false; public bool IsCheckingChamber { get { return m_isCheckingChamber; } }
+	//! @NOTE: Not Done yet vvv
+	[SerializeField, Utils.ReadOnly] private bool m_canInspectWeapon = true; public bool CanInspectWeapon { get { return m_canInspectWeapon; } }
+	[SerializeField, Utils.ReadOnly] private bool m_isInspectingWeapon = false; public bool IsInspectingWeapon { get { return m_isInspectingWeapon; } }
 
 	[SerializeField, Utils.ReadOnly] private bool m_canAutoBolt = false; public bool CanAutoBolt { get { return m_canAutoBolt; } }
 

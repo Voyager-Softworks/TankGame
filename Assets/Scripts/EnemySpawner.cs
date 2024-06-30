@@ -59,11 +59,11 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
-        // move enemies forward
-        foreach (EnemyData enemy in m_enemies)
-        {
-            enemy.m_gameObject.transform.position += enemy.m_gameObject.transform.forward * enemy.m_moveSpeed * Time.deltaTime;
-        }
+        // // move enemies forward
+        // foreach (EnemyData enemy in m_enemies)
+        // {
+        //     enemy.m_gameObject.transform.position += enemy.m_gameObject.transform.forward * enemy.m_moveSpeed * Time.deltaTime;
+        // }
     }
 
     private IEnumerator SpawnEnemies()

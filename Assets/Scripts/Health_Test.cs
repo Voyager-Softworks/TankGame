@@ -42,6 +42,7 @@ public class Health_Test : Health
         base.Die();
 
         // unlock rigidbody
+        m_rb.isKinematic = false;
         m_rb.freezeRotation = false;
     }
 }

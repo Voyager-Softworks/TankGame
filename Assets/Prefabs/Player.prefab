@@ -237,6 +237,8 @@ MonoBehaviour:
   m_isReloading: 0
   m_canCheckChamber: 1
   m_isCheckingChamber: 0
+  m_canInspectWeapon: 1
+  m_isInspectingWeapon: 0
   m_canAutoBolt: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
@@ -721,6 +723,7 @@ GameObject:
   - component: {fileID: 92752061796145002}
   - component: {fileID: 865843682631846252}
   - component: {fileID: 790520515656297815}
+  - component: {fileID: 2123494810651467878}
   m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
@@ -861,6 +864,25 @@ MonoBehaviour:
   interactableLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &2123494810651467878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538065541608882527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &9025367291846097375
 GameObject:
   m_ObjectHideFlags: 0
@@ -1736,6 +1758,8 @@ MonoBehaviour:
   m_isReloading: 0
   m_canCheckChamber: 1
   m_isCheckingChamber: 0
+  m_canInspectWeapon: 1
+  m_isInspectingWeapon: 0
   m_canAutoBolt: 0
   m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
   m_fxGunShot: {fileID: 3195713032724896427, guid: fba23d7430f275f4ea887474f064464b, type: 3}
