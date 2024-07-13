@@ -211,6 +211,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AutoSound_Gunshot
       objectReference: {fileID: 0}
+    - target: {fileID: 3107313251738698647, guid: 34fc804132a5dd3499b88583c5b04809, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: d8849049b8c879a4c96775023ce2a2f9, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
