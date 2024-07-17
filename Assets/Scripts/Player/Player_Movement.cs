@@ -21,6 +21,8 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Movement")]
     public float m_moveSpeed = 5f;
+    public float m_sidewaysMultiplier = 0.75f;
+    public float m_backwardsMultiplier = 0.5f;
 
     [Header("Sprint")]
     public float m_sprintSpeedMultiplier = 1.5f;
@@ -201,6 +203,15 @@ public class Player_Movement : MonoBehaviour
         float x = InputManager.PlayerMove.Move.ReadValue<Vector2>().x;
         float z = InputManager.PlayerMove.Move.ReadValue<Vector2>().y;
         Vector3 moveDir = (transform.right * x + transform.forward * z).normalized;
+        // Apply direction multipliers
+        if (z < 0)
+        {
+            moveDir *= m_backwardsMultiplier;
+        }
+        else if (x != 0)
+        {
+            moveDir *= m_sidewaysMultiplier;
+        }
 
         // Sprint & Crouch
         if (InputManager.PlayerMove.Sprint.IsPressed() && gun.AimAmount <= 0f)
@@ -247,9 +258,13 @@ public class Player_Movement : MonoBehaviour
         m_controller.height = currentScale.y * 2f;
         m_controller.radius = currentScale.x / 2f;
 
+        // Move
         Vector3 moveVector = moveDir * m_moveSpeed * Time.deltaTime;
-        m_moveVel = new Vector2(moveVector.x, moveVector.z) / Time.deltaTime;
+        // Apply direction multipliers
         m_controller.Move(moveVector);
+
+        // track move Vel
+        m_moveVel = new Vector2(moveVector.x, moveVector.z) / Time.deltaTime;
 
         // Jump
         if (m_canJump && InputManager.PlayerMove.Jump.WasPerformedThisFrame() && m_isGrounded)
@@ -313,26 +328,23 @@ public class Player_Movement : MonoBehaviour
                 gunMoveMulti = Mathf.Lerp(m_gunMoveAmount, m_gunMoveSprintAmount, m_sprintAmount);
             }
 
-            Vector3 origPos = gun.m_originalCamPos;
-            Vector3 targetLocalPos =
+           Vector3 targetLocalPos =
             (
-                // normal height (without crouch)
-                (Vector3.up * origPos.y)
                 // step vert bobbing
-                + (Vector3.up * origPos.y * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight * gunMoveMulti)
+                (Vector3.up * (0.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength))) * m_stepHeight * gunMoveMulti)
                 // step horiz bobbing
-                + (Vector3.right * (1.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f * gunMoveMulti)
+                + (Vector3.right * (0.0f - Mathf.Cos(m_distanceTraveled * (1.0f / m_stepLength) / 2)) * m_stepHeight * 0.4f * gunMoveMulti)
             );
 
             // if we are grounded, lerp to the target position
             if (m_isGrounded)
             {
-                gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, targetLocalPos, Time.deltaTime * m_gunLerpSpeed);
+                gun.m_gunParent.transform.localPosition = Vector3.Lerp(gun.m_gunParent.transform.localPosition, targetLocalPos, Time.deltaTime * m_gunLerpSpeed);
             }
             // if we are not grounded, lerp to the original position
             else
             {
-                gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, origPos, Time.deltaTime * m_gunLerpSpeed);
+                gun.m_gunParent.transform.localPosition = Vector3.Lerp(gun.m_gunParent.transform.localPosition, Vector3.zero, Time.deltaTime * m_gunLerpSpeed);
             }
 
             #region Unused Air Transition
@@ -342,11 +354,11 @@ public class Player_Movement : MonoBehaviour
             {
                 if (m_groundedTime < m_airTransitionTime)
                 {
-                    gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, targetLocalPos, Time.deltaTime * 10f);
+                    gun.m_gunParent.transform.localPosition = Vector3.Lerp(gun.m_gunParent.transform.localPosition, targetLocalPos, Time.deltaTime * 10f);
                 }
                 else
                 {
-                    gun.transform.localPosition = targetLocalPos;
+                    gun.m_gunParent.transform.localPosition = targetLocalPos;
                 }
             }
             // if we are not grounded, move back to the original position
@@ -354,11 +366,11 @@ public class Player_Movement : MonoBehaviour
             {
                 if (m_airTime < m_airTransitionTime)
                 {
-                    gun.transform.localPosition = Vector3.Lerp(gun.transform.localPosition, origPos, Time.deltaTime * 10f);
+                    gun.m_gunParent.transform.localPosition = Vector3.Lerp(gun.m_gunParent.transform.localPosition, origPos, Time.deltaTime * 10f);
                 }
                 else
                 {
-                    gun.transform.localPosition = origPos;
+                    gun.m_gunParent.transform.localPosition = origPos;
                 }
             }
             */

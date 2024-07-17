@@ -206,6 +206,7 @@ public class Player_Gun : MonoBehaviour
 	}
 
 	[Header("References")]
+	public Transform m_gunParent;
 	public Transform m_clip;
 	public Transform m_shellPointChamber;
 	public Transform m_shellPointMag;
@@ -262,11 +263,6 @@ public class Player_Gun : MonoBehaviour
 	public GameObject m_fxGunShot;
 	public GameObject m_fxSmokeTrail;
 
-	[Header("Follow Cam")]
-	public bool m_followCam = false;
-	public Vector3 m_originalCamPos;
-	private Vector3 m_originalPlayerPos;
-
 	[Header("Debug")]
 	private Vector3 m_aimDir = Vector3.zero;
 
@@ -282,17 +278,7 @@ public class Player_Gun : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		// null checks
-		if (Player.Instance == null)
-		{
-			Debug.LogError("Player_Gun.Awake | Player instance not found!");
-			return;
-		}
-		Player_Movement movement = Player.Instance.m_movement;
-
-		// set original positions
-		m_originalCamPos = transform.position - movement.m_cam.transform.position;
-		m_originalPlayerPos = transform.position - Player.Instance.transform.position;
+		// nothing
 	}
 
 	// Update is called once per frame
@@ -304,15 +290,13 @@ public class Player_Gun : MonoBehaviour
 			return;
 		}
 
-		FollowCam();
-
 		// aim (continuous)
 		UpdateAim();
 		// // check chamber (continuous)
 		// UpdateCheckChamber();
 
 		// shoot
-		if (InputManager.PlayerGun.Shoot.triggered)
+		if (InputManager.PlayerGun.Shoot.WasPerformedThisFrame())
 		{
 			StartCoroutine(TryShoot());
 		}
@@ -322,17 +306,17 @@ public class Player_Gun : MonoBehaviour
 			StartCoroutine(TryBolt());
 		}
 		// reload
-		if (InputManager.PlayerGun.Reload.triggered)
+		if (InputManager.PlayerGun.Reload.WasPerformedThisFrame())
 		{
 			StartCoroutine(TryReload());
 		}
 		// force bolt
-		if (InputManager.PlayerGun.Bolt.triggered)
+		if (InputManager.PlayerGun.Bolt.WasPerformedThisFrame())
 		{
 			StartCoroutine(TryBolt());
 		}
 		// check chamber
-		if (InputManager.PlayerGun.CheckChamber.triggered)
+		if (InputManager.PlayerGun.CheckChamber.IsPressed())
 		{
 			StartCoroutine(TryCheckChamber());
 		}
@@ -822,8 +806,8 @@ public class Player_Gun : MonoBehaviour
 		m_animator.SetBool("Check_Chamber", true);
 
 		// audio
-		AutoSound reloadSound = AudioManager.SpawnSound<AutoSound_GunReload>(m_shellPointChamber.position); // Temp sound
-		reloadSound.transform.parent = m_shellPointChamber;
+		AutoSound openBoltSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPointChamber.position); // Temp sound
+		openBoltSound.transform.parent = m_shellPointChamber;
 
 		// wait for check chamber time
 		yield return new WaitForSeconds(m_checkChamberTime);
@@ -836,6 +820,10 @@ public class Player_Gun : MonoBehaviour
 
 		// animation
 		m_animator.SetBool("Check_Chamber", false);
+
+		// audio
+		AutoSound closeBoltSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPointChamber.position); // Temp sound
+		closeBoltSound.transform.parent = m_shellPointChamber;
 
 		// wait for uncheck chamber time
 		yield return new WaitForSeconds(m_uncheckChamberTime);
@@ -851,59 +839,6 @@ public class Player_Gun : MonoBehaviour
 		m_canReload = true;
 		m_isCheckingChamber = false;
 		m_canCheckChamber = true;
-	}
-
-	/// <summary>
-	/// Looks at where the player cam is looking.
-	/// </summary>
-	private void FollowCam()
-	{
-		if (!m_followCam)
-		{
-			// parent to camera if not already
-			if (transform.parent != Player.Instance.m_movement.m_cam.transform)
-			{
-				transform.SetParent(Player.Instance.m_movement.m_cam.transform);
-				// reset position and rotation
-				transform.localPosition = m_originalCamPos;
-				transform.localRotation = Quaternion.identity;
-			}
-			return;
-		}
-		else
-		{
-			// parent to player if not already
-			if (transform.parent != Player.Instance.transform)
-			{
-				transform.SetParent(Player.Instance.transform);
-				// reset position and rotation
-				transform.localPosition = m_originalPlayerPos;
-				transform.localRotation = Quaternion.identity;
-			}
-		}
-
-		// null checks
-		Player_Movement movement = Player.Instance.m_movement;
-		if (movement == null)
-		{
-			return;
-		}
-
-		// look at where camera is looking (raycast to hit point)
-		Vector3 hitPoint = Vector3.zero;
-		RaycastHit hit;
-		LayerMask ignoreMask = LayerMask.GetMask("Player");
-		if (Physics.Raycast(movement.m_cam.transform.position, movement.m_cam.transform.forward, out hit, 100f, ~ignoreMask))
-		{
-			hitPoint = hit.point;
-		}
-		else
-		{
-			hitPoint = movement.m_cam.transform.position + movement.m_cam.transform.forward * 100f;
-		}
-
-		// move gun to look at hit point
-		transform.LookAt(hitPoint);
 	}
 
 	/// <summary>
