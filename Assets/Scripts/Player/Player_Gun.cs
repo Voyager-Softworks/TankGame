@@ -290,6 +290,12 @@ public class Player_Gun : MonoBehaviour
 			return;
 		}
 
+		ClipModel clipModel = FindObjectOfType<ClipModel>();
+		if (clipModel != null)
+		{
+			clipModel.SetClip(m_currentClip);
+		}
+
 		// aim (continuous)
 		UpdateAim();
 		// // check chamber (continuous)
