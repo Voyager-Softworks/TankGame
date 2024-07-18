@@ -50,6 +50,20 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		/// <summary>
+		/// Copy constructor.
+		/// </summary>
+		/// <param name="_toCopy"></param>
+		public ShellData(ShellData _toCopy)
+		{
+			m_damage = _toCopy.m_damage;
+			m_range = _toCopy.m_range;
+			m_hitForce = _toCopy.m_hitForce;
+			m_isDirty = _toCopy.m_isDirty;
+			m_isSpent = _toCopy.m_isSpent;
+			m_spendTries = _toCopy.m_spendTries;
+		}
+
+		/// <summary>
 		/// Makes the shell dirty.
 		/// </summary>
 		/// <param name="_dirty"></param>
@@ -214,7 +228,8 @@ public class Player_Gun : MonoBehaviour
 	public Transform m_aimPoint;
 	public Animator m_animator;
 
-	public List<Transform> m_clipShells = new List<Transform>();
+	public DisplayClip m_displayClip;
+	public DisplayClip DEBUG_displayClip;
 
 	[Header("Ammo")]
 	[SerializeField] private int m_startingClips = 20;
@@ -290,10 +305,9 @@ public class Player_Gun : MonoBehaviour
 			return;
 		}
 
-		ClipModel clipModel = FindObjectOfType<ClipModel>();
-		if (clipModel != null)
+		if (DEBUG_displayClip != null)
 		{
-			clipModel.SetClip(m_currentClip);
+			DEBUG_displayClip.SetClip(m_currentClip);
 		}
 
 		// aim (continuous)
@@ -614,10 +628,11 @@ public class Player_Gun : MonoBehaviour
 		{
 			yield break;
 		}
+		ShellData copyShell = new ShellData(m_shellInChamber);
 
 		yield return new WaitForSeconds(delay);
 
-		GameObject shell = InstantiateCosmeticShell(m_shellInChamber, m_shellPointChamber);
+		GameObject shell = InstantiateCosmeticShell(copyShell, m_shellPointChamber);
 		//AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
 		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
 		if (shellRb != null)
@@ -718,37 +733,34 @@ public class Player_Gun : MonoBehaviour
 			}
 
 			// spawn in cosmetic shells instead of animating
-			List<GameObject> tempShells = new List<GameObject>();
-			for (int i = 0; i < m_clipShells.Count; i++)
-			{
-				Transform shell = m_clipShells[i];
-				shell.localScale = Vector3.zero;
+			m_displayClip.SetClip(m_currentClip, moved);
+			// List<GameObject> tempShells = new List<GameObject>();
+			// for (int i = 0; i < m_clipShells.Count; i++)
+			// {
+			// 	Transform shell = m_clipShells[i];
+			// 	shell.localScale = Vector3.zero;
 
-				if (i >= m_clipShells.Count - moved)
-				{
-					ShellData shellData = m_currentClip.m_shells[i];
+			// 	if (i >= m_clipShells.Count - moved)
+			// 	{
+			// 		ShellData shellData = m_currentClip.m_shells[i];
 
-					GameObject tempShell = InstantiateCosmeticShell(shellData, shell.parent, _parent: true);
-					tempShells.Add(tempShell);
+			// 		GameObject tempShell = InstantiateCosmeticShell(shellData, shell.parent, _parent: true);
+			// 		tempShells.Add(tempShell);
 
-					tempShell.transform.position = shell.position;
-					// subtract 90 degrees to x rotation
-					tempShell.transform.rotation = shell.rotation * Quaternion.Euler(-90f, 0f, 0f);
-					tempShell.transform.localScale = Vector3.one;
+			// 		tempShell.transform.position = shell.position;
+			// 		// subtract 90 degrees to x rotation
+			// 		tempShell.transform.rotation = shell.rotation * Quaternion.Euler(-90f, 0f, 0f);
+			// 		tempShell.transform.localScale = Vector3.one;
 
-					StartCoroutine(CosmeticTrackShells(tempShell, shell, m_reloadTime));
-				}
-			}
+			// 		StartCoroutine(CosmeticTrackShells(tempShell, shell, m_reloadTime));
+			// 	}
+			// }
 
 			// wait for reload time
 			yield return new WaitForSeconds(m_reloadTime);
 
 			// destroy temp shells
-			foreach (GameObject tempShell in tempShells)
-			{
-				Destroy(tempShell);
-			}
-			tempShells.Clear();
+			m_displayClip.DestroyShells();
 
 			// re-chamber using top shell in clip
 			m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
@@ -764,28 +776,6 @@ public class Player_Gun : MonoBehaviour
 		m_canReload = true;
 		m_isReloading = false;
 		m_canCheckChamber = true;
-	}
-
-	/// <summary>
-	/// Coroutine for temp shells to track the animation.
-	/// </summary>
-	/// <returns></returns>
-	private IEnumerator CosmeticTrackShells(GameObject _shell, Transform _pos, float _time)
-	{
-		// during the time, track the shell to the position
-		float timeStart = Time.time;
-		while (Time.time - timeStart < _time)
-		{
-			// null check
-			if (_shell == null)
-			{
-				yield break;
-			}
-
-			// a little forward of the position
-			_shell.transform.position = _pos.position /* + _shell.forward * 0.1f */;
-			yield return null;
-		}
 	}
 
 	private IEnumerator TryCheckChamber()

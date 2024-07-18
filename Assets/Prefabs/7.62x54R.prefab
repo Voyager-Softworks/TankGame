@@ -443,7 +443,7 @@ GameObject:
   - component: {fileID: 627626393898657620}
   - component: {fileID: 8285977690933634054}
   m_Layer: 0
-  m_Name: Gun_Shell
+  m_Name: 7.62x54R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
