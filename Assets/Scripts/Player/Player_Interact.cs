@@ -26,7 +26,7 @@ public class Player_Interact : MonoBehaviour
 
     void ProcessInput()
     {
-        if (InputManager.PlayerSpecial.Interact.triggered)
+        if (InputManager.PlayerSpecial.Interact.WasPerformedThisFrame())
         {
             CheckInteractable();
         }

@@ -17,9 +17,10 @@ public class MosinShell : MonoBehaviour
     [Utils.ReadOnly] public float m_lastLandSoundTime = 0.0f;
     public float m_landSoundDelay = 0.1f;
 
-    public void SetShellData(ShellData shellData)
+    public void SetShellData(ShellData _shellData)
     {
-        m_shellData = shellData;
+        // copy data
+        m_shellData = new ShellData(_shellData);
 
         UpdateVisuals();
     }

@@ -35,7 +35,7 @@ public class Player_Gun : MonoBehaviour
 		public bool IsDirty { get { return m_isDirty; } }
 		private bool m_isSpent = false;
 		public bool IsSpent { get { return m_isSpent; } }
-		
+
 		private int m_spendTries = 0;
 
 		public System.Action OnDirty;
@@ -592,7 +592,7 @@ public class Player_Gun : MonoBehaviour
 		GameObject shell = null;
 		if (m_currentClip?.Top() != null)
 		{
-			shell = InstantiateCosmeticShell(m_currentClip.Top(), m_shellPointMag, _parent: true);
+			shell = InstantiateCosmeticShell(m_shellPrefab, m_currentClip.Top(), m_shellPointMag, _parent: true);
 		}
 
 		// wait for bolt time
@@ -632,8 +632,9 @@ public class Player_Gun : MonoBehaviour
 
 		yield return new WaitForSeconds(delay);
 
-		GameObject shell = InstantiateCosmeticShell(copyShell, m_shellPointChamber);
-		//AutoSound shellSound = AudioManager.SpawnSound<AutoSound_EjectShell>(m_shellPoint.position);
+		// spawn shell
+		GameObject shell = InstantiateCosmeticShell(m_shellPrefab, copyShell, m_shellPointChamber);
+		// add force
 		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
 		if (shellRb != null)
 		{
@@ -644,30 +645,6 @@ public class Player_Gun : MonoBehaviour
 			// random spin
 			shellRb.angularVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)) * 10f;
 		}
-	}
-
-	private GameObject InstantiateCosmeticShell(ShellData _toCopy, Transform _pos, bool _parent = false)
-	{
-		GameObject shell = Instantiate(m_shellPrefab, _pos.position, _pos.rotation, _parent ? _pos : null);
-
-		// no physics if parented
-		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
-		if (shellRb != null && _parent)
-		{
-			Destroy(shellRb);
-			// destroy all colliders
-			Collider[] colliders = shell.GetComponentsInChildren<Collider>();
-			for (int i = colliders.Length - 1; i >= 0; i--)
-			{
-				Destroy(colliders[i]);
-			}
-		}
-
-		// update visuals
-		MosinShell mosinShell = shell.GetComponent<MosinShell>();
-		mosinShell.SetShellData(_toCopy);
-
-		return shell;
 	}
 
 	/// <summary>
@@ -795,7 +772,7 @@ public class Player_Gun : MonoBehaviour
 		GameObject shell = null;
 		if (m_shellInChamber != null)
 		{
-			shell = InstantiateCosmeticShell(m_shellInChamber, m_shellPointChamber, _parent: true);
+			shell = InstantiateCosmeticShell(m_shellPrefab, m_shellInChamber, m_shellPointChamber, _parent: true);
 		}
 
 		// animation
@@ -892,6 +869,38 @@ public class Player_Gun : MonoBehaviour
 				m_totalClips.RemoveAt(i);
 			}
 		}
+	}
+
+	/// <summary>
+	/// Instantiates a cosmetic shell at the given position.
+	/// </summary>
+	/// <param name="_prefab">What prefab to instantiate.</param>
+	/// <param name="_toCopy">The data to copy from.</param>
+	/// <param name="_pos"></param>
+	/// <param name="_parent"></param>
+	/// <returns></returns>
+	public static GameObject InstantiateCosmeticShell(GameObject _prefab, ShellData _toCopy, Transform _pos, bool _parent = false)
+	{
+		GameObject shell = Instantiate(_prefab, _pos.position, _pos.rotation, _parent ? _pos : null);
+
+		// no physics if parented
+		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
+		if (shellRb != null && _parent)
+		{
+			Destroy(shellRb);
+			// destroy all colliders
+			Collider[] colliders = shell.GetComponentsInChildren<Collider>();
+			for (int i = colliders.Length - 1; i >= 0; i--)
+			{
+				Destroy(colliders[i]);
+			}
+		}
+
+		// update visuals
+		MosinShell mosinShell = shell.GetComponent<MosinShell>();
+		mosinShell.SetShellData(_toCopy);
+
+		return shell;
 	}
 
 	#region Custom Editor

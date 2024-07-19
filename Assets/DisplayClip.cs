@@ -42,7 +42,7 @@ public class DisplayClip : MonoBehaviour
             {
                 ShellData shellData = _clipData.m_shells[i];
 
-                GameObject tempShell = InstantiateCosmeticShell(shellData, shell.parent, _parent: true);
+                GameObject tempShell = Player_Gun.InstantiateCosmeticShell(m_shellPrefab, shellData, shell.parent, _parent: true);
                 m_tempShells.Add(tempShell);
 
                 tempShell.transform.position = shell.position;
@@ -65,37 +65,6 @@ public class DisplayClip : MonoBehaviour
             Destroy(m_tempShells[i]);
         }
         m_tempShells.Clear();
-    }
-
-    /// <summary>
-    /// Instantiates a cosmetic shell at the given position.
-    /// </summary>
-    /// <param name="_toCopy">The shell data to use.</param>
-    /// <param name="_pos">The position to instantiate the shell at.</param>
-    /// <param name="_parent">Whether to parent the shell to the given transform.</param>
-    /// <returns></returns>
-    public GameObject InstantiateCosmeticShell(ShellData _toCopy, Transform _pos, bool _parent = false)
-    {
-        GameObject shell = Instantiate(m_shellPrefab, _pos.position, _pos.rotation, _parent ? _pos : null);
-
-        // no physics if parented
-        Rigidbody shellRb = shell.GetComponent<Rigidbody>();
-        if (shellRb != null && _parent)
-        {
-            Destroy(shellRb);
-            // destroy all colliders
-            Collider[] colliders = shell.GetComponentsInChildren<Collider>();
-            for (int i = colliders.Length - 1; i >= 0; i--)
-            {
-                Destroy(colliders[i]);
-            }
-        }
-
-        // update visuals
-        MosinShell mosinShell = shell.GetComponent<MosinShell>();
-        mosinShell.SetShellData(_toCopy);
-
-        return shell;
     }
 
     /// <summary>
