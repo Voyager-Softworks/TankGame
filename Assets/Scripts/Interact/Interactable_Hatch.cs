@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Interactable_Hatch : Interactable
 {
-    public override void Interact()
+    public override void OnInteract(Interacter _interacter)
     {
-        base.Interact();
+        base.OnInteract(_interacter);
 
         Tank.Instance.OnPlayerEnter();
         Player.Instance.DisablePlayer();

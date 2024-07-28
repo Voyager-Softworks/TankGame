@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190e9dd1009c2504abd6b94fe2e7b03a, type: 3}
+  m_Name: 7.62x54R_5Round
+  m_EditorClassIdentifier: 
+  m_name: 7.62x54R_5Round
+  m_ammoType: {fileID: 11400000, guid: 5ff7c823fb2b9f54c873832ac4055605, type: 2}
+  m_shells: []
+  m_clipPrefab: {fileID: 5310533193775107259, guid: f0cdd4b10dd11cf4690a56e43a71486a, type: 3}

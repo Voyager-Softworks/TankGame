@@ -9,25 +9,35 @@ using static Player_Gun;
 /// </summary>
 public class DisplayClip : MonoBehaviour
 {
+    [Header("Settings")]
+    public Vector3 m_rotationOffset = Vector3.zero;
+
     [Header("References")]
-    public GameObject m_shellPrefab;
     public Transform m_clip;
     [FormerlySerializedAs("m_clipShells")]
     public List<Transform> m_shellPoints;
 
-    private List<GameObject> m_tempShells = new List<GameObject>();
+    private List<GameObject> m_spawnedShells = new List<GameObject>();
+    [SerializeField] protected ClipDefinition m_defaultClipDefinition = null;
+
+    [Header("Data")]
+    [Utils.ReadOnly, SerializeField] protected ClipDefinition m_clipData = null;
+    public ClipDefinition ClipData { get { return m_clipData; } }
 
     /// <summary>
     /// Sets the clip to display the given clip data.
     /// </summary>
-    /// <param name="_clipData"></param>
-    public void SetClip(ClipData _clipData, int _amount = -1)
+    /// <param name="_ClipDefinition"></param>
+    public void SetClip(ClipDefinition _ClipDefinition, int _amount = -1)
     {
         // destroy all temp shells
         DestroyShells();
 
+        // set the clip definition
+        m_clipData = _ClipDefinition;
+
         // null check
-        if (_clipData == null)
+        if (_ClipDefinition == null)
         {
             return;
         }
@@ -38,16 +48,16 @@ public class DisplayClip : MonoBehaviour
             Transform shell = m_shellPoints[i];
             shell.localScale = Vector3.zero;
 
-            if (i < _clipData.m_shells.Count && (i >= m_shellPoints.Count - _amount || _amount == -1))
+            if (i < _ClipDefinition.m_shells.Count && (i >= m_shellPoints.Count - _amount || _amount == -1))
             {
-                ShellData shellData = _clipData.m_shells[i];
+                ShellDefinition shellDefinition = _ClipDefinition.m_shells[i];
 
-                GameObject tempShell = Player_Gun.InstantiateCosmeticShell(m_shellPrefab, shellData, shell.parent, _parent: true);
-                m_tempShells.Add(tempShell);
+                GameObject tempShell = shellDefinition.InstantiateCosmeticShell(shell.parent, _parent: true);
+                m_spawnedShells.Add(tempShell);
 
                 tempShell.transform.position = shell.position;
-                // subtract 90 degrees to x rotation
-                tempShell.transform.rotation = shell.rotation * Quaternion.Euler(-90f, 0f, 0f);
+                // add offset
+                tempShell.transform.rotation = shell.rotation * Quaternion.Euler(m_rotationOffset);
                 tempShell.transform.localScale = Vector3.one;
 
                 StartCoroutine(CosmeticTrackShells(tempShell, shell));
@@ -60,11 +70,11 @@ public class DisplayClip : MonoBehaviour
     /// </summary>
     public void DestroyShells()
     {
-        for (int i = m_tempShells.Count - 1; i >= 0; i--)
+        for (int i = m_spawnedShells.Count - 1; i >= 0; i--)
         {
-            Destroy(m_tempShells[i]);
+            Destroy(m_spawnedShells[i]);
         }
-        m_tempShells.Clear();
+        m_spawnedShells.Clear();
     }
 
     /// <summary>

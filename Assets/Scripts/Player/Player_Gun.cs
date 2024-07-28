@@ -12,213 +12,6 @@ using UnityEditor;
 /// </summary>
 public class Player_Gun : MonoBehaviour
 {
-	/// <summary>
-	/// Data for a shell.
-	/// </summary>
-	[System.Serializable]
-	public class ShellData
-	{
-		public static Color DIRTY_COLOR = Color.red;
-		public static Color BRASS_COLOR = new Color(0.8f, 0.6f, 0.2f); // brass
-		public static Color COPPER_COLOR = new Color(0.72f, 0.45f, 0.2f); // copper
-		public static float s_dirtyChance = 0.5f;
-		public static float s_dirtyDryFireChance = 0.5f;
-		public static float s_maxSpendTries = 5;
-
-		private float m_damage = 100.0f;
-		public float Damage { get { return m_damage; } }
-		private float m_range = 500.0f;
-		public float Range { get { return m_range; } }
-		private float m_hitForce = 1.0f;
-		public float HitForce { get { return m_hitForce; } }
-		private bool m_isDirty = false;
-		public bool IsDirty { get { return m_isDirty; } }
-		private bool m_isSpent = false;
-		public bool IsSpent { get { return m_isSpent; } }
-
-		private int m_spendTries = 0;
-
-		public System.Action OnDirty;
-		public System.Action OnSpend;
-
-		public ShellData()
-		{
-			// all values are initialized to default
-
-			// randomize dirty
-			m_isDirty = UnityEngine.Random.value < s_dirtyChance;
-		}
-
-		/// <summary>
-		/// Copy constructor.
-		/// </summary>
-		/// <param name="_toCopy"></param>
-		public ShellData(ShellData _toCopy)
-		{
-			m_damage = _toCopy.m_damage;
-			m_range = _toCopy.m_range;
-			m_hitForce = _toCopy.m_hitForce;
-			m_isDirty = _toCopy.m_isDirty;
-			m_isSpent = _toCopy.m_isSpent;
-			m_spendTries = _toCopy.m_spendTries;
-		}
-
-		/// <summary>
-		/// Makes the shell dirty.
-		/// </summary>
-		/// <param name="_dirty"></param>
-		public void SetDirty(bool _dirty)
-		{
-			// no change
-			if (m_isDirty == _dirty)
-			{
-				return;
-			}
-
-			m_isDirty = _dirty;
-
-			// if made dirty, invoke event
-			if (m_isDirty)
-			{
-				OnDirty?.Invoke();
-			}
-		}
-
-		/// <summary>
-		/// Tries to spend the shell.
-		/// </summary>
-		/// <returns>True if the shell was spent, false if dry fired.</returns>
-		public bool TrySpend()
-		{
-			// no change
-			if (m_isSpent)
-			{
-				return false;
-			}
-
-			// dirty
-			if (m_isDirty)
-			{
-				bool canDryFire = m_spendTries < s_maxSpendTries;
-				bool shouldDryFire = UnityEngine.Random.value < s_dirtyDryFireChance;
-				// dry fire
-				if (canDryFire && shouldDryFire)
-				{
-					m_spendTries++;
-					return false;
-				}
-			}
-
-
-			m_isSpent = true;
-
-			// invoke event
-			OnSpend?.Invoke();
-
-			return true;
-		}
-
-		/// <summary>
-		/// <inheritdoc cref="GetShellString(ShellData)"/>
-		/// </summary>
-		/// <returns></returns>
-		public string GetShellString()
-		{
-			return GetShellString(this);
-		}
-
-		/// <summary>
-		/// Get a string representation of the shell.<br/>
-		/// Spent/Live = S/L, Clean/Dirty = C/D, null = _
-		/// </summary>
-		/// <returns></returns>
-		public static string GetShellString(ShellData _shell)
-		{
-			if (_shell == null)
-			{
-				return "_";
-			}
-			return (_shell.m_isSpent ? "S" : "L") + "" + (_shell.m_isDirty ? "D" : "C");
-		}
-	}
-
-	/// <summary>
-	/// Data for a clip of shells.
-	/// </summary>
-	[System.Serializable]
-	public class ClipData
-	{
-		private int m_maxSize = 5;
-		public int MaxSize { get { return m_maxSize; } }
-		/// <summary>
-		/// i=0 is the bottom of the clip, i=last is the top of the clip.
-		/// </summary>
-		public List<ShellData> m_shells = new List<ShellData>();
-
-		/// <summary>
-		/// Create a new clip of shells.
-		/// </summary>
-		/// <param name="_shells">The number of shells to add to the clip. If -1, use max size.</param>
-		public ClipData(int _shells = -1)
-		{
-			// if -1, use max size
-			if (_shells == -1)
-			{
-				_shells = m_maxSize;
-			}
-
-			// add shells
-			for (int i = 0; i < _shells; i++)
-			{
-				m_shells.Add(new ShellData());
-			}
-		}
-
-		public void Add(ShellData _shell)
-		{
-			if (m_shells.Count < m_maxSize)
-			{
-				m_shells.Add(_shell);
-			}
-		}
-
-		public ShellData Top(bool _remove = false)
-		{
-			if (m_shells.Count == 0)
-			{
-				return null;
-			}
-			ShellData shell = m_shells[m_shells.Count - 1];
-			if (_remove)
-			{
-				m_shells.RemoveAt(m_shells.Count - 1);
-			}
-			return shell;
-		}
-
-		/// <summary>
-		/// Get a string representation of the clip.<br/>
-		/// [
-		/// </summary>
-		/// <param name="_clip"></param>
-		/// <returns></returns>
-		public static string GetClipString(ClipData _clip)
-		{
-			if (_clip == null)
-			{
-				return "_";
-			}
-
-			string clipString = "";
-			for (int i = 0; i < _clip.MaxSize; i++)
-			{
-				clipString += ShellData.GetShellString(i < _clip.m_shells.Count ? _clip.m_shells[i] : null);
-				clipString += i < _clip.MaxSize - 1 ? "|" : "";
-			}
-			return clipString;
-		}
-	}
-
 	[Header("References")]
 	public Transform m_gunParent;
 	public Transform m_clip;
@@ -229,16 +22,18 @@ public class Player_Gun : MonoBehaviour
 	public Animator m_animator;
 
 	public DisplayClip m_displayClip;
-	public DisplayClip DEBUG_displayClip;
+
+	public ShellDefinition m_ammoType;
+	public ClipDefinition m_defaultClip;
 
 	[Header("Ammo")]
 	[SerializeField] private int m_startingClips = 20;
-	[NonSerialized] private ShellData m_shellInChamber = null;
-	public ShellData ShellInChamber { get { return m_shellInChamber; } }
-	[NonSerialized] private ClipData m_currentClip = null;
-	public ClipData CurrentClip { get { return m_currentClip; } }
-	[NonSerialized] private List<ClipData> m_totalClips = new List<ClipData>();
-	public List<ClipData> TotalClips { get { return m_totalClips; } }
+	[NonSerialized] private ShellDefinition m_shellInChamber = null;
+	public ShellDefinition ShellInChamber { get { return m_shellInChamber; } }
+	[NonSerialized] private ClipDefinition m_internalClip = null;
+	public ClipDefinition InternalClip { get { return m_internalClip; } }
+	[NonSerialized] private List<ClipDefinition> m_spareClips = null;
+	public List<ClipDefinition> SpareClips { get { return m_spareClips; } }
 
 	[Header("Timers")]
 	public float m_aimTime = 0.7916667f;
@@ -283,10 +78,13 @@ public class Player_Gun : MonoBehaviour
 
 	private void Awake()
 	{
+		// create list
+		m_spareClips = new List<ClipDefinition>();
+
 		// add starting clips
 		for (int i = 0; i < m_startingClips; i++)
 		{
-			m_totalClips.Add(new ClipData(5));
+			m_spareClips.Add(m_defaultClip.GetRandomInstance());
 		}
 	}
 
@@ -303,11 +101,6 @@ public class Player_Gun : MonoBehaviour
 		if (Player.Instance == null)
 		{
 			return;
-		}
-
-		if (DEBUG_displayClip != null)
-		{
-			DEBUG_displayClip.SetClip(m_currentClip);
 		}
 
 		// aim (continuous)
@@ -590,16 +383,16 @@ public class Player_Gun : MonoBehaviour
 
 		// spawn new mag shell
 		GameObject shell = null;
-		if (m_currentClip?.Top() != null)
+		if (m_internalClip?.Top() != null)
 		{
-			shell = InstantiateCosmeticShell(m_shellPrefab, m_currentClip.Top(), m_shellPointMag, _parent: true);
+			shell = ShellDefinition.InstantiateCosmeticShell(m_shellPrefab, m_internalClip.Top(), m_shellPointMag, _parent: true);
 		}
 
 		// wait for bolt time
 		yield return new WaitForSeconds(m_boltTime);
 
 		// re-chamber using top shell in clip
-		m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
+		m_shellInChamber = m_internalClip?.Top(_remove: true) ?? null;
 
 		// destroy chambered shell
 		if (shell != null)
@@ -628,12 +421,12 @@ public class Player_Gun : MonoBehaviour
 		{
 			yield break;
 		}
-		ShellData copyShell = new ShellData(m_shellInChamber);
+		ShellDefinition copyShell = m_shellInChamber.GetCopy();
 
 		yield return new WaitForSeconds(delay);
 
 		// spawn shell
-		GameObject shell = InstantiateCosmeticShell(m_shellPrefab, copyShell, m_shellPointChamber);
+		GameObject shell = ShellDefinition.InstantiateCosmeticShell(m_shellPrefab, copyShell, m_shellPointChamber);
 		// add force
 		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
 		if (shellRb != null)
@@ -666,7 +459,7 @@ public class Player_Gun : MonoBehaviour
 		m_canAutoBolt = false;
 
 		// do we have any clips
-		if (m_totalClips.Count > 0)
+		if (m_spareClips.Count > 0)
 		{
 			m_animator.SetTrigger("Reload");
 
@@ -682,26 +475,26 @@ public class Player_Gun : MonoBehaviour
 				m_shellInChamber = null;
 			}
 
-			int remainingShells = m_currentClip?.m_shells.Count ?? 0;
+			int remainingShells = m_internalClip?.m_shells.Count ?? 0;
 			int moved = 0;
 			// if no clip, use first clip 
 			if (remainingShells == 0)
 			{
-				m_currentClip = m_totalClips[0];
-				moved = m_currentClip.m_shells.Count;
-				m_totalClips.RemoveAt(0);
+				m_internalClip = m_spareClips[0];
+				moved = m_internalClip.m_shells.Count;
+				m_spareClips.RemoveAt(0);
 			}
 			else
 			{
-				ClipData nextClip = m_totalClips[0];
-				int neededShells = m_currentClip.MaxSize - remainingShells;
+				ClipDefinition nextClip = m_spareClips[0];
+				int neededShells = m_internalClip.MaxSize - remainingShells;
 				// transfer shells from next clip to current clip
 				for (int i = 0; i < neededShells; i++)
 				{
-					ShellData shell = nextClip.Top(_remove: true);
+					ShellDefinition shell = nextClip.Top(_remove: true);
 					if (shell != null)
 					{
-						m_currentClip.Add(shell);
+						m_internalClip.Add(shell);
 						moved++;
 					}
 				}
@@ -710,7 +503,7 @@ public class Player_Gun : MonoBehaviour
 			}
 
 			// spawn in cosmetic shells instead of animating
-			m_displayClip.SetClip(m_currentClip, moved);
+			m_displayClip.SetClip(m_internalClip, moved);
 			// List<GameObject> tempShells = new List<GameObject>();
 			// for (int i = 0; i < m_clipShells.Count; i++)
 			// {
@@ -719,9 +512,9 @@ public class Player_Gun : MonoBehaviour
 
 			// 	if (i >= m_clipShells.Count - moved)
 			// 	{
-			// 		ShellData shellData = m_currentClip.m_shells[i];
+			// 		ShellDefinition ShellDefinition = m_currentClip.m_shells[i];
 
-			// 		GameObject tempShell = InstantiateCosmeticShell(shellData, shell.parent, _parent: true);
+			// 		GameObject tempShell = InstantiateCosmeticShell(ShellDefinition, shell.parent, _parent: true);
 			// 		tempShells.Add(tempShell);
 
 			// 		tempShell.transform.position = shell.position;
@@ -740,7 +533,7 @@ public class Player_Gun : MonoBehaviour
 			m_displayClip.DestroyShells();
 
 			// re-chamber using top shell in clip
-			m_shellInChamber = m_currentClip?.Top(_remove: true) ?? null;
+			m_shellInChamber = m_internalClip?.Top(_remove: true) ?? null;
 		}
 		// out of ammo or clip is full
 		else
@@ -772,7 +565,7 @@ public class Player_Gun : MonoBehaviour
 		GameObject shell = null;
 		if (m_shellInChamber != null)
 		{
-			shell = InstantiateCosmeticShell(m_shellPrefab, m_shellInChamber, m_shellPointChamber, _parent: true);
+			shell = ShellDefinition.InstantiateCosmeticShell(m_shellPrefab, m_shellInChamber, m_shellPointChamber, _parent: true);
 		}
 
 		// animation
@@ -823,15 +616,15 @@ public class Player_Gun : MonoBehaviour
 		//m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
 
 		// empty all shells
-		List<ShellData> shells = new List<ShellData>();
-		foreach (ClipData clip in m_totalClips)
+		List<ShellDefinition> shells = new List<ShellDefinition>();
+		foreach (ClipDefinition clip in m_spareClips)
 		{
 			shells.AddRange(clip.m_shells);
 			clip.m_shells.Clear();
 		}
 
 		// fill all clips with shells
-		foreach (ClipData clip in m_totalClips)
+		foreach (ClipDefinition clip in m_spareClips)
 		{
 			for (int i = 0; i < clip.MaxSize; i++)
 			{
@@ -846,7 +639,7 @@ public class Player_Gun : MonoBehaviour
 		// add remaining shells to new clips
 		while (shells.Count > 0)
 		{
-			ClipData clip = new ClipData(0);
+			ClipDefinition clip = m_defaultClip.GetRandomInstance(0);
 			for (int i = 0; i < clip.MaxSize; i++)
 			{
 				if (shells.Count > 0)
@@ -855,52 +648,20 @@ public class Player_Gun : MonoBehaviour
 					shells.RemoveAt(0);
 				}
 			}
-			m_totalClips.Add(clip);
+			m_spareClips.Add(clip);
 		}
 
 		// sort clips by size (biggest first)
-		m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
+		m_spareClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
 
 		// remove any empty clips
-		for (int i = m_totalClips.Count - 1; i >= 0; i--)
+		for (int i = m_spareClips.Count - 1; i >= 0; i--)
 		{
-			if (m_totalClips[i].m_shells.Count == 0)
+			if (m_spareClips[i].m_shells.Count == 0)
 			{
-				m_totalClips.RemoveAt(i);
+				m_spareClips.RemoveAt(i);
 			}
 		}
-	}
-
-	/// <summary>
-	/// Instantiates a cosmetic shell at the given position.
-	/// </summary>
-	/// <param name="_prefab">What prefab to instantiate.</param>
-	/// <param name="_toCopy">The data to copy from.</param>
-	/// <param name="_pos"></param>
-	/// <param name="_parent"></param>
-	/// <returns></returns>
-	public static GameObject InstantiateCosmeticShell(GameObject _prefab, ShellData _toCopy, Transform _pos, bool _parent = false)
-	{
-		GameObject shell = Instantiate(_prefab, _pos.position, _pos.rotation, _parent ? _pos : null);
-
-		// no physics if parented
-		Rigidbody shellRb = shell.GetComponent<Rigidbody>();
-		if (shellRb != null && _parent)
-		{
-			Destroy(shellRb);
-			// destroy all colliders
-			Collider[] colliders = shell.GetComponentsInChildren<Collider>();
-			for (int i = colliders.Length - 1; i >= 0; i--)
-			{
-				Destroy(colliders[i]);
-			}
-		}
-
-		// update visuals
-		MosinShell mosinShell = shell.GetComponent<MosinShell>();
-		mosinShell.SetShellData(_toCopy);
-
-		return shell;
 	}
 
 	#region Custom Editor
@@ -916,14 +677,17 @@ public class Player_Gun : MonoBehaviour
 			GUILayout.BeginVertical("Ammo", "window");
 			// debug ammo, Spent/Live = S/L, Clean/Dirty = C/D, Empty = _
 			// chamber
-			EditorGUILayout.LabelField("Shell in Chamber", ShellData.GetShellString(script.m_shellInChamber));
+			EditorGUILayout.LabelField("Shell in Chamber", ShellDefinition.GetShellString(script.m_shellInChamber));
 			// current clip
-			EditorGUILayout.LabelField("Current Clip", ClipData.GetClipString(script.m_currentClip));
+			EditorGUILayout.LabelField("Current Clip", ClipDefinition.GetClipString(script.m_internalClip));
 			// total clips
-			EditorGUILayout.LabelField("Spares", script.m_totalClips.Count.ToString());
-			foreach (ClipData clip in script.m_totalClips)
+			EditorGUILayout.LabelField("Spares", script.m_spareClips?.Count.ToString());
+			if (script.m_spareClips != null)
 			{
-				EditorGUILayout.LabelField("Clip", ClipData.GetClipString(clip));
+				foreach (ClipDefinition clip in script.m_spareClips)
+				{
+					EditorGUILayout.LabelField("Clip", ClipDefinition.GetClipString(clip));
+				}
 			}
 
 			// end Ammo vertical

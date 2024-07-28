@@ -501,7 +501,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5007728310935963435}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d61353ff9b577084891d9ca2f26907db, type: 3}
   m_Name: 
@@ -522,9 +522,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_case: {fileID: 7080520904971079953}
   m_bullet: {fileID: 9082382572926591902}
-  m_minVelocity: 1
+  m_minLandVelocity: 1
   m_lastLandSoundTime: 0
   m_landSoundDelay: 0.2
+  m_defaultShellDefinition: {fileID: 11400000, guid: 5ff7c823fb2b9f54c873832ac4055605, type: 2}
+  m_shellData: {fileID: 0}
 --- !u!1001 &2424666630109868093
 PrefabInstance:
   m_ObjectHideFlags: 0

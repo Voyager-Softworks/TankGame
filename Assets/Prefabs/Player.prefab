@@ -100,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4330086912155924521
 RectTransform:
   m_ObjectHideFlags: 0
@@ -212,8 +212,9 @@ MonoBehaviour:
   m_firePoint: {fileID: 2948378921513073827}
   m_aimPoint: {fileID: 0}
   m_animator: {fileID: 0}
-  m_clipShells: []
   m_displayClip: {fileID: 0}
+  m_ammoType: {fileID: 0}
+  m_defaultClip: {fileID: 0}
   m_startingClips: 5
   m_aimTime: 0.5
   m_unaimTime: 0.5
@@ -495,6 +496,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4330086912155924521}
+  - {fileID: 6052139065872504106}
   m_Father: {fileID: 8750414136078585202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -721,8 +723,8 @@ GameObject:
   - component: {fileID: 8750414136078585202}
   - component: {fileID: 5859398360000702798}
   - component: {fileID: 92752061796145002}
+  - component: {fileID: 5241236531867883676}
   - component: {fileID: 865843682631846252}
-  - component: {fileID: 790520515656297815}
   - component: {fileID: 2123494810651467878}
   m_Layer: 10
   m_Name: Player
@@ -766,6 +768,7 @@ MonoBehaviour:
   m_gun: {fileID: 3356277461121661146}
   m_collider: {fileID: 865843682631846252}
   m_model: {fileID: 7746806413395705571}
+  DEBUG_interactShower: {fileID: 6052139065872504106}
 --- !u!114 &92752061796145002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -823,6 +826,24 @@ MonoBehaviour:
   m_gunMoveSprintAmount: 2
   m_gunMoveAimAmount: 0
   m_airTransitionTime: 0.5
+--- !u!114 &5241236531867883676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538065541608882527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4070fe94a978e864e870b663b0a4ddcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_interactRange: 5
+  m_maxInteractAngle: 10
+  m_minInteractAngle: 3
+  m_nearbyInteractables: []
+  m_focusedInteractable: {fileID: 0}
+  m_camera: {fileID: 6922495723610898369}
 --- !u!143 &865843682631846252
 CharacterController:
   m_ObjectHideFlags: 0
@@ -849,23 +870,6 @@ CharacterController:
   m_SkinWidth: 0.01
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
---- !u!114 &790520515656297815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8538065541608882527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83fbb406d11748341a31fd04d510e5a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 7664399482733038710}
-  interactRayDistance: 5
-  interactableLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!114 &2123494810651467878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,6 +920,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2063279264408485766}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!1 &9099075187792531016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6052139065872504106}
+  - component: {fileID: 9067532332490775265}
+  - component: {fileID: 7825666467371246476}
+  m_Layer: 10
+  m_Name: InteractShower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6052139065872504106
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9099075187792531016}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5482885653996614451}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 50, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &9067532332490775265
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9099075187792531016}
+  m_CullTransparentMesh: 1
+--- !u!114 &7825666467371246476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9099075187792531016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &9180514965451566601
 GameObject:
   m_ObjectHideFlags: 0
@@ -1765,14 +1844,10 @@ MonoBehaviour:
   m_firePoint: {fileID: 8423286623282046454}
   m_aimPoint: {fileID: 8496004436485074266}
   m_animator: {fileID: 1557326575293953827}
-  m_clipShells:
-  - {fileID: 2024327103611652033}
-  - {fileID: 882224089713116431}
-  - {fileID: 4091127010822929744}
-  - {fileID: 2620131858870753855}
-  - {fileID: 8940662298495562316}
   m_displayClip: {fileID: 3715140190763200396}
-  m_startingClips: 5
+  m_ammoType: {fileID: 11400000, guid: 5ff7c823fb2b9f54c873832ac4055605, type: 2}
+  m_defaultClip: {fileID: 11400000, guid: aedc4e49f416c0843a5d05e0f6103ac6, type: 2}
+  m_startingClips: 0
   m_aimTime: 0.7916667
   m_unaimTime: 0.4583333
   m_aimAmount: 0
@@ -1815,7 +1890,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87d620638ba62b0419ca78d5dea52c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shellPrefab: {fileID: 5007728310935963435, guid: dc6837db12deb514690725958bce1477, type: 3}
+  m_rotationOffset: {x: -90, y: 0, z: 0}
   m_clip: {fileID: 6746714073339589724}
   m_shellPoints:
   - {fileID: 2024327103611652033}
@@ -1823,6 +1898,8 @@ MonoBehaviour:
   - {fileID: 4091127010822929744}
   - {fileID: 2620131858870753855}
   - {fileID: 8940662298495562316}
+  m_defaultClipDefinition: {fileID: 11400000, guid: aedc4e49f416c0843a5d05e0f6103ac6, type: 2}
+  m_clipData: {fileID: 0}
 --- !u!4 &2024327103611652033 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8396532049913259835, guid: 5d0226e4b17ff8b4387b63158b2bd3b3, type: 3}

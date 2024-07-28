@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     public Collider m_collider;
     public GameObject m_model;
 
+    public RectTransform DEBUG_interactShower;
+
     private void Awake()
     {
         if (Instance == null)

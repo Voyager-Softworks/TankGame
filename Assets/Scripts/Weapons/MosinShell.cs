@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ShellData = Player_Gun.ShellData;
 
 /// <summary>
 /// Simple script to hold references to the case and bullet transforms of a Mosin Nagant shell.
@@ -11,16 +10,21 @@ public class MosinShell : MonoBehaviour
     public Transform m_case;
     public Transform m_bullet;
 
-    private ShellData m_shellData;
-
     public float m_minLandVelocity = 1.0f;
     [Utils.ReadOnly] public float m_lastLandSoundTime = 0.0f;
     public float m_landSoundDelay = 0.1f;
 
-    public void SetShellData(ShellData _shellData)
+    [Header("References")]
+    [SerializeField] protected ShellDefinition m_defaultShellDefinition = null;
+
+    [Header("Data")]
+    [Utils.ReadOnly, SerializeField] protected ShellDefinition m_shellData;
+    public ShellDefinition ShellData { get { return m_shellData; } }
+
+    public void SetShellDefinition(ShellDefinition _ShellDefinition)
     {
         // copy data
-        m_shellData = new ShellData(_shellData);
+        m_shellData = _ShellDefinition.GetCopy();
 
         UpdateVisuals();
     }
@@ -43,21 +47,24 @@ public class MosinShell : MonoBehaviour
         else
         {
             m_bullet.localScale = Vector3.one;
-            m_bullet.GetComponent<Renderer>().material.color = ShellData.COPPER_COLOR;
+            m_bullet.GetComponent<Renderer>().material.color = m_shellData.CopperColor;
         }
 
         // dirty
         if (m_shellData.IsDirty)
         {
-            m_case.GetComponent<Renderer>().material.color = ShellData.DIRTY_COLOR;
+            m_case.GetComponent<Renderer>().material.color = m_shellData.DirtyColor;
         }
         // clean
         else
         {
-            m_case.GetComponent<Renderer>().material.color = ShellData.BRASS_COLOR;
+            m_case.GetComponent<Renderer>().material.color = m_shellData.BrassColor;
         }
     }
 
+    /// <summary>
+    /// Spawns a landing sound if enough time has passed since the last one.
+    /// </summary>
     public void TryPlayLandSound()
     {
         if (Time.time - m_lastLandSoundTime > m_landSoundDelay)
@@ -71,6 +78,7 @@ public class MosinShell : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other) {
+        // play land sound
         if (other.relativeVelocity.magnitude > m_minLandVelocity)
         {
             TryPlayLandSound();

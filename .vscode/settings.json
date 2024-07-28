@@ -56,5 +56,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "TankGame.sln"
+    "dotnet.defaultSolution": "TankGame.sln",
+    "cSpell.words": [
+        "Interacter"
+    ]
 }

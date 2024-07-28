@@ -8,9 +8,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ShellDefinition", menuName = "Shell Definition", order = 1)]
 public class ShellDefinition : ScriptableObject
 {
-	[SerializeField] protected Color DIRTY_COLOR = Color.red;
-	[SerializeField] protected Color BRASS_COLOR = new Color(0.8f, 0.6f, 0.2f); // brass
-	[SerializeField] protected Color COPPER_COLOR = new Color(0.72f, 0.45f, 0.2f); // copper
+	[Header("Data")]
+	[SerializeField] protected string m_name = "Shell";
+
 	[SerializeField] protected float m_dirtyChance = 0.5f;
 	[SerializeField] protected float m_dirtyDryFireChance = 0.5f;
 	[SerializeField] protected float m_maxSpendTries = 5;
@@ -27,30 +27,72 @@ public class ShellDefinition : ScriptableObject
 	public bool IsSpent { get { return m_isSpent; } }
 
 	[SerializeField] protected int m_spendTries = 0;
+	
+	[Header("Colors")]
+	[SerializeField] protected Color m_dirtyColor = Color.red;
+	public Color DirtyColor { get { return m_dirtyColor; } }
+	[SerializeField] protected Color m_brassColor = new Color(0.8f, 0.6f, 0.2f); // brass
+	public Color BrassColor { get { return m_brassColor; } }
+	[SerializeField] protected Color m_copperColor = new Color(0.72f, 0.45f, 0.2f); // copper
+	public Color CopperColor { get { return m_copperColor; } }
+
+	[Header("References")]
+	[SerializeField] protected GameObject m_shellPrefab;
 
 	public System.Action OnDirty;
 	public System.Action OnSpend;
 
-	public ShellDefinition()
+	/// <summary>
+	/// Protected constructor to prevent instantiation.
+	/// </summary>
+	protected ShellDefinition()
 	{
-		// all values are initialized to default
-
-		// randomize dirty
-		//m_isDirty = UnityEngine.Random.value < s_dirtyChance;
 	}
 
 	/// <summary>
 	/// Copy constructor.
 	/// </summary>
 	/// <param name="_toCopy"></param>
-	public ShellDefinition(ShellDefinition _toCopy)
+	protected ShellDefinition(ShellDefinition _toCopy)
 	{
+		m_name = _toCopy.m_name;
+		m_dirtyChance = _toCopy.m_dirtyChance;
+		m_dirtyDryFireChance = _toCopy.m_dirtyDryFireChance;
+		m_maxSpendTries = _toCopy.m_maxSpendTries;
 		m_damage = _toCopy.m_damage;
 		m_range = _toCopy.m_range;
 		m_hitForce = _toCopy.m_hitForce;
 		m_isDirty = _toCopy.m_isDirty;
 		m_isSpent = _toCopy.m_isSpent;
 		m_spendTries = _toCopy.m_spendTries;
+		m_dirtyColor = _toCopy.m_dirtyColor;
+		m_brassColor = _toCopy.m_brassColor;
+		m_copperColor = _toCopy.m_copperColor;
+		m_shellPrefab = _toCopy.m_shellPrefab;
+	}
+
+	/// <summary>
+	/// Create a new shell with the same data as this shell.
+	/// </summary>
+	/// <returns></returns>
+	public ShellDefinition GetCopy()
+	{
+		return new ShellDefinition(this);
+	}
+
+	/// <summary>
+	/// Create a new shell with random data.
+	/// </summary>
+	/// <returns></returns>
+	public ShellDefinition GetRandomInstance()
+	{
+        ShellDefinition copy = new ShellDefinition(this)
+        {
+            // randomize dirty
+            m_isDirty = UnityEngine.Random.value < m_dirtyChance
+        };
+
+        return copy;
 	}
 
 	/// <summary>
@@ -129,5 +171,44 @@ public class ShellDefinition : ScriptableObject
 			return "_";
 		}
 		return (_shell.m_isSpent ? "S" : "L") + "" + (_shell.m_isDirty ? "D" : "C");
+	}
+
+	/// <inheritdoc cref="InstantiateCosmeticShell(GameObject, ShellDefinition, Transform, bool)"/>
+	public GameObject InstantiateCosmeticShell(Transform _pos, bool _parent = false)
+	{
+		return InstantiateCosmeticShell(m_shellPrefab, this, _pos, _parent);
+	}
+
+	/// <summary>
+	/// Instantiates a cosmetic shell at the given position.
+	/// </summary>
+	/// <param name="_prefab">What prefab to instantiate.</param>
+	/// <param name="_toCopy">The data to copy from.</param>
+	/// <param name="_pos">The position to instantiate at.</param>
+	/// <param name="_parent">Should the shell be parented to the given transform?</param>
+	/// <returns></returns>
+	public static GameObject InstantiateCosmeticShell(GameObject _prefab, ShellDefinition _toCopy, Transform _pos, bool _parent = false)
+	{
+		GameObject shellObject = Instantiate(_prefab, _pos.position, _pos.rotation, _parent ? _pos : null);
+
+		// no physics if parented
+		Rigidbody shellRb = shellObject.GetComponent<Rigidbody>();
+		if (shellRb != null && _parent)
+		{
+			shellRb.isKinematic = true; // kinematic first to prevent physics
+			Destroy(shellRb);
+			// // destroy all colliders
+			// Collider[] colliders = shell.GetComponentsInChildren<Collider>();
+			// for (int i = colliders.Length - 1; i >= 0; i--)
+			// {
+			// 	Destroy(colliders[i]);
+			// }
+		}
+
+		// update visuals
+		MosinShell mosinShell = shellObject.GetComponent<MosinShell>();
+		mosinShell?.SetShellDefinition(_toCopy);
+
+		return shellObject;
 	}
 }
