@@ -572,7 +572,7 @@ public class Player_Gun : MonoBehaviour
 		m_animator.SetBool("Check_Chamber", true);
 
 		// audio
-		AutoSound openBoltSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPointChamber.position); // Temp sound
+		AutoSound openBoltSound = AudioManager.SpawnSound<AutoSound_GunBoltOpen>(m_shellPointChamber.position); // Temp sound
 		openBoltSound.transform.parent = m_shellPointChamber;
 
 		// wait for check chamber time
@@ -588,7 +588,7 @@ public class Player_Gun : MonoBehaviour
 		m_animator.SetBool("Check_Chamber", false);
 
 		// audio
-		AutoSound closeBoltSound = AudioManager.SpawnSound<AutoSound_GunBolt>(m_shellPointChamber.position); // Temp sound
+		AutoSound closeBoltSound = AudioManager.SpawnSound<AutoSound_GunBoltClose>(m_shellPointChamber.position); // Temp sound
 		closeBoltSound.transform.parent = m_shellPointChamber;
 
 		// wait for uncheck chamber time
