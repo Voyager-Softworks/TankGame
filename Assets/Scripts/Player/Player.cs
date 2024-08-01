@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// The owner script of the player. Manages the state of the player.
@@ -42,6 +43,14 @@ public class Player : MonoBehaviour
         if (Instance == this)
         {
             Instance = null;
+        }
+    }
+    private void Update()
+    {
+        // f5 reloads the scene
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 

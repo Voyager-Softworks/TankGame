@@ -160,6 +160,8 @@ MonoBehaviour:
   m_deathFX: {fileID: 0}
   m_rb: {fileID: 3417067474960976538}
   m_force: 1.5
+  m_dropOnDeath: {fileID: 5310533193775107259, guid: f0cdd4b10dd11cf4690a56e43a71486a, type: 3}
+  m_dropChance: 0.333
 --- !u!195 &2574790846288030718
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -54,7 +54,6 @@ public class EnemySpawner : MonoBehaviour
             // dead
             else if (m_enemies[i].m_gameObject.GetComponent<Health_Test>().IsDead)
             {
-                Destroy(m_enemies[i].m_gameObject, 1f);
                 m_enemies.RemoveAt(i);
             }
         }

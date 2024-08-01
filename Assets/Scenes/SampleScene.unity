@@ -6202,7 +6202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d1ff3ad430b4054191a9c78c7a1c9c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_maxEnemies: 1
+  m_maxEnemies: 2
   m_spawnRadius: 35
   m_spawnInterval: 10
   m_maxLifetime: 30
@@ -6372,7 +6372,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1651782001
 Transform:
   m_ObjectHideFlags: 0

@@ -10,6 +10,8 @@ public class Health_Test : Health
     [Header("Test")]
     public Rigidbody m_rb;
     [SerializeField] private float m_force = 1.0f;
+    public GameObject m_dropOnDeath = null;
+    [Range(0f,1f)] public float m_dropChance = 1f/4f;
 
     protected override void Awake() {
         base.Awake();
@@ -41,8 +43,24 @@ public class Health_Test : Health
 
         base.Die();
 
+        // drop item
+        if (m_dropOnDeath != null)
+        {
+            float random = Random.Range(0f, 1f);
+            if (random < m_dropChance)
+            {
+                Instantiate(m_dropOnDeath, transform.position + transform.up * 2f, Quaternion.identity);
+
+                // play sound
+                AudioManager.SpawnSound<AutoSound_CannonFire>(Player.Instance.transform.position);
+            }
+        }
+
         // unlock rigidbody
         m_rb.isKinematic = false;
         m_rb.freezeRotation = false;
+
+        // destroy self 5 seconds later
+        Destroy(gameObject, 5f);
     }
 }
