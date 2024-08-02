@@ -30,7 +30,7 @@ public class Interactable_AmmoClip : Interactable
         if (_interacter.GetComponentInParent<Player>() != null && m_displayClip.ClipData != null)
         {
             // add ammo to player
-            Player.Instance.m_gun.SpareClips.Add(m_displayClip.ClipData);
+            Player.Instance.m_gun.AddSpareClip(m_displayClip.ClipData);
             m_displayClip.SetClip(null);
         }
     }

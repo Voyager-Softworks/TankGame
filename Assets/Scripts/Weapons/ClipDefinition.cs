@@ -14,7 +14,7 @@ public class ClipDefinition : ScriptableObject
     public int MaxSize { get { return m_maxSize; } }
     public ShellDefinition m_ammoType;
     /// <summary> i=0 is the bottom of the clip, i=last is the top of the clip. </summary>
-    public List<ShellDefinition> m_shells = null;
+    private List<ShellDefinition> m_shells = null;
 
     [Header("References")]
     [SerializeField] protected GameObject m_clipPrefab;
@@ -76,23 +76,55 @@ public class ClipDefinition : ScriptableObject
     }
 
     /// <summary>
-    /// Add a shell to the clip.
+    /// Get the number of shells in the clip.
     /// </summary>
-    /// <param name="_shell"></param>
-    public void Add(ShellDefinition _shell)
+    /// <returns></returns>
+    public int GetShellCount()
     {
-        if (m_shells.Count < m_maxSize)
-        {
-            m_shells.Add(_shell);
-        }
+        return m_shells?.Count ?? 0;
     }
 
     /// <summary>
-    /// Get the shell at the bottom of the clip.
+    /// Get the shell at the given index.
+    /// </summary>
+    /// <param name="_index"></param>
+    /// <returns></returns>
+    public ShellDefinition GetShell(int _index)
+    {
+        if (_index < 0 || _index >= m_shells.Count)
+        {
+            return null;
+        }
+        return m_shells[_index];
+    }
+
+    /// <summary>
+    /// Add a shell to the clip.
+    /// </summary>
+    /// <param name="_shell"></param>
+    /// <returns>False if the clip is full or the shell is null.</returns>
+    public bool AddShell(ShellDefinition _shell)
+    {
+        // null check
+        if (_shell == null)
+        {
+            return false;
+        }
+
+        if (m_shells.Count < m_maxSize)
+        {
+            m_shells.Add(_shell);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Get the shell at the top of the clip (aka the last shell).
     /// </summary>
     /// <param name="_remove">Should the shell be removed from the clip?</param>
     /// <returns></returns>
-    public ShellDefinition Top(bool _remove = false)
+    public ShellDefinition TopShell(bool _remove = false)
     {
         if (m_shells.Count == 0)
         {
@@ -101,8 +133,24 @@ public class ClipDefinition : ScriptableObject
         ShellDefinition shell = m_shells[m_shells.Count - 1];
         if (_remove)
         {
-            m_shells.RemoveAt(m_shells.Count - 1);
+            RemoveAt(m_shells.Count - 1);
         }
+        return shell;
+    }
+
+    /// <summary>
+    /// Remove the shell at the given index.
+    /// </summary>
+    /// <param name="_index"></param>
+    /// <returns></returns>
+    public ShellDefinition RemoveAt(int _index)
+    {
+        if (_index < 0 || _index >= m_shells.Count)
+        {
+            return null;
+        }
+        ShellDefinition shell = m_shells[_index];
+        m_shells.RemoveAt(_index);
         return shell;
     }
 

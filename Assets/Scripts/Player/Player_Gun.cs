@@ -13,6 +13,7 @@ using UnityEditor;
 public class Player_Gun : MonoBehaviour
 {
 	[Header("References")]
+	#region References
 	public Transform m_gunParent;
 	public Transform m_clip;
 	public Transform m_shellPointChamber;
@@ -25,8 +26,10 @@ public class Player_Gun : MonoBehaviour
 
 	public ShellDefinition m_ammoType;
 	public ClipDefinition m_defaultClip;
+	#endregion
 
 	[Header("Ammo")]
+	#region Ammo
 	[SerializeField] private int m_startingClips = 20;
 	[NonSerialized] private ShellDefinition m_shellInChamber = null;
 	public ShellDefinition ShellInChamber { get { return m_shellInChamber; } }
@@ -34,10 +37,12 @@ public class Player_Gun : MonoBehaviour
 	public ClipDefinition InternalClip { get { return m_internalClip; } }
 	[NonSerialized] private List<ClipDefinition> m_spareClips = null;
 	public List<ClipDefinition> SpareClips { get { return m_spareClips; } }
-	// [NonSerialized] private List<ShellDefinition> m_spareShells = null;
-	// public List<ShellDefinition> SpareShells { get { return m_spareShells; } }
-
+	[NonSerialized] private List<ShellDefinition> m_spareShells = null;
+	public List<ShellDefinition> SpareShells { get { return m_spareShells; } }
+	#endregion
+	
 	[Header("Timers")]
+	#region Timers
 	public float m_aimTime = 0.7916667f;
 	public float m_unaimTime = 0.4583333f;
 	[SerializeField, Utils.ReadOnly] private float m_aimAmount = 0.0f; public float AimAmount { get { return m_aimAmount; } }
@@ -51,8 +56,10 @@ public class Player_Gun : MonoBehaviour
 	public float m_reloadTime = 2.583333f;
 	public float m_checkChamberTime = 0.625f;
 	public float m_uncheckChamberTime = 0.6666667f;
+	#endregion
 
 	[Header("State")]
+	#region State
 	[SerializeField, Utils.ReadOnly] private bool m_canAim = true; public bool CanAim { get { return m_canAim; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isAiming = false; public bool IsAiming { get { return m_isAiming; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canUnAim = false; public bool CanUnAim { get { return m_canUnAim; } }
@@ -67,21 +74,26 @@ public class Player_Gun : MonoBehaviour
 	//! @NOTE: Not Done yet vvv
 	[SerializeField, Utils.ReadOnly] private bool m_canInspectWeapon = true; public bool CanInspectWeapon { get { return m_canInspectWeapon; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isInspectingWeapon = false; public bool IsInspectingWeapon { get { return m_isInspectingWeapon; } }
-
 	[SerializeField, Utils.ReadOnly] private bool m_canAutoBolt = false; public bool CanAutoBolt { get { return m_canAutoBolt; } }
+	#endregion
 
 	[Header("Prefabs")]
+	#region Prefabs
 	public GameObject m_shellPrefab;
 	public GameObject m_fxGunShot;
 	public GameObject m_fxSmokeTrail;
+	#endregion
 
 	[Header("Debug")]
 	private Vector3 m_aimDir = Vector3.zero;
 
+	#region Unity Methods
 	private void Awake()
 	{
-		// create list
+		// create lists
 		m_spareClips = new List<ClipDefinition>();
+		m_spareShells = new List<ShellDefinition>();
+		m_internalClip = m_defaultClip.GetRandomInstance(0); //empty clip
 
 		// add starting clips
 		for (int i = 0; i < m_startingClips; i++)
@@ -136,7 +148,9 @@ public class Player_Gun : MonoBehaviour
 			StartCoroutine(TryCheckChamber());
 		}
 	}
+	#endregion
 
+	#region Aim
 	/// <summary>
 	/// Aims the gun.
 	/// <br/>Since aiming is continuous and can be interrupted, this method is called every frame, and doesnt use coroutines.
@@ -218,12 +232,9 @@ public class Player_Gun : MonoBehaviour
 		// update sensitivity (current fov / default fov)
 		movement.m_mouseSensitivityMulti = newFov / movement.DefaultFOV;
 	}
+	#endregion
 
-	// private void UpdateCheckChamber()
-	// {
-
-	// }
-
+	#region Shoot
 	/// <summary>
 	/// Shoot without doing bolt.
 	/// </summary>
@@ -354,7 +365,9 @@ public class Player_Gun : MonoBehaviour
 			m_canAutoBolt = true;
 		}
 	}
+	#endregion
 
+	#region Bolt
 	/// <summary>
 	/// Bolt the gun.
 	/// </summary>
@@ -385,16 +398,16 @@ public class Player_Gun : MonoBehaviour
 
 		// spawn new mag shell
 		GameObject shell = null;
-		if (m_internalClip?.Top() != null)
+		if (m_internalClip?.TopShell() != null)
 		{
-			shell = ShellDefinition.InstantiateCosmeticShell(m_shellPrefab, m_internalClip.Top(), m_shellPointMag, _parent: true);
+			shell = ShellDefinition.InstantiateCosmeticShell(m_shellPrefab, m_internalClip.TopShell(), m_shellPointMag, _parent: true);
 		}
 
 		// wait for bolt time
 		yield return new WaitForSeconds(m_boltTime);
 
 		// re-chamber using top shell in clip
-		m_shellInChamber = m_internalClip?.Top(_remove: true) ?? null;
+		m_shellInChamber = m_internalClip?.TopShell(_remove: true) ?? null;
 
 		// destroy chambered shell
 		if (shell != null)
@@ -408,7 +421,9 @@ public class Player_Gun : MonoBehaviour
 		m_isBolting = false;
 		m_canCheckChamber = true;
 	}
+	#endregion
 
+	#region Eject
 	/// <summary>
 	/// Ejects a shell from the gun. <br/>
 	/// !Call before changing the current shell in chamber! <br/>
@@ -441,7 +456,9 @@ public class Player_Gun : MonoBehaviour
 			shellRb.angularVelocity = new Vector3(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)) * 10f;
 		}
 	}
+	#endregion
 
+	#region Reload
 	/// <summary>
 	/// Reload a clip of ammo.
 	/// </summary>
@@ -477,36 +494,22 @@ public class Player_Gun : MonoBehaviour
 				m_shellInChamber = null;
 			}
 
-			int remainingShells = m_internalClip?.m_shells.Count ?? 0;
-			int moved = 0;
-			// make a temp clip with the shells we are moving
-			ClipDefinition tempClip = m_defaultClip.GetRandomInstance(0);
-			// if no clip, use first clip 
-			if (remainingShells == 0)
+			// get next clip & make temp clip to move needed into
+			ClipDefinition nextClip = m_spareClips[0];
+			ClipDefinition tempClip = nextClip.GetRandomInstance(0);
+			// calc needed shells
+			int remainingShells = m_internalClip?.GetShellCount() ?? 0;
+			int neededShells = m_internalClip.MaxSize - remainingShells;
+			// transfer shells from next clip to temp clip
+			for (int i = 0; i < neededShells; i++)
 			{
-				m_internalClip = m_spareClips[0];
-				moved = m_internalClip.m_shells.Count;
-				tempClip.m_shells.AddRange(m_internalClip.m_shells);
-				m_spareClips.RemoveAt(0);
-			}
-			else
-			{
-				ClipDefinition nextClip = m_spareClips[0];
-				int neededShells = m_internalClip.MaxSize - remainingShells;
-				// transfer shells from next clip to current clip
-				for (int i = 0; i < neededShells; i++)
+				ShellDefinition shell = nextClip.TopShell(_remove: true); // remove from clip
+				if (shell != null)
 				{
-					ShellDefinition shell = nextClip.Top(_remove: true);
-					if (shell != null)
-					{
-						m_internalClip.Add(shell);
-						tempClip.Add(shell);
-						moved++;
-					}
+					tempClip.AddShell(shell);
 				}
-
-				BalanceClips();
 			}
+			BalanceAmmo(); // ensure all next clips are full
 
 			// spawn in cosmetic shells instead of animating
 			m_displayClip.SetClip(tempClip);
@@ -517,8 +520,23 @@ public class Player_Gun : MonoBehaviour
 			// destroy temp shells
 			m_displayClip.SetClip(null);
 
+			// transfer shells from temp clip to internal clip
+			for (int i = tempClip.GetShellCount() - 1; i >= 0; i--)
+			{
+				ShellDefinition shell = tempClip.TopShell(_remove: true); // remove from clip
+				if (shell != null)
+				{
+					bool didAdd = m_internalClip.AddShell(shell);
+					if (!didAdd)
+					{
+						// didn't add, keep in spare shells
+						m_spareShells.Add(shell);
+					}
+				}
+			}
+
 			// re-chamber using top shell in clip
-			m_shellInChamber = m_internalClip?.Top(_remove: true) ?? null;
+			m_shellInChamber = m_internalClip?.TopShell(_remove: true) ?? null;
 		}
 		// out of ammo or clip is full
 		else
@@ -532,7 +550,13 @@ public class Player_Gun : MonoBehaviour
 		m_isReloading = false;
 		m_canCheckChamber = true;
 	}
+	#endregion
 
+	#region Check Chamber
+	/// <summary>
+	/// Check the chamber for a shell.
+	/// </summary>
+	/// <returns></returns>
 	private IEnumerator TryCheckChamber()
 	{
 		if (!m_canCheckChamber)
@@ -591,11 +615,13 @@ public class Player_Gun : MonoBehaviour
 		m_isCheckingChamber = false;
 		m_canCheckChamber = true;
 	}
+	#endregion
 
+	#region Ammo
 	/// <summary>
-	/// Balances available clips so that all clips are full.
+	/// Balances available clips so that the next usable clip is always the most full.
 	/// </summary>
-	private void BalanceClips()
+	private void BalanceAmmo()
 	{
 		// sort clips by size (biggest first)
 		//m_totalClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
@@ -604,9 +630,18 @@ public class Player_Gun : MonoBehaviour
 		List<ShellDefinition> shells = new List<ShellDefinition>();
 		foreach (ClipDefinition clip in m_spareClips)
 		{
-			shells.AddRange(clip.m_shells);
-			clip.m_shells.Clear();
+			while (clip.GetShellCount() > 0)
+			{
+				shells.Add(clip.TopShell(_remove: true));
+			}
 		}
+
+		// add spare shells
+		foreach (ShellDefinition shell in m_spareShells)
+		{
+			shells.Add(shell);
+		}
+		m_spareShells.Clear();
 
 		// fill all clips with shells
 		foreach (ClipDefinition clip in m_spareClips)
@@ -615,7 +650,7 @@ public class Player_Gun : MonoBehaviour
 			{
 				if (shells.Count > 0)
 				{
-					clip.Add(shells[0]);
+					clip.AddShell(shells[0]);
 					shells.RemoveAt(0);
 				}
 			}
@@ -629,7 +664,7 @@ public class Player_Gun : MonoBehaviour
 			{
 				if (shells.Count > 0)
 				{
-					clip.Add(shells[0]);
+					clip.AddShell(shells[0]);
 					shells.RemoveAt(0);
 				}
 			}
@@ -637,17 +672,42 @@ public class Player_Gun : MonoBehaviour
 		}
 
 		// sort clips by size (biggest first)
-		m_spareClips.Sort((a, b) => b.m_shells.Count.CompareTo(a.m_shells.Count));
+		m_spareClips.Sort((a, b) => b.GetShellCount().CompareTo(a.GetShellCount()));
 
 		// remove any empty clips
 		for (int i = m_spareClips.Count - 1; i >= 0; i--)
 		{
-			if (m_spareClips[i].m_shells.Count == 0)
+			if (m_spareClips[i].GetShellCount() == 0)
 			{
 				m_spareClips.RemoveAt(i);
 			}
 		}
 	}
+
+	/// <summary>
+	/// Add a spare shell and balance ammo.
+	/// </summary>
+	/// <param name="_shell"></param>
+	public void AddSpareShell(ShellDefinition _shell)
+	{
+		m_spareShells.Add(_shell);
+
+		// balance ammo
+		BalanceAmmo();
+	}
+
+	/// <summary>
+	/// Add a spare clip and balance ammo.
+	/// </summary>
+	/// <param name="_clip"></param>
+	public void AddSpareClip(ClipDefinition _clip)
+	{
+		m_spareClips.Add(_clip);
+
+		// balance ammo
+		BalanceAmmo();
+	}
+	#endregion
 
 	#region Custom Editor
 #if UNITY_EDITOR
@@ -665,14 +725,21 @@ public class Player_Gun : MonoBehaviour
 			EditorGUILayout.LabelField("Shell in Chamber", ShellDefinition.GetShellString(script.m_shellInChamber));
 			// current clip
 			EditorGUILayout.LabelField("Current Clip", ClipDefinition.GetClipString(script.m_internalClip));
-			// total clips
-			EditorGUILayout.LabelField("Spares", script.m_spareClips?.Count.ToString());
+			// spare clips
+			EditorGUILayout.LabelField("Spare Clips", script.m_spareClips?.Count.ToString());
 			if (script.m_spareClips != null)
 			{
 				foreach (ClipDefinition clip in script.m_spareClips)
 				{
 					EditorGUILayout.LabelField("Clip", ClipDefinition.GetClipString(clip));
 				}
+			}
+			// spare shells
+			EditorGUILayout.LabelField("Spare Shells", script.m_spareShells?.Count.ToString());
+			if (script.m_spareShells != null)
+			{
+				string shells = string.Join("|", script.m_spareShells.ConvertAll(shell => ShellDefinition.GetShellString(shell)).ToArray());
+				EditorGUILayout.LabelField("Shells", shells);
 			}
 
 			// end Ammo vertical

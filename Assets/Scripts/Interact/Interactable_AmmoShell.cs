@@ -30,10 +30,8 @@ public class Interactable_AmmoShell : Interactable
         if (_interacter.GetComponentInParent<Player>() != null && m_displayShell.ShellData != null)
         {
             // add ammo to player
-            // @TODO: allow spare shells &/or ballance clips on add
-            ClipDefinition newCLip = Player.Instance.m_gun.m_defaultClip.GetRandomInstance(0);
-            newCLip.m_shells.Add(m_displayShell.ShellData);
-            Player.Instance.m_gun.SpareClips.Add(newCLip);
+            Player.Instance.m_gun.AddSpareShell(m_displayShell.ShellData);
+            m_displayShell.SetShell(null);
         }
     }
 }
