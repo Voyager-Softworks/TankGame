@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -206,8 +207,15 @@ public class ShellDefinition : ScriptableObject
 		}
 
 		// update visuals
-		MosinShell mosinShell = shellObject.GetComponent<MosinShell>();
-		mosinShell?.SetShellDefinition(_toCopy);
+		if (shellObject.TryGetComponent(out DisplayShell displayShell))
+		{
+			displayShell.SetShell(_toCopy);
+		}
+		// dont generate new shell if copying
+		if (_toCopy != null && shellObject.TryGetComponent(out Interactable_AmmoShell interactShell))
+		{
+			interactShell.GenerateRandomShell = false;
+		}
 
 		return shellObject;
 	}

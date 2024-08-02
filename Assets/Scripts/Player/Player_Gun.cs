@@ -34,6 +34,8 @@ public class Player_Gun : MonoBehaviour
 	public ClipDefinition InternalClip { get { return m_internalClip; } }
 	[NonSerialized] private List<ClipDefinition> m_spareClips = null;
 	public List<ClipDefinition> SpareClips { get { return m_spareClips; } }
+	// [NonSerialized] private List<ShellDefinition> m_spareShells = null;
+	// public List<ShellDefinition> SpareShells { get { return m_spareShells; } }
 
 	[Header("Timers")]
 	public float m_aimTime = 0.7916667f;
@@ -477,11 +479,14 @@ public class Player_Gun : MonoBehaviour
 
 			int remainingShells = m_internalClip?.m_shells.Count ?? 0;
 			int moved = 0;
+			// make a temp clip with the shells we are moving
+			ClipDefinition tempClip = m_defaultClip.GetRandomInstance(0);
 			// if no clip, use first clip 
 			if (remainingShells == 0)
 			{
 				m_internalClip = m_spareClips[0];
 				moved = m_internalClip.m_shells.Count;
+				tempClip.m_shells.AddRange(m_internalClip.m_shells);
 				m_spareClips.RemoveAt(0);
 			}
 			else
@@ -495,6 +500,7 @@ public class Player_Gun : MonoBehaviour
 					if (shell != null)
 					{
 						m_internalClip.Add(shell);
+						tempClip.Add(shell);
 						moved++;
 					}
 				}
@@ -503,34 +509,13 @@ public class Player_Gun : MonoBehaviour
 			}
 
 			// spawn in cosmetic shells instead of animating
-			m_displayClip.SetClip(m_internalClip, moved);
-			// List<GameObject> tempShells = new List<GameObject>();
-			// for (int i = 0; i < m_clipShells.Count; i++)
-			// {
-			// 	Transform shell = m_clipShells[i];
-			// 	shell.localScale = Vector3.zero;
-
-			// 	if (i >= m_clipShells.Count - moved)
-			// 	{
-			// 		ShellDefinition ShellDefinition = m_currentClip.m_shells[i];
-
-			// 		GameObject tempShell = InstantiateCosmeticShell(ShellDefinition, shell.parent, _parent: true);
-			// 		tempShells.Add(tempShell);
-
-			// 		tempShell.transform.position = shell.position;
-			// 		// subtract 90 degrees to x rotation
-			// 		tempShell.transform.rotation = shell.rotation * Quaternion.Euler(-90f, 0f, 0f);
-			// 		tempShell.transform.localScale = Vector3.one;
-
-			// 		StartCoroutine(CosmeticTrackShells(tempShell, shell, m_reloadTime));
-			// 	}
-			// }
+			m_displayClip.SetClip(tempClip);
 
 			// wait for reload time
 			yield return new WaitForSeconds(m_reloadTime);
 
 			// destroy temp shells
-			m_displayClip.DestroyShells();
+			m_displayClip.SetClip(null);
 
 			// re-chamber using top shell in clip
 			m_shellInChamber = m_internalClip?.Top(_remove: true) ?? null;

@@ -116,6 +116,12 @@ public class Interacter : MonoBehaviour
             // check if interactable is in range
             if (Vector3.Distance(interactable.transform.position, m_camera.transform.position) <= MaxRange(interactable))
             {
+                // skip if not interactable
+                if (interactable.IsInteractable == false)
+                {
+                    continue;
+                }
+                
                 m_nearbyInteractables.Add(interactable);
             }
         }

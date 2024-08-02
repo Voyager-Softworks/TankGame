@@ -2,22 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Interactable object that represents an ammo clip.
+/// </summary>
 public class Interactable_AmmoClip : Interactable
 {
     [Header("Settings")]
     [SerializeField] protected bool m_generateRandomClip = true;
+    public bool GenerateRandomClip { get { return m_generateRandomClip; } set { m_generateRandomClip = value; } }
 
     [Header("References")]
-    [SerializeField] protected ClipDefinition m_clipType = null;
     [SerializeField] protected DisplayClip m_displayClip = null;
 
-    protected override void Awake()
+    protected void Start()
     {
-        base.Awake();
-
         if (m_generateRandomClip)
         {
-            m_displayClip.SetClip(m_clipType.GetRandomInstance());
+            m_displayClip.SetClip(m_displayClip.DefaultClipDefinition.GetRandomInstance());
         }
     }
 
@@ -26,7 +27,7 @@ public class Interactable_AmmoClip : Interactable
         base.OnInteract(_interacter);
 
         // if interacter is player
-        if (_interacter.GetComponentInParent<Player>() != null)
+        if (_interacter.GetComponentInParent<Player>() != null && m_displayClip.ClipData != null)
         {
             // add ammo to player
             Player.Instance.m_gun.SpareClips.Add(m_displayClip.ClipData);

@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Simple script to hold references to the case and bullet transforms of a Mosin Nagant shell.
 /// </summary>
-public class MosinShell : MonoBehaviour
+public class DisplayShell : MonoBehaviour
 {
     public Transform m_case;
     public Transform m_bullet;
@@ -15,16 +15,17 @@ public class MosinShell : MonoBehaviour
     public float m_landSoundDelay = 0.1f;
 
     [Header("References")]
-    [SerializeField] protected ShellDefinition m_defaultShellDefinition = null;
+    [SerializeField, Tooltip("The type of shell this will represent")] protected ShellDefinition m_defaultShellDefinition = null;
+    public ShellDefinition DefaultShellDefinition { get { return m_defaultShellDefinition; } }
 
     [Header("Data")]
-    [Utils.ReadOnly, SerializeField] protected ShellDefinition m_shellData;
+    [Utils.ReadOnly, SerializeField, Tooltip("The current shell this is representing")] protected ShellDefinition m_shellData;
     public ShellDefinition ShellData { get { return m_shellData; } }
 
-    public void SetShellDefinition(ShellDefinition _ShellDefinition)
+    public void SetShell(ShellDefinition _ShellDefinition)
     {
         // copy data
-        m_shellData = _ShellDefinition.GetCopy();
+        m_shellData = _ShellDefinition;
 
         UpdateVisuals();
     }
@@ -43,6 +44,8 @@ public class MosinShell : MonoBehaviour
         if (m_shellData.IsSpent)
         {
             m_bullet.localScale = Vector3.zero;
+            // not interactable
+            GetComponent<Interactable_AmmoShell>().IsInteractable = false;
         }
         else
         {
@@ -62,6 +65,18 @@ public class MosinShell : MonoBehaviour
         }
     }
 
+    private void TouchGround()
+    {
+        // mark as dirty if not spent
+        if (!m_shellData.IsSpent)
+        {
+            m_shellData.SetDirty(true);
+        }
+
+        // update visuals
+        UpdateVisuals();
+    }
+
     /// <summary>
     /// Spawns a landing sound if enough time has passed since the last one.
     /// </summary>
@@ -77,11 +92,25 @@ public class MosinShell : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other) {
-        // play land sound
-        if (other.relativeVelocity.magnitude > m_minLandVelocity)
+    private void OnCollisionEnter(Collision other)
+    {
+        // only if not kinematic
+        if (GetComponent<Rigidbody>().isKinematic)
         {
-            TryPlayLandSound();
+            return;
+        }
+
+        // touch ground (not child of this, and not player
+        if (!other.transform.IsChildOf(transform) && !other.transform.IsChildOf(Player.Instance.transform))
+        {
+            // @TODO: if surface is dirty?
+            TouchGround();
+
+            // play land sound if fast enough
+            if (other.relativeVelocity.magnitude > m_minLandVelocity)
+            {
+                TryPlayLandSound();
+            }
         }
     }
 }

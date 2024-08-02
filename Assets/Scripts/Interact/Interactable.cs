@@ -13,7 +13,8 @@ public class Interactable : MonoBehaviour
     public static List<Interactable> AllInteractables { get { return s_allInteractables; } }
 
     [Header("Settings")]
-    public bool m_isInteractable = true;
+    private bool m_isInteractable = true;
+    public bool IsInteractable { get { return m_isInteractable; } set { m_isInteractable = value; } }
     [SerializeField] protected float m_interactRange = 5f; // takes the biggest, this or interacter's range
     public float InteractRange { get { return m_interactRange; } }
     [SerializeField] protected bool m_destroyOnInteract = false;
