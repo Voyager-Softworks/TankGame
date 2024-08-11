@@ -7,11 +7,22 @@ public class Enemy_Movement : MonoBehaviour
 {
     public NavMeshAgent m_navMeshAgent;
     [Utils.ReadOnly] public Transform m_target;
+    [Utils.ReadOnly] public bool m_isRunning = false;
+    [Utils.ReadOnly] public Enemy m_Enemy;
+
+    public float m_detectRange = 10.0f;
+
+    private void Awake()
+    {
+        m_Enemy = GetComponentInParent<Enemy>();
+    }
 
     private void Start()
     {
         m_navMeshAgent = GetComponent<NavMeshAgent>();
         m_target = Player.Instance.m_model.transform;
+        AutoSound idle = AudioManager.SpawnSound<AutoSound_FusedIdle>(transform.position);
+        idle.transform.SetParent(transform);
     }
 
     private void Update()
@@ -20,10 +31,30 @@ public class Enemy_Movement : MonoBehaviour
         if (GetComponent<Health>().IsDead)
         {
             m_navMeshAgent.enabled = false;
+            m_Enemy.Animator.SetTrigger("Die");
             return;
         }
 
-        m_navMeshAgent.SetDestination(m_target.position);
+        if (Vector3.Distance(transform.position, m_target.position) <= m_detectRange)
+        {
+            if (m_isRunning == false)
+            {
+                AutoSound scream = AudioManager.SpawnSound<AutoSound_FusedScream>(transform.position);
+                scream.transform.SetParent(transform);
+            }
+
+            m_isRunning = true;
+            m_navMeshAgent.isStopped = false;
+            m_navMeshAgent.SetDestination(m_target.position);
+        }
+        else
+        {
+            m_navMeshAgent.isStopped = true;
+            m_isRunning = false;
+        }
+
+        m_Enemy.Animator.SetBool("IsRunning", m_isRunning);
+
     }
 
     private void OnDrawGizmos()
@@ -42,5 +73,8 @@ public class Enemy_Movement : MonoBehaviour
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(transform.position, m_target.position);
         }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, m_detectRange);
     }
 }

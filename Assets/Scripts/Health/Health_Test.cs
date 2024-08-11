@@ -31,7 +31,7 @@ public class Health_Test : Health
         // change material color from Red to Black based on health
         float healthPercent = m_currentHealth / m_maxHealth;
         Color color = Color.Lerp(Color.black, Color.red, healthPercent);
-        GetComponent<Renderer>().material.color = color;
+        GetComponentInChildren<Renderer>().material.color = color;
     }
 
     public override void Die()
@@ -57,8 +57,11 @@ public class Health_Test : Health
         }
 
         // unlock rigidbody
-        m_rb.isKinematic = false;
-        m_rb.freezeRotation = false;
+        if(m_rb != null)
+        {
+            m_rb.isKinematic = false;
+            m_rb.freezeRotation = false;
+        }
 
         // destroy self 5 seconds later
         Destroy(gameObject, 5f);
