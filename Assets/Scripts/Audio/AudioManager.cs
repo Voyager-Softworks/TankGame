@@ -189,6 +189,13 @@ public class AudioManager : MonoBehaviour
     /// <returns></returns>
     public static AutoSound SpawnSound(string _autoSoundPrefabName, Vector3 _position)
     {
+        // null check
+        if (Instance == null)
+        {
+            Debug.LogError("AudioManager.SpawnSound | Instance is null");
+            return null;
+        }
+
         string prefabResourcePath = AutoSound.AutoSound_Prefab.RESOURCES_FOLDER + _autoSoundPrefabName;
 
         GameObject prefab = null;

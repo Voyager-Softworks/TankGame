@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Enemy_Movement : MonoBehaviour
 {
@@ -55,6 +56,11 @@ public class Enemy_Movement : MonoBehaviour
 
         m_Enemy.Animator.SetBool("IsRunning", m_isRunning);
 
+        // if touches player, restart scene
+        if (Vector3.Distance(transform.position, m_target.position) <= 1f)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private void OnDrawGizmos()

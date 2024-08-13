@@ -211,12 +211,14 @@ MonoBehaviour:
   m_onFlickerInterval: 0.1
   m_onFlickerChance: 0.5
   m_offDelay: 0
+  m_onFlickerIntensityMulti: 0.25
   m_flickerMinDelay: 0.1
-  m_flickerMaxDelay: 1
+  m_flickerMaxDelay: 2
   m_flickerDelayChance: 0.2
-  m_flickerMinTime: 0.05
-  m_flickerMaxTime: 0.1
-  m_flickerMinInterval: 0.01
-  m_flickerMaxInterval: 0.05
+  m_flickerMinTime: 0.1
+  m_flickerMaxTime: 0.5
+  m_flickerMinInterval: 0.05
+  m_flickerMaxInterval: 0.1
+  m_flickerIntensityMulti: 0.25
   m_Light: {fileID: 4642167760490639195}
   m_lightRenderer: {fileID: 4004681440336067046}

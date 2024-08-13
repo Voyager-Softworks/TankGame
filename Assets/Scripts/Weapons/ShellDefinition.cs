@@ -50,11 +50,7 @@ public class ShellDefinition : ScriptableObject
 	{
 	}
 
-	/// <summary>
-	/// Copy constructor.
-	/// </summary>
-	/// <param name="_toCopy"></param>
-	protected ShellDefinition(ShellDefinition _toCopy)
+	protected void Copy(ShellDefinition _toCopy)
 	{
 		m_name = _toCopy.m_name;
 		m_dirtyChance = _toCopy.m_dirtyChance;
@@ -78,7 +74,9 @@ public class ShellDefinition : ScriptableObject
 	/// <returns></returns>
 	public ShellDefinition GetCopy()
 	{
-		return new ShellDefinition(this);
+		ShellDefinition copy = ScriptableObject.CreateInstance<ShellDefinition>();
+		copy.Copy(this);
+		return copy;
 	}
 
 	/// <summary>
@@ -87,11 +85,9 @@ public class ShellDefinition : ScriptableObject
 	/// <returns></returns>
 	public ShellDefinition GetRandomInstance()
 	{
-        ShellDefinition copy = new ShellDefinition(this)
-        {
-            // randomize dirty
-            m_isDirty = UnityEngine.Random.value < m_dirtyChance
-        };
+        ShellDefinition copy = this.GetCopy();
+        // randomize dirty
+        copy.m_isDirty = UnityEngine.Random.value < m_dirtyChance;
 
         return copy;
 	}

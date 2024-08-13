@@ -14,7 +14,7 @@ public class ClipDefinition : ScriptableObject
     public int MaxSize { get { return m_maxSize; } }
     public ShellDefinition m_ammoType;
     /// <summary> i=0 is the bottom of the clip, i=last is the top of the clip. </summary>
-    private List<ShellDefinition> m_shells = null;
+    private List<ShellDefinition> m_shells = new List<ShellDefinition>();
 
     [Header("References")]
     [SerializeField] protected GameObject m_clipPrefab;
@@ -26,11 +26,7 @@ public class ClipDefinition : ScriptableObject
     {
     }
 
-    /// <summary>
-    /// Copy constructor.
-    /// </summary>
-    /// <param name="_toCopy"></param>
-    protected ClipDefinition(ClipDefinition _toCopy)
+    protected void Copy(ClipDefinition _toCopy)
     {
         m_name = _toCopy.m_name;
         m_maxSize = _toCopy.m_maxSize;
@@ -45,7 +41,9 @@ public class ClipDefinition : ScriptableObject
     /// <returns></returns>
     public ClipDefinition GetCopy()
     {
-        return new ClipDefinition(this);
+        ClipDefinition copy = ScriptableObject.CreateInstance<ClipDefinition>();
+        copy.Copy(this);
+        return copy;
     }
 
     /// <summary>
@@ -55,7 +53,7 @@ public class ClipDefinition : ScriptableObject
     /// <returns></returns>
     public ClipDefinition GetRandomInstance(int _shells = -1)
     {
-        ClipDefinition copy = new ClipDefinition(this);
+        ClipDefinition copy = this.GetCopy();
 
         // if -1, use max size
         if (_shells == -1)

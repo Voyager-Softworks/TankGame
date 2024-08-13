@@ -35,6 +35,8 @@ public class Electrical : MonoBehaviour
     public bool IsReceivingPower { get { return m_receivedFrom.Any(e => e.HasPower); } }
     /// <summary> Does this electrical have power right now? </summary>
     public bool HasPower { get { return m_isSource || IsReceivingPower; } }
+
+    protected bool m_isBeingDestroyed = false;
     #endregion
 
     #region Unity Functions
@@ -62,7 +64,10 @@ public class Electrical : MonoBehaviour
         {
             s_allElectricals.Add(this);
         }
+    }
 
+    protected virtual void Start()
+    {
         // bind all electricals
         foreach (Electrical source in m_receivedFrom)
         {
@@ -76,6 +81,8 @@ public class Electrical : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
+        m_isBeingDestroyed = true;
+
         // Remove this from the list of all electricals.
         if (s_allElectricals.Contains(this))
         {
@@ -166,7 +173,11 @@ public class Electrical : MonoBehaviour
 
         m_isOn = false;
 
-        OnPowerOff();
+        // if not being destroyed, do power off logic
+        if (!m_isBeingDestroyed && gameObject.activeInHierarchy)
+        {
+            OnPowerOff();
+        }
 
         return true;
     }

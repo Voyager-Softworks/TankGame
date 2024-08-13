@@ -13,6 +13,7 @@ public class Electrical_Light : Electrical
     [SerializeField] private float m_onFlickerInterval = 0.1f; // how fast it flickers
     [SerializeField] private float m_onFlickerChance = 0.5f; // chance of flickering
     [SerializeField] private float m_offDelay = 0f; // how long till it starts turning off
+    [SerializeField] private float m_onFlickerIntensityMulti = 0.25f; // how bright it flickers
 
     [Header("Idle Flicker")]
     [SerializeField] private float m_flickerMinDelay = 0.1f; // min delay between flickers
@@ -22,6 +23,7 @@ public class Electrical_Light : Electrical
     [SerializeField] private float m_flickerMaxTime = 0.5f; // max flicker time
     [SerializeField] private float m_flickerMinInterval = 0.1f; // min flicker interval
     [SerializeField] private float m_flickerMaxInterval = 0.5f; // max flicker interval
+    [SerializeField] private float m_flickerIntensityMulti = 0.25f; // how bright it flickers
 
     [Header("References")]
     public Light m_Light = null;
@@ -33,6 +35,7 @@ public class Electrical_Light : Electrical
     // track coroutines
     private Coroutine m_onCoroutine = null;
     private Coroutine m_offCoroutine = null;
+    private Coroutine m_idleFlickerCoroutine = null;
 
     protected override void Awake()
     {
@@ -40,9 +43,11 @@ public class Electrical_Light : Electrical
 
         m_initialIntensity = m_Light.intensity;
         m_initialEmissionColor = m_lightRenderer.material.GetColor("_EmissionColor");
+    }
 
-        // start the idle flicker coroutine
-        StartCoroutine(IdleFlicker());
+    protected override void Start()
+    {
+        base.Start();
     }
 
     protected override void OnPowerOn()
@@ -51,11 +56,16 @@ public class Electrical_Light : Electrical
 
         AudioManager.SpawnSound<AutoSound_GunEmpty>(transform.position); // temporary sound
 
-        // stop the off coroutine
+        // stop coroutines
         if (m_offCoroutine != null)
         {
             StopCoroutine(m_offCoroutine);
             m_offCoroutine = null;
+        }
+        if (m_idleFlickerCoroutine != null)
+        {
+            StopCoroutine(m_idleFlickerCoroutine);
+            m_idleFlickerCoroutine = null;
         }
 
         // start the on coroutine
@@ -63,16 +73,21 @@ public class Electrical_Light : Electrical
     }
 
     protected override void OnPowerOff()
-    {
+    {   
         base.OnPowerOff();
 
         AudioManager.SpawnSound<AutoSound_GunEmpty>(transform.position); // temporary sound
 
-        // stop the on coroutine
+        // stop coroutines
         if (m_onCoroutine != null)
         {
             StopCoroutine(m_onCoroutine);
             m_onCoroutine = null;
+        }
+        if (m_idleFlickerCoroutine != null)
+        {
+            StopCoroutine(m_idleFlickerCoroutine);
+            m_idleFlickerCoroutine = null;
         }
 
         // start the off coroutine
@@ -87,8 +102,8 @@ public class Electrical_Light : Electrical
     {
         yield return new WaitForSeconds(m_onDelay);
         // on
-        m_Light.enabled = true;
-        m_lightRenderer.material.SetColor("_EmissionColor", m_initialEmissionColor);
+        SetLightIntensity(1f);
+        bool isOn = true;
 
         // flicker
         float flickerTime = m_onFlickerTime;
@@ -96,8 +111,8 @@ public class Electrical_Light : Electrical
         {
             if (Random.value < m_onFlickerChance)
             {
-                m_Light.enabled = !m_Light.enabled;
-                m_lightRenderer.material.SetColor("_EmissionColor", m_Light.enabled ? m_initialEmissionColor : Color.black);
+                isOn = !isOn;
+                StartCoroutine(SetLightIntensityOverTime(isOn ? 1f : m_onFlickerIntensityMulti, m_onFlickerInterval));
             }
 
             flickerTime -= m_onFlickerInterval;
@@ -105,10 +120,12 @@ public class Electrical_Light : Electrical
         }
 
         // on
-        m_Light.enabled = true;
-        m_lightRenderer.material.SetColor("_EmissionColor", m_initialEmissionColor);
+        SetLightIntensity(1f);
 
         m_onCoroutine = null;
+
+        // start idle flicker
+        m_idleFlickerCoroutine = StartCoroutine(IdleFlicker());
     }
 
     /// <summary>
@@ -119,8 +136,7 @@ public class Electrical_Light : Electrical
     {
         yield return new WaitForSeconds(m_offDelay);
         // off
-        m_Light.enabled = false;
-        m_lightRenderer.material.SetColor("_EmissionColor", Color.black);
+        SetLightIntensity(0f);
 
         m_offCoroutine = null;
     }
@@ -149,17 +165,41 @@ public class Electrical_Light : Electrical
                 float flickerTime = Random.Range(m_flickerMinTime, m_flickerMaxTime);
                 while (flickerTime > 0)
                 {
-                    m_Light.enabled = !m_Light.enabled;
-                    m_lightRenderer.material.SetColor("_EmissionColor", m_Light.enabled ? m_initialEmissionColor : Color.black);
+                    float interval = Random.Range(m_flickerMinInterval, m_flickerMaxInterval);
+                    
+                    StartCoroutine(SetLightIntensityOverTime(m_flickerIntensityMulti, interval));
 
-                    yield return new WaitForSeconds(Random.Range(m_flickerMinInterval, m_flickerMaxInterval));
+                    yield return new WaitForSeconds(interval);
 
                     flickerTime -= Random.Range(m_flickerMinInterval, m_flickerMaxInterval);
                 }
 
-                m_Light.enabled = true;
-                m_lightRenderer.material.SetColor("_EmissionColor", m_initialEmissionColor);
+                SetLightIntensity(1f);
             }
+        }
+    }
+
+    private void SetLightIntensity(float _multi)
+    {
+        m_Light.intensity = m_initialIntensity * _multi;
+        m_lightRenderer.material.SetColor("_EmissionColor", m_initialEmissionColor * _multi);
+    }
+
+    // set light over time
+    private IEnumerator SetLightIntensityOverTime(float _intensity, float _time)
+    {
+        float time = 0;
+        float startIntensityMulti = m_Light.intensity / m_initialIntensity;
+        float endIntensityMulti = _intensity / m_initialIntensity;
+
+        while (time < _time)
+        {
+            time += Time.deltaTime;
+            float t = time / _time;
+
+            SetLightIntensity(Mathf.Lerp(startIntensityMulti, endIntensityMulti, t));
+
+            yield return null;
         }
     }
 }
