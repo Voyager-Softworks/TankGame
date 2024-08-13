@@ -10,19 +10,15 @@ public class Interactable_Lever : Interactable
 {
     public Animator m_Animator;
     [SerializeField] private bool m_IsDown = false;
-    public Interactable m_linkedInteractable = null;
+    [SerializeField] private bool m_lockDown = false;
+    [SerializeField] private bool m_lockUp = false;
+    [SerializeField] private Electrical m_linkedElectrical;
 
     public override void OnInteract(Interacter _interacter)
     {
         base.OnInteract(_interacter);
 
         SetLeverState(!m_IsDown);
-
-        // Activate linked interactable
-        if (m_linkedInteractable != null)
-        {
-            m_linkedInteractable.OnInteract(_interacter);
-        }
     }
 
     /// <summary>
@@ -31,8 +27,25 @@ public class Interactable_Lever : Interactable
     /// <param name="_isDown"></param>
     public void SetLeverState(bool _isDown)
     {
+        // Locks
+        if (m_lockDown && _isDown)
+        {
+            return;
+        }
+        if (m_lockUp && !_isDown)
+        {
+            return;
+        }
+
+        // Set the state
         m_IsDown = _isDown;
         m_Animator.SetBool("IsDown", _isDown);
+
+        // Update the linked electrical
+        if (m_linkedElectrical != null)
+        {
+            m_linkedElectrical.SetPowerSource(_isDown);
+        }
 
         // Play sound
         if (m_IsDown)

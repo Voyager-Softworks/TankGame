@@ -111,7 +111,7 @@ MonoBehaviour:
   m_deathFX: {fileID: 0}
   m_rb: {fileID: 0}
   m_force: 1
-  m_dropOnDeath: {fileID: 0}
+  m_dropOnDeath: {fileID: 5310533193775107259, guid: f0cdd4b10dd11cf4690a56e43a71486a, type: 3}
   m_dropChance: 0.25
 --- !u!1001 &6427316803360559733
 PrefabInstance:

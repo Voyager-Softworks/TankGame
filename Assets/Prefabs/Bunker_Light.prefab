@@ -44,7 +44,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -159,11 +159,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7301625743458107367}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8348382353902657437}
+      addedObject: {fileID: 3933151035176599640}
   m_SourcePrefab: {fileID: 100100000, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
+--- !u!23 &661328186117012664 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8029106800918022278, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
+  m_PrefabInstance: {fileID: 7368060940753925182}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7046485378553615317 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
@@ -174,7 +176,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
   m_PrefabInstance: {fileID: 7368060940753925182}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7301625743458107367
+--- !u!114 &3933151035176599640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -186,29 +188,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe725c7e3cc8c84da7df4cc48d8425f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_isInteractable: 0
-  m_interactRange: 5
-  m_destroyOnInteract: 0
-  m_Animator: {fileID: 8348382353902657437}
-  m_IsOn: 0
---- !u!95 &8348382353902657437
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7674685387907549551}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0bec35717895b394aa47ca3a9e73bffc, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_isSource: 0
+  m_canReceive: 1
+  m_canTransfer: 1
+  m_receivedFrom: []
+  m_transfersTo: []
+  m_isOn: 1
+  m_onDelay: 0.1
+  m_onFlickerTime: 0.5
+  m_onFlickerInterval: 0.1
+  m_onFlickerChance: 0.5
+  m_offDelay: 0
+  m_flickerMinDelay: 0.1
+  m_flickerMaxDelay: 1
+  m_flickerDelayChance: 0.2
+  m_flickerMinTime: 0.05
+  m_flickerMaxTime: 0.1
+  m_flickerMinInterval: 0.01
+  m_flickerMaxInterval: 0.05
+  m_Light: {fileID: 1075691537735654542}
+  m_lightRenderer: {fileID: 661328186117012664}

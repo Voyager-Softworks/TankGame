@@ -52,7 +52,7 @@ public class Health_Test : Health
                 Instantiate(m_dropOnDeath, transform.position + transform.up * 2f, Quaternion.identity);
 
                 // play sound
-                AudioManager.SpawnSound<AutoSound_CannonFire>(Player.Instance.transform.position);
+                AudioManager.SpawnSound<AutoSound_CannonFire>(transform.position);
             }
         }
 

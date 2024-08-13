@@ -168,10 +168,55 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -2473911154401799538, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6467593637310379244}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5805554691867455798}
   m_SourcePrefab: {fileID: 100100000, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
 --- !u!4 &1729136823558686802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2473911154401799538, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
   m_PrefabInstance: {fileID: 5356405232903543516}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &4004681440336067046 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -160235525644033222, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
+  m_PrefabInstance: {fileID: 5356405232903543516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5085883392857171853 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
+  m_PrefabInstance: {fileID: 5356405232903543516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5805554691867455798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5085883392857171853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe725c7e3cc8c84da7df4cc48d8425f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_isSource: 0
+  m_canReceive: 1
+  m_canTransfer: 1
+  m_receivedFrom: []
+  m_transfersTo: []
+  m_isOn: 1
+  m_onDelay: 0.1
+  m_onFlickerTime: 0.5
+  m_onFlickerInterval: 0.1
+  m_onFlickerChance: 0.5
+  m_offDelay: 0
+  m_flickerMinDelay: 0.1
+  m_flickerMaxDelay: 1
+  m_flickerDelayChance: 0.2
+  m_flickerMinTime: 0.05
+  m_flickerMaxTime: 0.1
+  m_flickerMinInterval: 0.01
+  m_flickerMaxInterval: 0.05
+  m_Light: {fileID: 4642167760490639195}
+  m_lightRenderer: {fileID: 4004681440336067046}

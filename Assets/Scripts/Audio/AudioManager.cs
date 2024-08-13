@@ -12,7 +12,18 @@ public class AudioManager : MonoBehaviour
     const string EXPOSED_VOLUME_NAME = "Vol";
 
     // singleton
-    public static AudioManager Instance { get; private set; } = null;
+    private static AudioManager s_instance;
+    public static AudioManager Instance
+    {
+        get
+        {
+            if (s_instance == null)
+            {
+                s_instance = FindObjectOfType<AudioManager>();
+            }
+            return s_instance;
+        }
+    }
 
     [Header("Audio Mixer")]
     [SerializeField] private AudioMixer m_audioMixer = null;
@@ -40,14 +51,14 @@ public class AudioManager : MonoBehaviour
     private void Awake()
     {
         // if instance already exists, destroy this one
-        if (Instance != null)
+        if (s_instance != null && s_instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
         // set instance
-        Instance = this;
+        s_instance = this;
 
         // don't destroy on load
         DontDestroyOnLoad(gameObject);
