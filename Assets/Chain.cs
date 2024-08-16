@@ -18,12 +18,34 @@ public class Chain : MonoBehaviour
     /// <summary> The end of the chain. Provided by the scene</summary>
     public GameObject m_end;
 
+    public bool m_autoMass = true;
+    public float m_mass = 0.1f;
+    public float m_healthMassScale = 10.0f;
+
+    public bool m_canBreak = true;
+    public float m_breakForce = 20.0f;
+    
+    void Awake()
+    {
+        // listen for link deaths
+        for (int i = 0; i < m_linkObjects.Count; i++)
+        {
+            Health health = m_linkObjects[i].GetComponent<Health>();
+            if (health != null)
+            {
+                // avoid duplicate listeners
+                health.OnDeath -= OnLinkDeath;
+                health.OnDeath += OnLinkDeath;
+            }
+        }
+    }
+
     /// <summary>
-    /// Adds 
+    /// Creates the chain by adding rigidbodies and hinge joints to the links.
     /// </summary>
     public void CreateChain()
     {
-        // add rigidbodies to the links
+        // add rigidbodies and health to the links
         for (int i = 0; i < m_linkObjects.Count; i++)
         {
             GameObject link = m_linkObjects[i];
@@ -33,16 +55,33 @@ public class Chain : MonoBehaviour
                 rb = link.AddComponent<Rigidbody>();
             }
             // calculate mass from size
-            Mesh mesh = link.GetComponent<MeshFilter>().sharedMesh;
-            rb.mass = mesh.bounds.size.magnitude;
-            rb.drag = 0.05f;
-            rb.angularDrag = 0.05f;
+            if (m_autoMass)
+            {
+                Mesh mesh = link.GetComponent<MeshFilter>().sharedMesh;
+                rb.mass = mesh.bounds.size.magnitude;
+            }
+            else
+            {
+                rb.mass = m_mass;
+            }
+            rb.drag = 1.0f;
+            rb.angularDrag = 10.0f;
 
             // if the link is an anchor, make it kinematic
-            if (m_anchors.Contains(link))
+            bool isAnchor = m_anchors.Contains(link);
+            if (isAnchor)
             {
                 rb.isKinematic = true;
             }
+
+            Health health = link.GetComponent<Health>();
+            if (health == null)
+            {
+                health = link.AddComponent<Health_Prop>();
+            }
+            // set health to 10x mass
+            health.m_maxHealth = rb.mass * m_healthMassScale;
+            health.enabled = m_canBreak && !isAnchor;
         }
 
         // ensure the end has a rigidbody
@@ -74,6 +113,58 @@ public class Chain : MonoBehaviour
             // set anchor to mid point
             joint.anchor = link.transform.InverseTransformPoint(midPoint);
             joint.connectedAnchor = nextLink.transform.InverseTransformPoint(midPoint);
+
+            joint.breakForce = m_breakForce;
+            joint.breakTorque = m_breakForce;
+            joint.enablePreprocessing = false;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the chain is broken by checking for destroyed links and missing connections.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsBroken()
+    {
+        // check for destroyed links
+        for (int i = 0; i < m_linkObjects.Count; i++)
+        {
+            if (m_linkObjects[i] == null)
+            {
+                return true;
+            }
+        }
+
+        // check for missing joints/connections
+        for (int i = 0; i < m_linkObjects.Count; i++)
+        {
+            HingeJoint joint = m_linkObjects[i].GetComponent<HingeJoint>();
+            if (joint == null || joint.connectedBody == null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Called when a link in the chain dies.
+    /// </summary>
+    private void OnLinkDeath()
+    {
+        // remove the hinge joint from dead links
+        for (int i = 0; i < m_linkObjects.Count; i++)
+        {
+            Health health = m_linkObjects[i].GetComponent<Health>();
+            if (health != null && health.IsDead)
+            {
+                HingeJoint joint = m_linkObjects[i].GetComponent<HingeJoint>();
+                if (joint != null)
+                {
+                    Destroy(joint);
+                }
+            }
         }
     }
 

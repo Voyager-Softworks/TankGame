@@ -17,9 +17,19 @@ public class Electrical : MonoBehaviour
     [SerializeField] protected bool m_isSource = false;
     public bool IsSource { get { return m_isSource; } }
     [SerializeField] protected bool m_canReceive = true;
-    public bool CanReceive { get { return m_canReceive; } }
+    public bool CanReceive { get { return m_canReceive && (!IsBroken || CanReceiveIfBroken); } }
     [SerializeField] protected bool m_canTransfer = true;
-    public bool CanTransfer { get { return m_canTransfer; } }
+    public bool CanTransfer { get { return m_canTransfer && (!IsBroken || CanTransferIfBroken); } }
+
+    [Header("Break/Fix Properties")]
+    [SerializeField] protected bool m_canBreak = true;
+    public bool CanBreak { get { return m_canBreak; } }
+    [SerializeField] protected bool m_canFix = true;
+    public bool CanFix { get { return m_canFix; } }
+    [SerializeField] protected bool m_canReceiveIfBroken = true;
+    public bool CanReceiveIfBroken { get { return m_canReceiveIfBroken; } }
+    [SerializeField] protected bool m_canTransferIfBroken = false;
+    public bool CanTransferIfBroken { get { return m_canTransferIfBroken; } }
 
     [Header("Electrical Links")]
     [SerializeField] protected List<Electrical> m_receivedFrom = new List<Electrical>();
@@ -27,16 +37,21 @@ public class Electrical : MonoBehaviour
     [SerializeField] protected List<Electrical> m_transfersTo = new List<Electrical>();
     public List<Electrical> TransfersTo { get { return m_transfersTo; } }
 
-    [Header("Power State")]
+    [Header("State")]
     [Tooltip("Is this electrical in an On state?\nSet this to true for things that start in a powered state! e.g. Lights")]
     [SerializeField] protected bool m_isOn = false;
+    /// <summary> Is this electrical on? Just tracking the state, not controlling it </summary>
     public bool IsOn { get { return m_isOn; } }
+    [SerializeField] protected bool m_isBroken = false;
+    /// <summary> Is this electrical broken? Just tracking the state, not controlling it </summary>
+    public bool IsBroken { get { return m_isBroken; } }
+
     /// <summary> Is this electrical receiving power from any source? </summary>
-    public bool IsReceivingPower { get { return m_receivedFrom.Any(e => e.HasPower); } }
-    /// <summary> Does this electrical have power right now? </summary>
+    public bool IsReceivingPower { get { return CanReceive && m_receivedFrom.Any(e => e.CanTransfer && e.HasPower); } }
+    /// <summary> Does this electrical have power right now? Broken things can still have power!</summary>
     public bool HasPower { get { return m_isSource || IsReceivingPower; } }
 
-    protected bool m_isBeingDestroyed = false;
+    protected bool m_isGOBeingDestroyed = false;
     #endregion
 
     #region Unity Functions
@@ -81,7 +96,7 @@ public class Electrical : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        m_isBeingDestroyed = true;
+        m_isGOBeingDestroyed = true;
 
         // Remove this from the list of all electricals.
         if (s_allElectricals.Contains(this))
@@ -107,8 +122,8 @@ public class Electrical : MonoBehaviour
     /// </summary>
     public void UpdatePowerState()
     {
-        // if source or receiving power, turn on
-        if (m_isSource || IsReceivingPower)
+        // if not broken, and is source or receiving power, turn on
+        if (!IsBroken && (m_isSource || IsReceivingPower))
         {
             PowerOn();
         }
@@ -174,7 +189,7 @@ public class Electrical : MonoBehaviour
         m_isOn = false;
 
         // if not being destroyed, do power off logic
-        if (!m_isBeingDestroyed && gameObject.activeInHierarchy)
+        if (!m_isGOBeingDestroyed && gameObject.activeInHierarchy)
         {
             OnPowerOff();
         }
@@ -196,6 +211,62 @@ public class Electrical : MonoBehaviour
     protected virtual void OnPowerOff()
     {
         Debug.Log("Electrical.OnPowerOff | " + gameObject.name);
+    }
+    #endregion
+
+    #region Break Control
+    /// <summary>
+    /// Breaks/fixes this electrical if not already, and does break logic.
+    /// </summary>
+    /// <param name="_isBroken"></param>
+    /// <returns></returns>
+    public bool SetBroken(bool _isBroken)
+    {
+        if (m_isBroken == _isBroken)
+        {
+            return false;
+        }
+        if (_isBroken && !m_canBreak)
+        {
+            return false;
+        }
+        if (!_isBroken && !m_canFix)
+        {
+            return false;
+        }
+
+        m_isBroken = _isBroken;
+
+        if (m_isBroken)
+        {
+            OnBreak();
+        }
+        else
+        {
+            OnFix();
+        }
+
+        UpdatePowerState();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Does the individual break logic.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual void OnBreak()
+    {
+        Debug.Log("Electrical.OnBreak | " + gameObject.name);
+    }
+
+    /// <summary>
+    /// Does the individual fix logic.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual void OnFix()
+    {
+        Debug.Log("Electrical.OnFix | " + gameObject.name);
     }
     #endregion
 

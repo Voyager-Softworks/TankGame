@@ -65,7 +65,7 @@ public abstract class Health : MonoBehaviour
     [Header("Events")]
     public System.Action OnDamage;
     public System.Action OnHeal;
-    public System.Action OnDie;
+    public System.Action OnDeath;
 
     protected List<DamageInfo> m_damageHistory = new List<DamageInfo>();
 
@@ -164,7 +164,7 @@ public abstract class Health : MonoBehaviour
             Destroy(gameObject);
         }
 
-        OnDie?.Invoke();
+        OnDeath?.Invoke();
     }
 
     /// <summary>
