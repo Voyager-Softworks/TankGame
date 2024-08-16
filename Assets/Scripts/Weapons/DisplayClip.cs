@@ -84,20 +84,20 @@ public class DisplayClip : MonoBehaviour
 	/// </summary>
 	/// <returns></returns>
 	private IEnumerator CosmeticTrackShells(GameObject _shell, Transform _pos, float _time = 10f)
-	{
-		// during the time, track the shell to the position
-		float timeStart = Time.time;
-		while (Time.time - timeStart < _time)
-		{
-			// null check
-			if (_shell == null)
-			{
-				yield break;
-			}
+    {
+        // during the time, track the shell to the position
+        float timeStart = Time.time;
+        while (Time.time - timeStart < _time)
+        {
+            // null check
+            if (_shell == null)
+            {
+                yield break;
+            }
 
-			// a little forward of the position
-			_shell.transform.position = _pos.position /* + _shell.forward * 0.1f */;
-			yield return null;
-		}
-	}
+            // a little forward of the position
+            _shell.transform.position = _pos.position /* + _shell.forward * 0.1f */;
+            yield return null;
+        }
+    }
 }

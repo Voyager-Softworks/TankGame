@@ -202,15 +202,15 @@ public class ShellDefinition : ScriptableObject
 			// }
 		}
 
-		// update visuals
-		if (shellObject.TryGetComponent(out DisplayShell displayShell))
-		{
-			displayShell.SetShell(_toCopy);
-		}
 		// dont generate new shell if copying
 		if (_toCopy != null && shellObject.TryGetComponent(out Interactable_AmmoShell interactShell))
 		{
 			interactShell.GenerateRandomShell = false;
+		}
+		// update visuals
+		if (shellObject.TryGetComponent(out DisplayShell displayShell))
+		{
+			displayShell.SetShell(_toCopy);
 		}
 
 		return shellObject;

@@ -412,6 +412,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CheckClips",
+                    "type": "Button",
+                    "id": "78880e15-5645-4f62-ad5f-b915a92171ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Bolt",
                     "type": "Button",
                     "id": "1efab203-0dd4-421d-92fc-2187ddcac002",
@@ -474,6 +483,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Bolt",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d7aa12e-6813-44c9-b5f1-9ccaf56f35d9",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CheckClips",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

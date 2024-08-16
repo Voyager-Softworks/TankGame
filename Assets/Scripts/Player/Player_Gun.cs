@@ -71,10 +71,11 @@ public class Player_Gun : MonoBehaviour
 	[SerializeField, Utils.ReadOnly] private bool m_isReloading = false; public bool IsReloading { get { return m_isReloading; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canCheckChamber = true; public bool CanCheckChamber { get { return m_canCheckChamber; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isCheckingChamber = false; public bool IsCheckingChamber { get { return m_isCheckingChamber; } }
+	[SerializeField, Utils.ReadOnly] private bool m_canAutoBolt = false; public bool CanAutoBolt { get { return m_canAutoBolt; } }
+	[SerializeField, Utils.ReadOnly] private bool m_canCheckClips = true; public bool CanCheckClips { get { return m_canCheckClips; } }
 	//! @NOTE: Not Done yet vvv
 	[SerializeField, Utils.ReadOnly] private bool m_canInspectWeapon = true; public bool CanInspectWeapon { get { return m_canInspectWeapon; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isInspectingWeapon = false; public bool IsInspectingWeapon { get { return m_isInspectingWeapon; } }
-	[SerializeField, Utils.ReadOnly] private bool m_canAutoBolt = false; public bool CanAutoBolt { get { return m_canAutoBolt; } }
 	#endregion
 
 	[Header("Prefabs")]
@@ -82,6 +83,14 @@ public class Player_Gun : MonoBehaviour
 	public GameObject m_shellPrefab;
 	public GameObject m_fxGunShot;
 	public GameObject m_fxSmokeTrail;
+	#endregion
+
+	[Header("Spare Clip Display")]
+	#region Tracking
+	[SerializeField, Utils.ReadOnly] private Vector3 m_displayClipOriginalPos = Vector3.zero;
+	[SerializeField] private Vector3 m_displayHideOffset = new Vector3(0.0f, -1.0f, 0.0f);
+	[SerializeField] private float m_displayClipShowTime = 0.5f;
+	[SerializeField] private float m_displayClipHideTime = 0.25f;
 	#endregion
 
 	[Header("Debug")]
@@ -100,6 +109,14 @@ public class Player_Gun : MonoBehaviour
 		{
 			m_spareClips.Add(m_defaultClip.GetRandomInstance());
 		}
+
+		// save original clip position
+		m_displayClipOriginalPos = Player.Instance.m_clipDisplayParent.transform.localPosition;
+		// hide it
+		Player.Instance.m_clipDisplayParent.SetActive(false);
+		Player.Instance.m_clipDisplayParent.transform.localPosition = m_displayHideOffset;
+		// hide template
+		Player.Instance.m_clipDisplayTemplate.SetActive(false);
 	}
 
 	// Start is called before the first frame update
@@ -146,6 +163,12 @@ public class Player_Gun : MonoBehaviour
 		if (InputManager.PlayerGun.CheckChamber.IsPressed())
 		{
 			StartCoroutine(TryCheckChamber());
+		}
+		// check clips
+		if (InputManager.PlayerGun.CheckClips.IsPressed())
+		{
+			// check clips
+			StartCoroutine(TryCheckClips());
 		}
 	}
 	#endregion
@@ -614,6 +637,82 @@ public class Player_Gun : MonoBehaviour
 		m_canReload = true;
 		m_isCheckingChamber = false;
 		m_canCheckChamber = true;
+	}
+	#endregion
+
+	#region Check Clips
+	/// <summary>
+	/// Pulls the clips up on screen, like a diegetic UI.
+	/// </summary>
+	/// <returns></returns>
+	private IEnumerator TryCheckClips()
+	{
+		if (!m_canCheckClips)
+		{
+			yield break;
+		}
+
+		m_canCheckClips = false;
+
+		// show clip parent
+		Player.Instance.m_clipDisplayParent.SetActive(true);
+
+		// spawn in cosmetic clips for each spare clip
+		Vector3 clipOffset = Player.Instance.m_clipDisplayTemplate.transform.localPosition;
+		List<GameObject> clipObjects = new List<GameObject>();
+		for (int i = 0; i < m_spareClips.Count; i++)
+		{
+			// make empty gameobject at spawn point
+			GameObject clipObject = new GameObject("Clip " + i);
+			clipObject.transform.parent = Player.Instance.m_clipDisplayParent.transform;
+			clipObject.transform.localPosition = clipOffset * (i + 1);
+			clipObject.transform.rotation = Player.Instance.m_clipDisplayTemplate.transform.rotation;
+			clipObjects.Add(clipObject);
+
+			ClipDefinition clip = m_spareClips[i];
+			GameObject displayClip = clip.InstantiateCosmeticClip(clipObject.transform, _parent: true);
+		}
+
+		// move the clip parent to the player's view slowly
+		float time = 0.0f;
+		float duration = m_displayClipShowTime;
+		Vector3 startPos = Player.Instance.m_clipDisplayParent.transform.localPosition;
+		Vector3 endPos = m_displayClipOriginalPos;
+		while (time < duration && InputManager.PlayerGun.CheckClips.IsPressed())
+		{
+			time += Time.deltaTime;
+			Player.Instance.m_clipDisplayParent.transform.localPosition = Vector3.Lerp(startPos, endPos, time / duration);
+			yield return null;
+		}
+
+		// wait for user to release the check clips button
+		while (InputManager.PlayerGun.CheckClips.IsPressed())
+		{
+			yield return null;
+		}
+
+		// move the clip parent back to the hide position quickly
+		time = 0.0f;
+		duration = m_displayClipHideTime;
+		startPos = Player.Instance.m_clipDisplayParent.transform.localPosition;
+		endPos = m_displayClipOriginalPos + m_displayHideOffset;
+		while (time < duration && !InputManager.PlayerGun.CheckClips.IsPressed())
+		{
+			time += Time.deltaTime;
+			Player.Instance.m_clipDisplayParent.transform.localPosition = Vector3.Lerp(startPos, endPos, time / duration);
+			yield return null;
+		}
+
+		// destroy clip objects
+		for (int i = clipObjects.Count - 1; i >= 0; i--)
+		{
+			Destroy(clipObjects[i]);
+		}
+
+		// hide clip parent
+		Player.Instance.m_clipDisplayParent.SetActive(false);
+
+		m_canCheckClips = true;
 	}
 	#endregion
 

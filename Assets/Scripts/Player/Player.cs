@@ -10,7 +10,22 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     // singleton pattern
-    public static Player Instance { get; private set; }
+    private static Player s_instance = null;
+    public static Player Instance
+    {
+        get
+        {
+            if (s_instance == null)
+            {
+                s_instance = FindObjectOfType<Player>();
+            }
+            return s_instance;
+        }
+        private set
+        {
+            s_instance = value;
+        }
+    }
 
     [Header("References")]
     public Player_Movement m_movement;
@@ -18,15 +33,18 @@ public class Player : MonoBehaviour
     public Collider m_collider;
     public GameObject m_model;
 
+    public GameObject m_clipDisplayParent;
+    public GameObject m_clipDisplayTemplate;
+
     public RectTransform DEBUG_interactShower;
 
     private void Awake()
     {
-        if (Instance == null)
+        if (s_instance == null)
         {
-            Instance = this;
+            s_instance = this;
         }
-        else
+        else if (s_instance != this)
         {
             Destroy(gameObject);
             return;

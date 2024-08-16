@@ -14,7 +14,7 @@ public class ClipDefinition : ScriptableObject
     public int MaxSize { get { return m_maxSize; } }
     public ShellDefinition m_ammoType;
     /// <summary> i=0 is the bottom of the clip, i=last is the top of the clip. </summary>
-    private List<ShellDefinition> m_shells = new List<ShellDefinition>();
+    [SerializeField] private List<ShellDefinition> m_shells = new List<ShellDefinition>();
 
     [Header("References")]
     [SerializeField] protected GameObject m_clipPrefab;
@@ -172,5 +172,45 @@ public class ClipDefinition : ScriptableObject
             clipString += i < _clip.MaxSize - 1 ? "|" : "";
         }
         return clipString;
+    }
+
+    /// <inheritdoc cref="InstantiateCosmeticShell(GameObject, ShellDefinition, Transform, bool)"/>
+	public GameObject InstantiateCosmeticClip(Transform _pos, bool _parent = false)
+	{
+		return InstantiateCosmeticClip(m_clipPrefab, this, _pos, _parent);
+	}
+
+    /// <summary>
+    /// Instantiates a cosmetic clip at the given position.
+    /// </summary>
+    /// <param name="_prefab">What prefab to instantiate.</param>
+    /// <param name="_toCopy">The data to copy from.</param>
+    /// <param name="_pos">The position to instantiate at.</param>
+    /// <param name="_parent">Should the clip be parented to the given transform?</param>
+    /// <returns
+    public static GameObject InstantiateCosmeticClip(GameObject _prefab, ClipDefinition _toCopy, Transform _pos, bool _parent = false)
+    {
+        GameObject clipObject = Instantiate(_prefab, _pos.position, _pos.rotation, _parent ? _pos : null);
+
+        // no physics if parented
+        Rigidbody clipRb = clipObject.GetComponent<Rigidbody>();
+        if (clipRb != null && _parent)
+        {
+            clipRb.isKinematic = true; // kinematic first to prevent physics
+            Destroy(clipRb);
+        }
+
+        // dont generate new clip if copying
+        if (_toCopy != null && clipObject.TryGetComponent(out Interactable_AmmoClip interactableClip))
+        {
+            interactableClip.GenerateRandomClip = false;
+        }
+        // update visuals
+        if (clipObject.TryGetComponent(out DisplayClip displayClip))
+        {
+            displayClip.SetClip(_toCopy);
+        }
+
+        return clipObject;
     }
 }

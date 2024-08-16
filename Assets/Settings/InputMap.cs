@@ -434,6 +434,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""CheckClips"",
+                    ""type"": ""Button"",
+                    ""id"": ""78880e15-5645-4f62-ad5f-b915a92171ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Bolt"",
                     ""type"": ""Button"",
                     ""id"": ""1efab203-0dd4-421d-92fc-2187ddcac002"",
@@ -498,6 +507,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""action"": ""Bolt"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d7aa12e-6813-44c9-b5f1-9ccaf56f35d9"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClips"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -531,6 +551,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_PlayerGun_Reload = m_PlayerGun.FindAction("Reload", throwIfNotFound: true);
         m_PlayerGun_Aim = m_PlayerGun.FindAction("Aim", throwIfNotFound: true);
         m_PlayerGun_CheckChamber = m_PlayerGun.FindAction("CheckChamber", throwIfNotFound: true);
+        m_PlayerGun_CheckClips = m_PlayerGun.FindAction("CheckClips", throwIfNotFound: true);
         m_PlayerGun_Bolt = m_PlayerGun.FindAction("Bolt", throwIfNotFound: true);
     }
 
@@ -875,6 +896,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerGun_Reload;
     private readonly InputAction m_PlayerGun_Aim;
     private readonly InputAction m_PlayerGun_CheckChamber;
+    private readonly InputAction m_PlayerGun_CheckClips;
     private readonly InputAction m_PlayerGun_Bolt;
     public struct PlayerGunActions
     {
@@ -884,6 +906,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         public InputAction @Reload => m_Wrapper.m_PlayerGun_Reload;
         public InputAction @Aim => m_Wrapper.m_PlayerGun_Aim;
         public InputAction @CheckChamber => m_Wrapper.m_PlayerGun_CheckChamber;
+        public InputAction @CheckClips => m_Wrapper.m_PlayerGun_CheckClips;
         public InputAction @Bolt => m_Wrapper.m_PlayerGun_Bolt;
         public InputActionMap Get() { return m_Wrapper.m_PlayerGun; }
         public void Enable() { Get().Enable(); }
@@ -906,6 +929,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @CheckChamber.started += instance.OnCheckChamber;
             @CheckChamber.performed += instance.OnCheckChamber;
             @CheckChamber.canceled += instance.OnCheckChamber;
+            @CheckClips.started += instance.OnCheckClips;
+            @CheckClips.performed += instance.OnCheckClips;
+            @CheckClips.canceled += instance.OnCheckClips;
             @Bolt.started += instance.OnBolt;
             @Bolt.performed += instance.OnBolt;
             @Bolt.canceled += instance.OnBolt;
@@ -925,6 +951,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @CheckChamber.started -= instance.OnCheckChamber;
             @CheckChamber.performed -= instance.OnCheckChamber;
             @CheckChamber.canceled -= instance.OnCheckChamber;
+            @CheckClips.started -= instance.OnCheckClips;
+            @CheckClips.performed -= instance.OnCheckClips;
+            @CheckClips.canceled -= instance.OnCheckClips;
             @Bolt.started -= instance.OnBolt;
             @Bolt.performed -= instance.OnBolt;
             @Bolt.canceled -= instance.OnBolt;
@@ -977,6 +1006,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         void OnReload(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnCheckChamber(InputAction.CallbackContext context);
+        void OnCheckClips(InputAction.CallbackContext context);
         void OnBolt(InputAction.CallbackContext context);
     }
 }
