@@ -8,6 +8,20 @@ using UnityEditor;
 
 namespace Utils
 {
+    public static class Methods
+    {
+        public static Bounds GetBounds(GameObject _obj)
+        {
+            Bounds bounds = new Bounds(_obj.transform.position, Vector3.zero);
+            Renderer[] renderers = _obj.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+            return bounds;
+        }
+    }
+
     /// <summary>
     /// ReadOnly attribute for serialized fields.
     /// </summary>

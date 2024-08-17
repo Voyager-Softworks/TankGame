@@ -370,7 +370,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1246676889380536764}
   serializedVersion: 4
-  m_Mass: 0.13297649
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -403,10 +403,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: -0.0000005779842, y: 0.00000012333965, z: 0.034524262}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -422,8 +422,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -613,7 +613,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2724623322573921688}
   serializedVersion: 4
-  m_Mass: 0.13297646
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -646,10 +646,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: -0.0000005209681, y: 0.000000110998315, z: 0.03452432}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -665,8 +665,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -726,7 +726,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3811450818126796540}
   serializedVersion: 4
-  m_Mass: 0.13297647
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -759,10 +759,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0.00000013733339, y: 0.00000056792595, z: 0.034493744}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -778,8 +778,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -839,7 +839,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3912633180048573862}
   serializedVersion: 4
-  m_Mass: 0.13297647
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -872,10 +872,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0.00000012499198, y: 0.0000005394179, z: 0.034493804}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -891,8 +891,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -952,7 +952,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4073732100521904750}
   serializedVersion: 4
-  m_Mass: 0.13297644
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -985,10 +985,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0.000000112650596, y: 0.00000051090984, z: 0.034493506}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1004,8 +1004,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -1070,7 +1070,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4992519288366633969}
   serializedVersion: 4
-  m_Mass: 0.13297647
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1103,10 +1103,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: -0.0000005779842, y: 0.00000013568109, z: 0.03452456}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1122,8 +1122,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -1220,10 +1220,10 @@ MonoBehaviour:
   - {fileID: 5742458701386484008}
   m_end: {fileID: 2461728447031317935}
   m_autoMass: 1
-  m_mass: 0.1
+  m_forcedMass: 0.1
   m_healthMassScale: 10
   m_canBreak: 1
-  m_breakForce: 1000
+  m_breakForce: Infinity
 --- !u!1 &5505724801963422425 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8773709545125697531, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
@@ -1279,7 +1279,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5505724801963422425}
   serializedVersion: 4
-  m_Mass: 0.13297646
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1312,10 +1312,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0.00000014967478, y: 0.000000596434, z: 0.034493566}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1331,8 +1331,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -1392,7 +1392,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5683746026955647429}
   serializedVersion: 4
-  m_Mass: 0.13297644
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1420,15 +1420,15 @@ HingeJoint:
   m_GameObject: {fileID: 5683746026955647429}
   m_ConnectedBody: {fileID: 7935987816631534735}
   m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: -0.0000005209681, y: 0.00000009322673, z: -0.026210845}
+  m_Anchor: {x: -0.0000003494541, y: 0.002105369, z: -0.16894817}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 0
-  m_ConnectedAnchor: {x: 0.000000096579384, y: 0.00000051314504, z: 0.026210785}
+  m_ConnectedAnchor: {x: 0.0021053725, y: 0.00000034209668, z: -0.116526544}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1444,8 +1444,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -1463,7 +1463,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5742458701386484008}
   serializedVersion: 4
-  m_Mass: 0.13297646
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1496,10 +1496,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: -0.0000006064922, y: 0.00000014802248, z: 0.03452441}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1515,8 +1515,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1
@@ -1596,7 +1596,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6392504797038839753}
   serializedVersion: 4
-  m_Mass: 0.13297646
+  m_Mass: 0.1167702
   m_Drag: 1
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1629,10 +1629,10 @@ HingeJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: -0.0000005209681, y: 0.000000098656926, z: 0.0345245}
   serializedVersion: 2
-  m_UseSpring: 0
+  m_UseSpring: 1
   m_Spring:
-    spring: 0
-    damper: 0
+    spring: 1
+    damper: 1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -1648,8 +1648,8 @@ HingeJoint:
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0.1
-  m_BreakForce: 1000
-  m_BreakTorque: 1000
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 0
   m_MassScale: 1

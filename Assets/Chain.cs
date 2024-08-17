@@ -15,16 +15,16 @@ public class Chain : MonoBehaviour
     public List<GameObject> m_linkObjects = new List<GameObject>();
     /// <summary> List of objects in the chain that do not move. Provided by the scene</summary>
     public List<GameObject> m_anchors = new List<GameObject>();
-    /// <summary> The end of the chain. Provided by the scene</summary>
+    /// <summary> The end of the chain. Provided by the scene, may not exist</summary>
     public GameObject m_end;
 
     public bool m_autoMass = true;
-    public float m_mass = 0.1f;
+    public float m_forcedMass = 0.1f;
     public float m_healthMassScale = 10.0f;
 
     public bool m_canBreak = true;
-    public float m_breakForce = 20.0f;
-    
+    public float m_breakForce = float.PositiveInfinity;
+
     void Awake()
     {
         // listen for link deaths
@@ -57,22 +57,21 @@ public class Chain : MonoBehaviour
             // calculate mass from size
             if (m_autoMass)
             {
-                Mesh mesh = link.GetComponent<MeshFilter>().sharedMesh;
-                rb.mass = mesh.bounds.size.magnitude;
+                // calc volume from bounds
+                Bounds bounds = Utils.Methods.GetBounds(link);
+                float volume = bounds.size.x * bounds.size.y * bounds.size.z;
+                rb.mass = volume * 5000.0f;
             }
             else
             {
-                rb.mass = m_mass;
+                rb.mass = m_forcedMass;
             }
             rb.drag = 1.0f;
             rb.angularDrag = 10.0f;
 
             // if the link is an anchor, make it kinematic
             bool isAnchor = m_anchors.Contains(link);
-            if (isAnchor)
-            {
-                rb.isKinematic = true;
-            }
+            rb.isKinematic = isAnchor;
 
             Health health = link.GetComponent<Health>();
             if (health == null)
@@ -85,10 +84,14 @@ public class Chain : MonoBehaviour
         }
 
         // ensure the end has a rigidbody
-        Rigidbody endRb = m_end.GetComponent<Rigidbody>();
-        if (endRb == null)
+        Rigidbody endRb = null;
+        if (m_end != null)
         {
-            endRb = m_end.AddComponent<Rigidbody>();
+            endRb = m_end.GetComponent<Rigidbody>();
+            if (endRb == null)
+            {
+                endRb = m_end.AddComponent<Rigidbody>();
+            }
         }
 
         // add hinge joints to the links
@@ -103,12 +106,35 @@ public class Chain : MonoBehaviour
                 joint = link.gameObject.AddComponent<HingeJoint>();
             }
 
+            // if no next link, stop the chain
+            if (nextLink == null)
+            {
+                // if edit mode, use DestroyImmediate
+                if (Application.isEditor && !Application.isPlaying)
+                {
+                    DestroyImmediate(joint);
+                }
+                else
+                {
+                    Destroy(joint);
+                }
+                break;
+            }
+
+            // get mid point between the two links
+            Bounds bounds = Utils.Methods.GetBounds(link.gameObject);
+            bounds.Encapsulate(Utils.Methods.GetBounds(nextLink.gameObject));
+            Vector3 midPoint = bounds.center;
+
+            // set joint properties
             joint.autoConfigureConnectedAnchor = false;
             joint.connectedBody = nextLink;
             joint.axis = Vector3.right;
-
-            // get mid point between the two links
-            Vector3 midPoint = (link.transform.position + nextLink.transform.position) / 2;
+            joint.useSpring = true;
+            JointSpring spring = joint.spring;
+            spring.spring = 1.0f;
+            spring.damper = 1.0f;
+            joint.spring = spring;
 
             // set anchor to mid point
             joint.anchor = link.transform.InverseTransformPoint(midPoint);
@@ -168,7 +194,7 @@ public class Chain : MonoBehaviour
         }
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     [CustomEditor(typeof(Chain))]
     public class ChainEditor : Editor
     {
@@ -183,5 +209,5 @@ public class Chain : MonoBehaviour
             }
         }
     }
-    #endif
+#endif
 }
