@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
     public GameObject m_clipDisplayTemplate;
 
     public RectTransform DEBUG_interactShower;
+    public Animator deathAnimator;
 
     private void Awake()
     {
@@ -86,5 +87,13 @@ public class Player : MonoBehaviour
     public void DisablePlayer()
     {
         gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    ///  Deactivates Movement & Weapon, activates death animation.
+    /// </summary>
+    public void PlayerDeath()
+    {
+        deathAnimator.enabled = true;
     }
 }

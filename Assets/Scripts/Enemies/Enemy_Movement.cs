@@ -11,7 +11,7 @@ public class Enemy_Movement : MonoBehaviour
     [Utils.ReadOnly] public bool m_isRunning = false;
     [Utils.ReadOnly] public Enemy m_Enemy;
 
-    public float m_detectRange = 10.0f;
+    public float m_detectRange = 20.0f;
 
     private void Awake()
     {
@@ -57,9 +57,11 @@ public class Enemy_Movement : MonoBehaviour
         m_Enemy.Animator.SetBool("IsRunning", m_isRunning);
 
         // if touches player, restart scene
-        if (Vector3.Distance(transform.position, m_target.position) <= 1f)
+        if (Vector3.Distance(transform.position, m_target.position) <= 1.5f)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Player.Instance.PlayerDeath();
+            Destroy(gameObject);
         }
     }
 
