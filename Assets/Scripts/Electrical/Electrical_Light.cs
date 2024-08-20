@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// A light that can be interacted with.
@@ -28,6 +29,20 @@ public class Electrical_Light : Electrical
     [Header("References")]
     public Light m_Light = null;
     public Renderer m_lightRenderer = null;
+    [SerializeField] private Material m_lightMatRef = null;
+    private Material m_lightMat = null;
+    public Material LightMaterial
+    {
+        get
+        {
+            // find material matching given light material
+            if (m_lightMat == null)
+            {
+                m_lightMat = m_lightRenderer.materials.FirstOrDefault(m => m.name.Contains(m_lightMatRef.name));
+            }
+            return m_lightMat;
+        }
+    }
 
     private float m_initialIntensity = 0f;
     private Color m_initialEmissionColor = Color.white;
@@ -42,7 +57,7 @@ public class Electrical_Light : Electrical
         base.Awake();
 
         m_initialIntensity = m_Light.intensity;
-        m_initialEmissionColor = m_lightRenderer.material.GetColor("_EmissionColor");
+        m_initialEmissionColor = LightMaterial.GetColor("_EmissionColor");
     }
 
     protected override void Start()
@@ -182,7 +197,9 @@ public class Electrical_Light : Electrical
     private void SetLightIntensity(float _multi)
     {
         m_Light.intensity = m_initialIntensity * _multi;
-        m_lightRenderer.material.SetColor("_EmissionColor", m_initialEmissionColor * _multi);
+        // get light material
+
+        LightMaterial.SetColor("_EmissionColor", m_initialEmissionColor * _multi);
     }
 
     // set light over time

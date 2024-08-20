@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 7943523409800264235}
   serializedVersion: 2
   m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: -0, y: -0, z: 0.162}
+  m_LocalPosition: {x: -0, y: -0, z: 0.049}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46,7 +46,7 @@ Light:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
-  m_SpotAngle: 151.8
+  m_SpotAngle: 150
   m_InnerSpotAngle: 1
   m_CookieSize: 10
   m_Shadows:
@@ -54,7 +54,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.05
+    m_Bias: 0.001
     m_NormalBias: 0.4
     m_NearPlane: 0.1
     m_CullingMatrixOverride:
@@ -116,31 +116,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.58
+      value: -2.27
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.07
+      value: 3.528
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.46
+      value: -0.224
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.6822956
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071067
+      value: -0.6822955
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000030908616
+      value: -0.18566848
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000030908623
+      value: -0.1856684
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -521,6 +521,7 @@ MonoBehaviour:
   m_flickerIntensityMulti: 0.25
   m_Light: {fileID: 9171857463509037988}
   m_lightRenderer: {fileID: 2712676937687078137}
+  m_lightMatRef: {fileID: 2100000, guid: 591cc6773cc3260428430217f132ae33, type: 2}
 --- !u!1 &2461728447031317935 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1694454256276025485, guid: 74ddcbaab32863c47a3125b2311d2077, type: 3}

@@ -103,32 +103,44 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.16666667
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.06317439
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.08187191
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.402
+      value: -0.0411
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.576
+      value: 0.106
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 4.3297816e-17
+      value: -0.5000003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.707107
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071066
+      value: 0.49999967
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 4.3297786e-17
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -136,7 +148,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -180
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f1ad826ffd3f64e478d584bcb72cc7fd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -191,14 +203,20 @@ MonoBehaviour:
   m_isSource: 0
   m_canReceive: 1
   m_canTransfer: 1
+  m_canBreak: 1
+  m_canFix: 1
+  m_canReceiveIfBroken: 1
+  m_canTransferIfBroken: 0
   m_receivedFrom: []
   m_transfersTo: []
   m_isOn: 1
+  m_isBroken: 0
   m_onDelay: 0.1
   m_onFlickerTime: 0.5
   m_onFlickerInterval: 0.1
   m_onFlickerChance: 0.5
   m_offDelay: 0
+  m_onFlickerIntensityMulti: 0.25
   m_flickerMinDelay: 0.1
   m_flickerMaxDelay: 1
   m_flickerDelayChance: 0.2
@@ -206,5 +224,7 @@ MonoBehaviour:
   m_flickerMaxTime: 0.1
   m_flickerMinInterval: 0.01
   m_flickerMaxInterval: 0.05
+  m_flickerIntensityMulti: 0.25
   m_Light: {fileID: 1075691537735654542}
   m_lightRenderer: {fileID: 661328186117012664}
+  m_lightMatRef: {fileID: 2100000, guid: 591cc6773cc3260428430217f132ae33, type: 2}
