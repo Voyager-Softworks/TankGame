@@ -349,6 +349,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Grab"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ee7a6a8-1536-4cb9-9be4-7ef4fee857c6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -360,6 +369,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""541b312a-1b44-4776-9937-8364d840d5fb"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -542,6 +562,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // PlayerSpecial
         m_PlayerSpecial = asset.FindActionMap("PlayerSpecial", throwIfNotFound: true);
         m_PlayerSpecial_Interact = m_PlayerSpecial.FindAction("Interact", throwIfNotFound: true);
+        m_PlayerSpecial_Grab = m_PlayerSpecial.FindAction("Grab", throwIfNotFound: true);
         // TankSpecial
         m_TankSpecial = asset.FindActionMap("TankSpecial", throwIfNotFound: true);
         m_TankSpecial_Exit = m_TankSpecial.FindAction("Exit", throwIfNotFound: true);
@@ -801,11 +822,13 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_PlayerSpecial;
     private List<IPlayerSpecialActions> m_PlayerSpecialActionsCallbackInterfaces = new List<IPlayerSpecialActions>();
     private readonly InputAction m_PlayerSpecial_Interact;
+    private readonly InputAction m_PlayerSpecial_Grab;
     public struct PlayerSpecialActions
     {
         private @InputMap m_Wrapper;
         public PlayerSpecialActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         public InputAction @Interact => m_Wrapper.m_PlayerSpecial_Interact;
+        public InputAction @Grab => m_Wrapper.m_PlayerSpecial_Grab;
         public InputActionMap Get() { return m_Wrapper.m_PlayerSpecial; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -818,6 +841,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Grab.started += instance.OnGrab;
+            @Grab.performed += instance.OnGrab;
+            @Grab.canceled += instance.OnGrab;
         }
 
         private void UnregisterCallbacks(IPlayerSpecialActions instance)
@@ -825,6 +851,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Grab.started -= instance.OnGrab;
+            @Grab.performed -= instance.OnGrab;
+            @Grab.canceled -= instance.OnGrab;
         }
 
         public void RemoveCallbacks(IPlayerSpecialActions instance)
@@ -995,6 +1024,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     public interface IPlayerSpecialActions
     {
         void OnInteract(InputAction.CallbackContext context);
+        void OnGrab(InputAction.CallbackContext context);
     }
     public interface ITankSpecialActions
     {

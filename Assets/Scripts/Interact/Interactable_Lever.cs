@@ -14,7 +14,7 @@ public class Interactable_Lever : Interactable
     [SerializeField] private bool m_lockUp = false;
     [SerializeField] private Electrical m_linkedElectrical;
 
-    public override void OnInteract(Interacter _interacter)
+    public override void OnInteract(Focuser _interacter)
     {
         base.OnInteract(_interacter);
 

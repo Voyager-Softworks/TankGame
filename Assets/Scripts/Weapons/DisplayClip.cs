@@ -52,8 +52,8 @@ public class DisplayClip : MonoBehaviour
                 ShellDefinition shellDefinition = _ClipDefinition.GetShell(i - emptyShellPoints);
 
                 GameObject tempShell = shellDefinition.InstantiateCosmeticShell(shellPoint.parent, _parent: true);
-                // cant interact with shell
-                tempShell.GetComponent<Interactable_AmmoShell>().IsInteractable = false;
+                // cant focus on the shells
+                tempShell.GetComponent<Interactable_AmmoShell>().IsFocusable = false;
 
                 m_spawnedShells.Add(tempShell);
 

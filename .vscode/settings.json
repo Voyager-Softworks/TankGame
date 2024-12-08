@@ -58,6 +58,7 @@
     },
     "dotnet.defaultSolution": "TankGame.sln",
     "cSpell.words": [
+        "Grabbable",
         "Interacter"
     ]
 }

@@ -36,7 +36,7 @@ public class Interactable_AmmoClip : Interactable
         m_displayClip.OnClipChanged -= UpdateCornerPositions;
     }
 
-    public override void OnInteract(Interacter _interacter)
+    public override void OnInteract(Focuser _interacter)
     {
         base.OnInteract(_interacter);
 

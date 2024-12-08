@@ -22,7 +22,7 @@ public class Interactable_AmmoShell : Interactable
         }
     }
 
-    public override void OnInteract(Interacter _interacter)
+    public override void OnInteract(Focuser _interacter)
     {
         base.OnInteract(_interacter);
 

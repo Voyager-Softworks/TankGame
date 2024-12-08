@@ -39,8 +39,6 @@ public class Player : MonoBehaviour
     public GameObject m_clipDisplayTemplate;
     public Animator deathAnimator;
 
-    public List<GameObject> m_DEBUGCorners = new List<GameObject>();
-
     private void Awake()
     {
         if (s_instance == null)
