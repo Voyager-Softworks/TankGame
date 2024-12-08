@@ -90,15 +90,56 @@ public class Interacter : MonoBehaviour
                 br.y = Mathf.Min(br.y, screenPoints[i].y);
             }
 
+            // prevent overlap with sprite
+            float spriteWidth = Player.Instance.m_ui.m_interactTL.rect.width;
+            float spriteHeight = Player.Instance.m_ui.m_interactTL.rect.height;
+            // if top left is overlapping bottom right, move away form each other
+            float TLBR_overlapX = (tl.x + spriteWidth) - (br.x - spriteWidth);
+            if (TLBR_overlapX > 0)
+            {
+                tl.x -= TLBR_overlapX / 2;
+                br.x += TLBR_overlapX / 2;
+            }
+            float TLBR_overlapY = (tl.y - spriteHeight) - (br.y + spriteHeight);
+            if (TLBR_overlapY < 0)
+            {
+                tl.y -= TLBR_overlapY / 2;
+                br.y += TLBR_overlapY / 2;
+            }
+            // if top right is overlapping bottom left, move away form each other
+            float TRBL_overlapX = (tr.x - spriteWidth) - (bl.x + spriteWidth);
+            if (TRBL_overlapX < 0)
+            {
+                tr.x -= TRBL_overlapX / 2;
+                bl.x += TRBL_overlapX / 2;
+            }
+            float TRBL_overlapY = (tr.y - spriteHeight) - (bl.y + spriteHeight);
+            if (TRBL_overlapY < 0)
+            {
+                tr.y -= TRBL_overlapY / 2;
+                bl.y += TRBL_overlapY / 2;
+            }
+
+            // get center of object on screen
+            Vector3 center = Vector3.zero;
+            foreach (Vector3 point in corners)
+            {
+                center += point;
+            }
+            center /= corners.Length;
+            center = m_camera.WorldToScreenPoint(center);
+
             // set bounds
             Player.Instance.m_ui.m_interactTL.gameObject.SetActive(true);
             Player.Instance.m_ui.m_interactBR.gameObject.SetActive(true);
             Player.Instance.m_ui.m_interactTR.gameObject.SetActive(true);
             Player.Instance.m_ui.m_interactBL.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactC.gameObject.SetActive(true);
             Player.Instance.m_ui.m_interactTL.position = tl;
             Player.Instance.m_ui.m_interactBR.position = br;
             Player.Instance.m_ui.m_interactTR.position = tr;
             Player.Instance.m_ui.m_interactBL.position = bl;
+            Player.Instance.m_ui.m_interactC.position = center;
         }
         else
         {
@@ -107,6 +148,7 @@ public class Interacter : MonoBehaviour
             Player.Instance.m_ui.m_interactBR.gameObject.SetActive(false);
             Player.Instance.m_ui.m_interactTR.gameObject.SetActive(false);
             Player.Instance.m_ui.m_interactBL.gameObject.SetActive(false);
+            Player.Instance.m_ui.m_interactC.gameObject.SetActive(false);
         }
     }
 
@@ -157,7 +199,8 @@ public class Interacter : MonoBehaviour
 
         // Raycast:
         RaycastHit hit;
-        if (Physics.Raycast(m_camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, MaxRange()))
+        LayerMask mask = ~Utils.Layers.PlayerIgnore;
+        if (Physics.Raycast(m_camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, MaxRange(), mask))
         {
             if (hit.collider != null)
             {

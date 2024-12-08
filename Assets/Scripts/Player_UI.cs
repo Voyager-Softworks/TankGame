@@ -8,4 +8,5 @@ public class PlayerUI : MonoBehaviour
     public RectTransform m_interactTR = null;
     public RectTransform m_interactBL = null;
     public RectTransform m_interactBR = null;
+    public RectTransform m_interactC = null;
 }

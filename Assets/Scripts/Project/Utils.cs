@@ -36,7 +36,7 @@ namespace Utils
             // get local corners
             foreach (MeshFilter meshFilter in meshFilters)
             {
-                Mesh mesh = meshFilter.mesh;
+                Mesh mesh = meshFilter.sharedMesh;
                 if (mesh == null)
                 {
                     continue;
@@ -47,9 +47,9 @@ namespace Utils
                     Vector3 vert = verts[i];
                     // convert to world space
                     vert = meshFilter.transform.TransformPoint(vert);
-                    // relative to main object
+                    // relative to main object (right = x, up = y, forward = z)
                     vert = _obj.transform.InverseTransformPoint(vert);
-                    if (i == 0)
+                    if (min == Vector3.zero && max == Vector3.zero)
                     {
                         min = vert;
                         max = vert;
@@ -107,6 +107,25 @@ namespace Utils
             GUI.enabled = false;
             EditorGUI.PropertyField(position, property, label, true);
             GUI.enabled = true;
+        }
+    }
+
+    public static class Layers
+    {
+        public static string IGNORE = "Ignore Raycast";
+        public static string PLAYER = "Player";
+        public static string UI = "UI";
+
+        public static LayerMask PlayerIgnore = GetLayerMask(new string[] { IGNORE, PLAYER, UI });
+
+        public static LayerMask GetLayerMask(string[] _layers)
+        {
+            LayerMask mask = 0;
+            foreach (string layer in _layers)
+            {
+                mask |= 1 << LayerMask.NameToLayer(layer);
+            }
+            return mask;
         }
     }
     #endif
