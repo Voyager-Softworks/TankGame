@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -59,25 +60,53 @@ public class Interacter : MonoBehaviour
                 InteractWith(m_focusedInteractable);
             }
 
-            // get renderer bounds
-            List<Renderer> renderers = new List<Renderer>(m_focusedInteractable.GetComponentsInChildren<Renderer>());
-            Bounds bounds = renderers[0].bounds;
-            foreach (Renderer renderer in renderers)
+            Vector3[] corners = m_focusedInteractable.WorldCorners;
+
+            // get screen points
+            Vector3[] screenPoints = new Vector3[8];
+            for (int i = 0; i < 8; i++)
             {
-                bounds.Encapsulate(renderer.bounds);
+                screenPoints[i] = m_camera.WorldToScreenPoint(corners[i]);
             }
-            // debug shower is circle, so we just need the radius
-            float radius = Vector3.Distance(m_camera.WorldToScreenPoint(bounds.min), m_camera.WorldToScreenPoint(bounds.max)) / 2;
-            
-            // set debug shower
-            Player.Instance.DEBUG_interactShower.gameObject.SetActive(true);
-            Player.Instance.DEBUG_interactShower.position = m_camera.WorldToScreenPoint(bounds.center);
-            Player.Instance.DEBUG_interactShower.sizeDelta = new Vector2(radius * 2, radius * 2);
+
+            // get screen corners
+            Vector3 tl = screenPoints[0];
+            Vector3 tr = screenPoints[0];
+            Vector3 bl = screenPoints[0];
+            Vector3 br = screenPoints[0];
+            for (int i = 1; i < 8; i++)
+            {
+                // tl = smallest x, largest y
+                tl.x = Mathf.Min(tl.x, screenPoints[i].x);
+                tl.y = Mathf.Max(tl.y, screenPoints[i].y);
+                // tr = largest x, largest y
+                tr.x = Mathf.Max(tr.x, screenPoints[i].x);
+                tr.y = Mathf.Max(tr.y, screenPoints[i].y);
+                // bl = smallest x, smallest y
+                bl.x = Mathf.Min(bl.x, screenPoints[i].x);
+                bl.y = Mathf.Min(bl.y, screenPoints[i].y);
+                // br = largest x, smallest y
+                br.x = Mathf.Max(br.x, screenPoints[i].x);
+                br.y = Mathf.Min(br.y, screenPoints[i].y);
+            }
+
+            // set bounds
+            Player.Instance.m_ui.m_interactTL.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactBR.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactTR.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactBL.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactTL.position = tl;
+            Player.Instance.m_ui.m_interactBR.position = br;
+            Player.Instance.m_ui.m_interactTR.position = tr;
+            Player.Instance.m_ui.m_interactBL.position = bl;
         }
         else
         {
-            // disable debug shower
-            Player.Instance.DEBUG_interactShower.gameObject.SetActive(false);
+            // disable bounds
+            Player.Instance.m_ui.m_interactTL.gameObject.SetActive(false);
+            Player.Instance.m_ui.m_interactBR.gameObject.SetActive(false);
+            Player.Instance.m_ui.m_interactTR.gameObject.SetActive(false);
+            Player.Instance.m_ui.m_interactBL.gameObject.SetActive(false);
         }
     }
 

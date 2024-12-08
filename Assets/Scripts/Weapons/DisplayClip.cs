@@ -25,6 +25,8 @@ public class DisplayClip : MonoBehaviour
     [Utils.ReadOnly, SerializeField, Tooltip("The current clip this is representing")] protected ClipDefinition m_clipData = null;
     public ClipDefinition ClipData { get { return m_clipData; } }
 
+    public System.Action OnClipChanged;
+
     /// <summary>
     /// Sets the clip to display the given clip data.
     /// </summary>
@@ -37,34 +39,35 @@ public class DisplayClip : MonoBehaviour
         // set the clip definition
         m_clipData = _ClipDefinition;
 
-        // null check
-        if (_ClipDefinition == null)
+        // only update if not null
+        if (_ClipDefinition != null)
         {
-            return;
+            int clipAmount = _ClipDefinition.GetShellCount();
+            int emptyShellPoints = Mathf.Max(m_shellPoints.Count - clipAmount, 0);
+            for (int i = emptyShellPoints; i < m_shellPoints.Count; i++)
+            {
+                Transform shellPoint = m_shellPoints[i];
+                shellPoint.localScale = Vector3.zero;
+
+                ShellDefinition shellDefinition = _ClipDefinition.GetShell(i - emptyShellPoints);
+
+                GameObject tempShell = shellDefinition.InstantiateCosmeticShell(shellPoint.parent, _parent: true);
+                // cant interact with shell
+                tempShell.GetComponent<Interactable_AmmoShell>().IsInteractable = false;
+
+                m_spawnedShells.Add(tempShell);
+
+                tempShell.transform.position = shellPoint.position;
+                // add offset
+                tempShell.transform.rotation = shellPoint.rotation * Quaternion.Euler(m_rotationOffset);
+                tempShell.transform.localScale = Vector3.one;
+
+                StartCoroutine(CosmeticTrackShells(tempShell, shellPoint));
+            }
         }
 
-        int clipAmount = _ClipDefinition.GetShellCount();
-        int emptyShellPoints = Mathf.Max(m_shellPoints.Count - clipAmount, 0);
-        for (int i = emptyShellPoints; i < m_shellPoints.Count; i++)
-        {
-            Transform shellPoint = m_shellPoints[i];
-            shellPoint.localScale = Vector3.zero;
-
-            ShellDefinition shellDefinition = _ClipDefinition.GetShell(i - emptyShellPoints);
-
-            GameObject tempShell = shellDefinition.InstantiateCosmeticShell(shellPoint.parent, _parent: true);
-            // cant interact with shell
-            tempShell.GetComponent<Interactable_AmmoShell>().IsInteractable = false;
-
-            m_spawnedShells.Add(tempShell);
-
-            tempShell.transform.position = shellPoint.position;
-            // add offset
-            tempShell.transform.rotation = shellPoint.rotation * Quaternion.Euler(m_rotationOffset);
-            tempShell.transform.localScale = Vector3.one;
-
-            StartCoroutine(CosmeticTrackShells(tempShell, shellPoint));
-        }
+        // invoke event
+        OnClipChanged?.Invoke();
     }
 
     /// <summary>

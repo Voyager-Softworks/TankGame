@@ -56,7 +56,10 @@ public class Electrical_Light : Electrical
     {
         base.Awake();
 
-        m_initialIntensity = m_Light.intensity;
+        if (m_Light != null)
+        {
+            m_initialIntensity = m_Light.intensity;
+        }
         m_initialEmissionColor = LightMaterial.GetColor("_EmissionColor");
     }
 
@@ -196,18 +199,23 @@ public class Electrical_Light : Electrical
 
     private void SetLightIntensity(float _multi)
     {
-        m_Light.intensity = m_initialIntensity * _multi;
+        if (m_Light != null)
+        {
+            m_Light.intensity = m_initialIntensity * _multi;
+        }
         // get light material
 
-        LightMaterial.SetColor("_EmissionColor", m_initialEmissionColor * _multi);
+        LightMaterial?.SetColor("_EmissionColor", m_initialEmissionColor * _multi);
     }
 
     // set light over time
     private IEnumerator SetLightIntensityOverTime(float _intensity, float _time)
     {
         float time = 0;
-        float startIntensityMulti = m_Light.intensity / m_initialIntensity;
-        float endIntensityMulti = _intensity / m_initialIntensity;
+        // float startIntensityMulti = m_Light.intensity / m_initialIntensity;
+        // float endIntensityMulti = _intensity / m_initialIntensity;
+        float startIntensityMulti = LightMaterial.GetColor("_EmissionColor").r / m_initialEmissionColor.r;
+        float endIntensityMulti = _intensity / m_initialEmissionColor.r;
 
         while (time < _time)
         {

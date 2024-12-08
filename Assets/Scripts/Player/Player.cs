@@ -30,14 +30,16 @@ public class Player : MonoBehaviour
     [Header("References")]
     public Player_Movement m_movement;
     public Player_Gun m_gun;
+
+    public PlayerUI m_ui;
     public Collider m_collider;
     public GameObject m_model;
 
     public GameObject m_clipDisplayParent;
     public GameObject m_clipDisplayTemplate;
-
-    public RectTransform DEBUG_interactShower;
     public Animator deathAnimator;
+
+    public List<GameObject> m_DEBUGCorners = new List<GameObject>();
 
     private void Awake()
     {

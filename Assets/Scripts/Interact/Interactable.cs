@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Interactable is a base class for all interactable objects in the game. <br/>
@@ -19,6 +22,34 @@ public class Interactable : MonoBehaviour
     public float InteractRange { get { return m_interactRange; } }
     [SerializeField] protected bool m_destroyOnInteract = false;
 
+    private Vector3[] m_localCorners = new Vector3[8];
+    public Vector3[] WorldCorners
+    {
+        get
+        {
+            // convert to world space
+            Vector3[] worldCorners = new Vector3[m_localCorners.Length];
+            for (int i = 0; i < m_localCorners.Length; i++)
+            {
+                worldCorners[i] = transform.TransformPoint(m_localCorners[i]);
+            }
+            return worldCorners;
+        }
+    }
+
+    public Color m_gizmoColor = Color.green;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = m_gizmoColor;
+        Vector3[] corners = WorldCorners;
+        for (int i = 0; i < corners.Length; i++)
+        {
+            Gizmos.DrawWireSphere(corners[i], 0.01f);
+            Gizmos.DrawLine(corners[i], corners[(i + 1) % corners.Length]);
+        }
+    }
+
     protected virtual void Awake()
     {
         // add to list
@@ -26,6 +57,10 @@ public class Interactable : MonoBehaviour
         {
             s_allInteractables.Add(this);
         }
+
+        m_gizmoColor = Random.ColorHSV();
+
+        UpdateCornerPositions();
     }
 
     protected virtual void OnDestroy()
@@ -50,4 +85,28 @@ public class Interactable : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    /// <summary> Re-calculates the corner positions of this object based on its mesh filters. </summary>
+    public virtual void UpdateCornerPositions()
+    {
+        m_localCorners = Utils.Methods.GetCorners(gameObject, _local: true);
+    }
+
+    #if UNITY_EDITOR
+    [CustomEditor(typeof(Interactable), true)]
+    public class InteractableEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            Interactable interactable = (Interactable)target;
+
+            if (GUILayout.Button("Update Corners"))
+            {
+                interactable.UpdateCornerPositions();
+            }
+        }
+    }
+    #endif
 }

@@ -14,12 +14,26 @@ public class Interactable_AmmoClip : Interactable
     [Header("References")]
     [SerializeField] protected DisplayClip m_displayClip = null;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        m_displayClip.OnClipChanged += UpdateCornerPositions;
+    }
+
     protected void Start()
     {
         if (m_generateRandomClip)
         {
             m_displayClip.SetClip(m_displayClip.DefaultClipDefinition.GetRandomInstance());
         }
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        m_displayClip.OnClipChanged -= UpdateCornerPositions;
     }
 
     public override void OnInteract(Interacter _interacter)
