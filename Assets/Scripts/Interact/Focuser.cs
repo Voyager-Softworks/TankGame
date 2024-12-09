@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class Focuser : MonoBehaviour
 {
+    [Header("Focus Settings")]
     [Tooltip("The range at which the focuser can focus on objects.")]
     public float m_focusRange = 5f; // takes the biggest, this or focusable's range
     [Tooltip("The focus angle from the cursor to the focusable object.")]
@@ -21,8 +22,17 @@ public class Focuser : MonoBehaviour
     public List<Focusable> m_nearbyFocusables = new List<Focusable>();
     public Focusable m_focused = null;
 
+    public Color m_focusColor = Color.white;
+    public Color m_focusGrabbedColor = Color.yellow;
+
+    [Header("Grab Settings")]
+    [Tooltip("The force at which the focuser grabs objects.")]
+    public float m_grabForce = 10f;
+    public float m_maxGrabForce = 100f;
+    [Tooltip("The point at which the focuser grabs objects.")]
     public Transform m_grabPoint = null;
-    public Grabbable m_grabbed = null;
+    [Utils.ReadOnly] public Grabbable m_grabbed = null;
+    private Quaternion m_grabbedRotation = Quaternion.identity;
 
     [Header("Input Actions")]
     public Camera m_camera = null;
@@ -35,7 +45,7 @@ public class Focuser : MonoBehaviour
         // check for interact input
         if (InputManager.PlayerSpecial.Interact.WasPerformedThisFrame())
         {
-            if (m_focused is Interactable interactable)
+            if (m_focused.TryGetComponent<Interactable>(out Interactable interactable))
             {
                 interactable.OnInteract(this);
             }
@@ -46,11 +56,12 @@ public class Focuser : MonoBehaviour
         {
             if (m_grabbed != null)
             {
-                m_grabbed.OnRelease(this);
+                m_grabbed.OnDrop(this);
             }
-            else if (m_focused is Grabbable grabbable)
+            else if (m_focused.TryGetComponent<Grabbable>(out Grabbable grabbable))
             {
                 grabbable.OnGrab(this);
+                m_grabbedRotation = Quaternion.Inverse(transform.rotation) * grabbable.transform.rotation;
             }
         }
 
@@ -63,6 +74,9 @@ public class Focuser : MonoBehaviour
             Player.Instance.m_ui.m_focusTR.gameObject.SetActive(false);
             Player.Instance.m_ui.m_focusBL.gameObject.SetActive(false);
             Player.Instance.m_ui.m_focusC.gameObject.SetActive(false);
+
+            // disable text
+            Player.Instance.m_ui.m_focusTextBG.gameObject.SetActive(false);
         }
         else
         {
@@ -146,6 +160,54 @@ public class Focuser : MonoBehaviour
             Player.Instance.m_ui.m_focusTR.position = tr;
             Player.Instance.m_ui.m_focusBL.position = bl;
             Player.Instance.m_ui.m_focusC.position = center;
+
+            // set colour
+            Color color = m_focused == m_grabbed?.Focusable ? m_focusGrabbedColor : m_focusColor;
+            Player.Instance.m_ui.m_focusTL.GetComponent<UnityEngine.UI.Image>().color = color;
+            Player.Instance.m_ui.m_focusBR.GetComponent<UnityEngine.UI.Image>().color = color;
+            Player.Instance.m_ui.m_focusTR.GetComponent<UnityEngine.UI.Image>().color = color;
+            Player.Instance.m_ui.m_focusBL.GetComponent<UnityEngine.UI.Image>().color = color;
+            Player.Instance.m_ui.m_focusC.GetComponent<UnityEngine.UI.Image>().color = color;
+
+            // set text
+            Interactable focusedInteractable = m_focused.GetComponent<Interactable>();
+            Grabbable focusedGrabbable = m_focused.GetComponent<Grabbable>();
+            Player.Instance.m_ui.m_focusTextBG.gameObject.SetActive(true);
+            Player.Instance.m_ui.m_interactText.gameObject.SetActive(focusedInteractable != null && focusedInteractable.IsInteractable);
+            Player.Instance.m_ui.m_grabText.gameObject.SetActive(focusedGrabbable != null && m_grabbed == null && focusedGrabbable.IsGrabbable);
+            Player.Instance.m_ui.m_dropText.gameObject.SetActive(focusedGrabbable != null && m_grabbed == focusedGrabbable);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        // if we have something grabbed
+        if (m_grabbed != null)
+        {
+            Player.Instance.m_gun.m_wantsToBeActive = false;
+
+            // dragged obj tries to match focuser velocity
+            Vector3 velocity = Vector3.Lerp(m_grabbed.RB.velocity, Player.Instance.m_movement.CalcVelocity(), 0.1f);
+            m_grabbed.RB.velocity = velocity;
+
+            // set rotation
+            m_grabbed.transform.rotation = transform.rotation * m_grabbedRotation;
+
+            // apply force to move grabbed object to grab point
+            Vector3 moveForce = (m_grabPoint.position - m_grabbed.Focusable.WorldCenter) * m_grabForce * m_grabbed.RB.mass;
+            // clamp and apply
+            moveForce = moveForce.normalized * Mathf.Min(moveForce.magnitude, m_maxGrabForce);
+            m_grabbed.RB.AddForce(moveForce, ForceMode.Force);
+
+            // counteract gravity
+            Vector3 gravityForce = -Physics.gravity * m_grabbed.RB.mass;
+            // clamp and apply
+            gravityForce = gravityForce.normalized * Mathf.Min(gravityForce.magnitude, m_maxGrabForce);
+            m_grabbed.RB.AddForce(gravityForce, ForceMode.Force);
+        }
+        else
+        {
+            Player.Instance.m_gun.m_wantsToBeActive = true;
         }
     }
 
@@ -172,14 +234,14 @@ public class Focuser : MonoBehaviour
             }
 
             // check if focusable is in range
-            if (Vector3.Distance(focusable.transform.position, m_camera.transform.position) <= MaxRange(focusable))
+            if (Vector3.Distance(focusable.transform.position, m_camera.transform.position) <= m_focusRange)
             {
                 // skip if not focusable
                 if (focusable.IsFocusable == false)
                 {
                     continue;
                 }
-                
+
                 m_nearbyFocusables.Add(focusable);
             }
         }
@@ -187,7 +249,7 @@ public class Focuser : MonoBehaviour
         // Raycast:
         RaycastHit hit;
         LayerMask mask = ~Utils.Layers.PlayerIgnore;
-        if (Physics.Raycast(m_camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, MaxRange(), mask))
+        if (Physics.Raycast(m_camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, m_focusRange, mask))
         {
             if (hit.collider != null)
             {
@@ -250,23 +312,5 @@ public class Focuser : MonoBehaviour
         }
 
         return bestFocusable;
-    }
-
-    /// <summary>
-    /// Gets the biggest range between the focuser and the focusable. <br/>
-    /// (or just the focuser's range if focusable is null)
-    /// </summary>
-    /// <param name="_focusable"></param>
-    /// <returns>The maximum range of focus.</returns>
-    private float MaxRange(Focusable _focusable = null)
-    {
-        if (_focusable != null)
-        {
-            return Mathf.Max(m_focusRange, _focusable.FocusRange);
-        }
-        else
-        {
-            return m_focusRange;
-        }
     }
 }

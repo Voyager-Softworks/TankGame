@@ -26,6 +26,11 @@ public class Interactable_AmmoShell : Interactable
     {
         base.OnInteract(_interacter);
 
+        if (!IsInteractable)
+        {
+            return;
+        }
+
         // if interacter is player
         if (_interacter.GetComponentInParent<Player>() != null && m_displayShell.ShellData != null)
         {

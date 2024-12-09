@@ -358,6 +358,15 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Help"",
+                    ""type"": ""Button"",
+                    ""id"": ""06c27c86-522a-402e-a373-76fe25a7931c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -380,6 +389,17 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5b3a2fe-4024-4239-a493-27ac8c784ed0"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Help"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -563,6 +583,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         m_PlayerSpecial = asset.FindActionMap("PlayerSpecial", throwIfNotFound: true);
         m_PlayerSpecial_Interact = m_PlayerSpecial.FindAction("Interact", throwIfNotFound: true);
         m_PlayerSpecial_Grab = m_PlayerSpecial.FindAction("Grab", throwIfNotFound: true);
+        m_PlayerSpecial_Help = m_PlayerSpecial.FindAction("Help", throwIfNotFound: true);
         // TankSpecial
         m_TankSpecial = asset.FindActionMap("TankSpecial", throwIfNotFound: true);
         m_TankSpecial_Exit = m_TankSpecial.FindAction("Exit", throwIfNotFound: true);
@@ -823,12 +844,14 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     private List<IPlayerSpecialActions> m_PlayerSpecialActionsCallbackInterfaces = new List<IPlayerSpecialActions>();
     private readonly InputAction m_PlayerSpecial_Interact;
     private readonly InputAction m_PlayerSpecial_Grab;
+    private readonly InputAction m_PlayerSpecial_Help;
     public struct PlayerSpecialActions
     {
         private @InputMap m_Wrapper;
         public PlayerSpecialActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         public InputAction @Interact => m_Wrapper.m_PlayerSpecial_Interact;
         public InputAction @Grab => m_Wrapper.m_PlayerSpecial_Grab;
+        public InputAction @Help => m_Wrapper.m_PlayerSpecial_Help;
         public InputActionMap Get() { return m_Wrapper.m_PlayerSpecial; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -844,6 +867,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Grab.started += instance.OnGrab;
             @Grab.performed += instance.OnGrab;
             @Grab.canceled += instance.OnGrab;
+            @Help.started += instance.OnHelp;
+            @Help.performed += instance.OnHelp;
+            @Help.canceled += instance.OnHelp;
         }
 
         private void UnregisterCallbacks(IPlayerSpecialActions instance)
@@ -854,6 +880,9 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
             @Grab.started -= instance.OnGrab;
             @Grab.performed -= instance.OnGrab;
             @Grab.canceled -= instance.OnGrab;
+            @Help.started -= instance.OnHelp;
+            @Help.performed -= instance.OnHelp;
+            @Help.canceled -= instance.OnHelp;
         }
 
         public void RemoveCallbacks(IPlayerSpecialActions instance)
@@ -1025,6 +1054,7 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
     {
         void OnInteract(InputAction.CallbackContext context);
         void OnGrab(InputAction.CallbackContext context);
+        void OnHelp(InputAction.CallbackContext context);
     }
     public interface ITankSpecialActions
     {

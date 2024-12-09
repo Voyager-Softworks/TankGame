@@ -43,6 +43,8 @@ public class Player_Gun : MonoBehaviour
 	
 	[Header("Timers")]
 	#region Timers
+	public float m_activateTime = 0.5f;
+	public float m_deactivateTime = 0.5f;
 	public float m_aimTime = 0.7916667f;
 	public float m_unaimTime = 0.4583333f;
 	[SerializeField, Utils.ReadOnly] private float m_aimAmount = 0.0f; public float AimAmount { get { return m_aimAmount; } }
@@ -60,6 +62,10 @@ public class Player_Gun : MonoBehaviour
 
 	[Header("State")]
 	#region State
+	public bool m_wantsToBeActive = false; // Controlled externally
+	[SerializeField, Utils.ReadOnly] private bool m_canActivate = true; public bool CanActivate { get { return m_canActivate; } }
+	[SerializeField, Utils.ReadOnly] private bool m_isActivated = false; public bool IsActivated { get { return m_isActivated; } }
+	[SerializeField, Utils.ReadOnly] private bool m_canDeactivate = false; public bool CanDeactivate { get { return m_canDeactivate; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canAim = true; public bool CanAim { get { return m_canAim; } }
 	[SerializeField, Utils.ReadOnly] private bool m_isAiming = false; public bool IsAiming { get { return m_isAiming; } }
 	[SerializeField, Utils.ReadOnly] private bool m_canUnAim = false; public bool CanUnAim { get { return m_canUnAim; } }
@@ -139,6 +145,16 @@ public class Player_Gun : MonoBehaviour
 		// // check chamber (continuous)
 		// UpdateCheckChamber();
 
+		// activate
+		if (m_wantsToBeActive)
+		{
+			StartCoroutine(Activate());
+		}
+		// deactivate
+		else if (!m_wantsToBeActive && !(m_isShooting || m_isBolting || m_isReloading || m_isCheckingChamber))
+		{
+			StartCoroutine(Deactivate());
+		}
 		// shoot
 		if (InputManager.PlayerGun.Shoot.WasPerformedThisFrame())
 		{
@@ -173,6 +189,65 @@ public class Player_Gun : MonoBehaviour
 	}
 	#endregion
 
+	#region Active
+	private IEnumerator Activate()
+	{
+		if (!m_canActivate)
+		{
+			yield break;
+		}
+
+		m_canActivate = false;
+		m_canDeactivate = true;
+
+		// begin activate animation
+		m_animator.SetBool("Active", true);
+
+		// wait for activate time
+		yield return new WaitForSeconds(m_activateTime);
+
+		m_isActivated = true;
+
+		// reset state
+		m_canAim = true;
+		m_canShoot = true;
+		m_canBolt = true;
+		m_canReload = true;
+		m_canCheckChamber = true;
+		m_canAutoBolt = false;
+		m_canCheckClips = true;
+		m_canInspectWeapon = true;
+	}
+
+	private IEnumerator Deactivate()
+	{
+		if (!m_canDeactivate)
+		{
+			yield break;
+		}
+
+		// cant do anything while deactivating, except activate
+		m_canActivate = true;
+		m_canDeactivate = false;
+		m_canAim = false;
+		m_canUnAim = false;
+		m_canShoot = false;
+		m_canBolt = false;
+		m_canReload = false;
+		m_canCheckChamber = false;
+		m_canAutoBolt = false;
+		m_canCheckClips = false;
+		m_canInspectWeapon = false;
+
+		// begin deactivate animation
+		m_animator.SetBool("Active", false);
+
+		// wait for deactivate time
+		yield return new WaitForSeconds(m_deactivateTime);
+	}
+	
+	#endregion
+
 	#region Aim
 	/// <summary>
 	/// Aims the gun.
@@ -201,7 +276,7 @@ public class Player_Gun : MonoBehaviour
 			}
 		}
 		// unaim
-		else if ((!wantsToAim && m_canUnAim) || m_isBolting || m_isReloading || m_isCheckingChamber)
+		else if ((!wantsToAim && m_canUnAim) || m_isBolting || m_isReloading || m_isCheckingChamber || !m_wantsToBeActive)
 		{
 			m_canAim = true;
 			m_isAiming = false;

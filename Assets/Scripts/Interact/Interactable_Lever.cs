@@ -18,6 +18,11 @@ public class Interactable_Lever : Interactable
     {
         base.OnInteract(_interacter);
 
+        if (!IsInteractable)
+        {
+            return;
+        }
+
         SetLeverState(!m_IsDown);
     }
 

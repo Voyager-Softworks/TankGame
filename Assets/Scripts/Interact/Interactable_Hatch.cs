@@ -8,6 +8,11 @@ public class Interactable_Hatch : Interactable
     {
         base.OnInteract(_interacter);
 
+        if (!IsInteractable)
+        {
+            return;
+        }
+
         Tank.Instance.OnPlayerEnter();
         Player.Instance.DisablePlayer();
     }

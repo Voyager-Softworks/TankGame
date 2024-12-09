@@ -18,7 +18,7 @@ public class Interactable_AmmoClip : Interactable
     {
         base.Awake();
 
-        m_displayClip.OnClipChanged += UpdateCornerPositions;
+        m_displayClip.OnClipChanged += Focusable.UpdateCornerPositions;
     }
 
     protected void Start()
@@ -33,12 +33,17 @@ public class Interactable_AmmoClip : Interactable
     {
         base.OnDestroy();
 
-        m_displayClip.OnClipChanged -= UpdateCornerPositions;
+        m_displayClip.OnClipChanged -= Focusable.UpdateCornerPositions;
     }
 
     public override void OnInteract(Focuser _interacter)
     {
         base.OnInteract(_interacter);
+
+        if (!IsInteractable)
+        {
+            return;
+        }
 
         // if interacter is player
         if (_interacter.GetComponentInParent<Player>() != null && m_displayClip.ClipData != null)

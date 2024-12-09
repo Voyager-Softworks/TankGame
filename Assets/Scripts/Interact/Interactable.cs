@@ -6,7 +6,8 @@ using UnityEngine;
 /// Interactable is a base class for all interactable objects in the game. <br/>
 /// Usually to be interacted by <see cref="Focuser"/>.
 /// </summary>
-public class Interactable : Focusable
+[RequireComponent(typeof(Focusable))]
+public class Interactable : MonoBehaviour
 {
     protected static List<Interactable> s_allInteractables = new List<Interactable>();
     public static List<Interactable> AllInteractables { get { return s_allInteractables; } }
@@ -16,10 +17,21 @@ public class Interactable : Focusable
     public bool IsInteractable { get { return m_isInteractable; } set { m_isInteractable = value; } }
     [SerializeField] protected bool m_destroyOnInteract = false;
 
-    protected override void Awake()
+    Focusable m_focusable = null;
+    public Focusable Focusable
     {
-        base.Awake();
+        get
+        {
+            if (m_focusable == null)
+            {
+                m_focusable = GetComponent<Focusable>();
+            }
+            return m_focusable;
+        }
+    }
 
+    protected virtual void Awake()
+    {
         // add to list
         if (!s_allInteractables.Contains(this))
         {
@@ -27,10 +39,8 @@ public class Interactable : Focusable
         }
     }
 
-    protected override void OnDestroy()
+    protected virtual void OnDestroy()
     {
-        base.OnDestroy();
-
         // remove from list
         if (s_allInteractables.Contains(this))
         {

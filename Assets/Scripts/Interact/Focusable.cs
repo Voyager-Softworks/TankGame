@@ -13,8 +13,6 @@ public class Focusable : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private bool m_isFocusable = true;
     public bool IsFocusable { get { return m_isFocusable; } set { m_isFocusable = value; } }
-    [SerializeField] protected float m_focusRange = 5f; // takes the biggest, this or interacter's range
-    public float FocusRange { get { return m_focusRange; } }
 
     protected Vector3[] m_localCorners = new Vector3[8];
     public Vector3[] WorldCorners
@@ -30,6 +28,8 @@ public class Focusable : MonoBehaviour
             return worldCorners;
         }
     }
+    protected Vector3 m_center = Vector3.zero;
+    public Vector3 WorldCenter { get { return transform.TransformPoint(m_center); } }
 
     public Color m_gizmoColor = Color.green;
 
@@ -75,17 +75,25 @@ public class Focusable : MonoBehaviour
     public virtual void UpdateCornerPositions()
     {
         m_localCorners = Utils.Methods.GetCorners(gameObject, _local: true);
+
+        // calculate center
+        m_center = Vector3.zero;
+        for (int i = 0; i < m_localCorners.Length; i++)
+        {
+            m_center += m_localCorners[i];
+        }
+        m_center /= m_localCorners.Length;
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(Interactable), true)]
+    [CustomEditor(typeof(Focusable), true)]
     public class InteractableEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            Interactable interactable = (Interactable)target;
+            Focusable interactable = (Focusable)target;
 
             if (GUILayout.Button("Update Corners"))
             {
