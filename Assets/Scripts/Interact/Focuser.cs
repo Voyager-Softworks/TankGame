@@ -45,7 +45,7 @@ public class Focuser : MonoBehaviour
         // check for interact input
         if (InputManager.PlayerSpecial.Interact.WasPerformedThisFrame())
         {
-            if (m_focused.TryGetComponent<Interactable>(out Interactable interactable))
+            if (m_focused != null && m_focused.TryGetComponent<Interactable>(out Interactable interactable))
             {
                 interactable.OnInteract(this);
             }
