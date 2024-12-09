@@ -58,7 +58,7 @@ public class Focuser : MonoBehaviour
             {
                 m_grabbed.OnDrop(this);
             }
-            else if (m_focused.TryGetComponent<Grabbable>(out Grabbable grabbable))
+            else if (m_focused != null && m_focused.TryGetComponent<Grabbable>(out Grabbable grabbable))
             {
                 grabbable.OnGrab(this);
                 m_grabbedRotation = Quaternion.Inverse(transform.rotation) * grabbable.transform.rotation;
