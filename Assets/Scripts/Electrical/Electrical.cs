@@ -51,6 +51,8 @@ public class Electrical : MonoBehaviour
     /// <summary> Does this electrical have power right now? Broken things can still have power!</summary>
     public bool HasPower { get { return m_isSource || IsReceivingPower; } }
 
+    public System.Action<bool> OnPowerStateChanged;
+
     protected bool m_isGOBeingDestroyed = false;
     #endregion
 
@@ -173,6 +175,8 @@ public class Electrical : MonoBehaviour
 
         OnPowerOn();
 
+        OnPowerStateChanged?.Invoke(true);
+
         return true;
     }
 
@@ -192,6 +196,8 @@ public class Electrical : MonoBehaviour
         if (!m_isGOBeingDestroyed && gameObject.activeInHierarchy)
         {
             OnPowerOff();
+
+            OnPowerStateChanged?.Invoke(false);
         }
 
         return true;

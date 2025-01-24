@@ -134,8 +134,7 @@ MonoBehaviour:
   m_canReceiveIfBroken: 1
   m_canTransferIfBroken: 0
   m_receivedFrom: []
-  m_transfersTo:
-  - {fileID: 0}
+  m_transfersTo: []
   m_isOn: 0
   m_isBroken: 0
 --- !u!114 &8544567230219085158

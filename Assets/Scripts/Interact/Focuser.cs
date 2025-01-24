@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 /// <summary>
 /// Focuser is a base class for things that can be focused on and focused on. <br/>
@@ -29,6 +30,11 @@ public class Focuser : MonoBehaviour
     [Tooltip("The force at which the focuser grabs objects.")]
     public float m_grabForce = 10f;
     public float m_maxGrabForce = 100f;
+    public float m_grabGravityMultiplier = 2f;
+    public float m_velDrag = 0.1f;
+    public float m_minVelDrag = 0.1f;
+    public float m_angDrag = 0.1f;
+    public float m_matchLerp = 0.1f;
     [Tooltip("The point at which the focuser grabs objects.")]
     public Transform m_grabPoint = null;
     [Utils.ReadOnly] public Grabbable m_grabbed = null;
@@ -187,11 +193,21 @@ public class Focuser : MonoBehaviour
             Player.Instance.m_gun.m_wantsToBeActive = false;
 
             // dragged obj tries to match focuser velocity
-            Vector3 velocity = Vector3.Lerp(m_grabbed.RB.velocity, Player.Instance.m_movement.CalcVelocity(), 0.1f);
-            m_grabbed.RB.velocity = velocity;
+            Vector3 playerVelocity = Player.Instance.m_movement.CalcVelocity();
+            if (playerVelocity.magnitude > 0.1f)
+            {
+                Vector3 matchVel = Vector3.Lerp(m_grabbed.RB.velocity, Player.Instance.m_movement.CalcVelocity(), m_matchLerp);
+                m_grabbed.RB.velocity = matchVel;
+            }
+
+            // apply drag
+            float distToGrabPoint = Vector3.Distance(m_grabPoint.position, m_grabbed.Focusable.WorldCenter);
+            float drag = Mathf.Min(m_velDrag / distToGrabPoint, m_minVelDrag);
+            m_grabbed.RB.velocity *= 1 - drag;
 
             // set rotation
             m_grabbed.transform.rotation = transform.rotation * m_grabbedRotation;
+            m_grabbed.RB.angularVelocity *= 1 - m_angDrag;
 
             // apply force to move grabbed object to grab point
             Vector3 moveForce = (m_grabPoint.position - m_grabbed.Focusable.WorldCenter) * m_grabForce * m_grabbed.RB.mass;
@@ -202,7 +218,7 @@ public class Focuser : MonoBehaviour
             // counteract gravity
             Vector3 gravityForce = -Physics.gravity * m_grabbed.RB.mass;
             // clamp and apply
-            gravityForce = gravityForce.normalized * Mathf.Min(gravityForce.magnitude, m_maxGrabForce);
+            gravityForce = gravityForce.normalized * Mathf.Min(gravityForce.magnitude, m_maxGrabForce * m_grabGravityMultiplier);
             m_grabbed.RB.AddForce(gravityForce, ForceMode.Force);
         }
         else
