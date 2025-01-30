@@ -21,11 +21,24 @@ public class Player_Gun : MonoBehaviour
 	public Transform m_firePoint;
 	public Transform m_aimPoint;
 	public Animator m_animator;
+	public Light m_flashlight;
 
 	public DisplayClip m_displayClip;
 
 	public ShellDefinition m_ammoType;
 	public ClipDefinition m_defaultClip;
+	#endregion
+
+	[Header("Flashlight")]
+	#region Flashlight
+	[SerializeField] private bool m_flashlightAllowed = true;
+	public bool FlashlightAllowed { get { return m_flashlightAllowed; } }
+	[SerializeField] private float m_flashlightIntensity = 1.0f;
+	public float FlashlightIntensity { get { return m_flashlightIntensity; } }
+	[SerializeField] private float m_flashlightRange = 50.0f;
+	public float FlashlightRange { get { return m_flashlightRange; } }
+	[SerializeField] private float m_flashlightSpotAngle = 30.0f;
+	public float FlashlightSpotAngle { get { return m_flashlightSpotAngle; } }
 	#endregion
 
 	[Header("Ammo")]
@@ -123,6 +136,8 @@ public class Player_Gun : MonoBehaviour
 		Player.Instance.m_clipDisplayParent.transform.localPosition = m_displayHideOffset;
 		// hide template
 		Player.Instance.m_clipDisplayTemplate.SetActive(false);
+
+		UpdateFlashlightSettings();
 	}
 
 	// Start is called before the first frame update
@@ -189,6 +204,19 @@ public class Player_Gun : MonoBehaviour
 	}
 	#endregion
 
+	#region Flashlight
+	/// <summary>
+	/// Updates the flashlight with the current settings.
+	/// </summary>
+	private void UpdateFlashlightSettings()
+	{
+		m_flashlight.gameObject.SetActive(m_flashlightAllowed); // just disable the gameobject, as the component is controlled by other parts
+		m_flashlight.intensity = m_flashlightIntensity;
+		m_flashlight.range = m_flashlightRange;
+		m_flashlight.spotAngle = m_flashlightSpotAngle;
+	}
+	#endregion
+
 	#region Active
 	private IEnumerator Activate()
 	{
@@ -202,6 +230,9 @@ public class Player_Gun : MonoBehaviour
 
 		// begin activate animation
 		m_animator.SetBool("Active", true);
+
+		// enable flashlight
+		m_flashlight.enabled = true;
 
 		// wait for activate time
 		yield return new WaitForSeconds(m_activateTime);
@@ -244,6 +275,9 @@ public class Player_Gun : MonoBehaviour
 
 		// wait for deactivate time
 		yield return new WaitForSeconds(m_deactivateTime);
+
+		// disable flashlight
+		m_flashlight.enabled = false;
 	}
 	
 	#endregion
@@ -598,10 +632,10 @@ public class Player_Gun : MonoBehaviour
 			// calc needed shells
 			int remainingShells = m_internalClip?.GetShellCount() ?? 0;
 			int neededShells = m_internalClip.MaxSize - remainingShells;
-			// transfer shells from next clip to temp clip
+			// transfer shells from next clip to temp clip (in same order)
 			for (int i = 0; i < neededShells; i++)
 			{
-				ShellDefinition shell = nextClip.TopShell(_remove: true); // remove from clip
+				ShellDefinition shell = nextClip.BottomShell(_remove: true); // remove from bottom of clip to keep order
 				if (shell != null)
 				{
 					tempClip.AddShell(shell);
@@ -618,10 +652,10 @@ public class Player_Gun : MonoBehaviour
 			// destroy temp shells
 			m_displayClip.SetClip(null);
 
-			// transfer shells from temp clip to internal clip
+			// transfer shells from temp clip to internal clip (in same order)
 			for (int i = tempClip.GetShellCount() - 1; i >= 0; i--)
 			{
-				ShellDefinition shell = tempClip.TopShell(_remove: true); // remove from clip
+				ShellDefinition shell = tempClip.BottomShell(_remove: true); // remove from clip to keep order
 				if (shell != null)
 				{
 					bool didAdd = m_internalClip.AddShell(shell);

@@ -137,6 +137,25 @@ public class ClipDefinition : ScriptableObject
     }
 
     /// <summary>
+    /// Get the shell at the bottom of the clip (aka the first shell).
+    /// </summary>
+    /// <param name="_remove">Should the shell be removed from the clip?</param>
+    /// <returns></returns>
+    public ShellDefinition BottomShell(bool _remove = false)
+    {
+        if (m_shells.Count == 0)
+        {
+            return null;
+        }
+        ShellDefinition shell = m_shells[0];
+        if (_remove)
+        {
+            RemoveAt(0);
+        }
+        return shell;
+    }
+
+    /// <summary>
     /// Remove the shell at the given index.
     /// </summary>
     /// <param name="_index"></param>
