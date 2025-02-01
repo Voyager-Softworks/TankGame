@@ -161,7 +161,7 @@ PrefabInstance:
     - target: {fileID: -6259257438507918633, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: -1576071006116105342, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -169,7 +169,7 @@ PrefabInstance:
     - target: {fileID: -1576071006116105342, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: -1153261609078251876, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -177,7 +177,7 @@ PrefabInstance:
     - target: {fileID: -1153261609078251876, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 919132149155446097, guid: 0a48d97eb57cc7243bf500bf3e14faf5, type: 3}
       propertyPath: m_Name
       value: Fluorescent_Light

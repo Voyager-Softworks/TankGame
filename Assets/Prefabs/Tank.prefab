@@ -622,7 +622,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2204,6 +2204,7 @@ GameObject:
   - component: {fileID: 8138217483037083576}
   - component: {fileID: 1284505934185028218}
   - component: {fileID: 6818298275166036985}
+  - component: {fileID: 4686760215470788224}
   m_Layer: 6
   m_Name: TopLeft
   m_TagString: Untagged
@@ -2260,8 +2261,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_isInteractable: 1
-  m_interactRange: 5
   m_destroyOnInteract: 0
+--- !u!114 &4686760215470788224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4370190463579525499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e3104cbce20d148885e65aa34b0cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_isFocusable: 1
+  m_gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &4468788198105241077
 GameObject:
   m_ObjectHideFlags: 0
@@ -2963,6 +2977,7 @@ GameObject:
   - component: {fileID: 6505305764437046179}
   - component: {fileID: 2603743603293287794}
   - component: {fileID: 2680412506536527588}
+  - component: {fileID: 1326742810490000522}
   m_Layer: 6
   m_Name: Front
   m_TagString: Untagged
@@ -3019,8 +3034,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_isInteractable: 1
-  m_interactRange: 5
   m_destroyOnInteract: 0
+--- !u!114 &1326742810490000522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6931372805610512361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e3104cbce20d148885e65aa34b0cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_isFocusable: 1
+  m_gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &7151274767465967994
 GameObject:
   m_ObjectHideFlags: 0
@@ -3262,7 +3290,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3644,6 +3672,7 @@ GameObject:
   - component: {fileID: 6701800506499851884}
   - component: {fileID: 1003715099702905693}
   - component: {fileID: 1186634648112909808}
+  - component: {fileID: 2831580040695350579}
   m_Layer: 6
   m_Name: TopRight
   m_TagString: Untagged
@@ -3700,8 +3729,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_isInteractable: 1
-  m_interactRange: 5
   m_destroyOnInteract: 0
+--- !u!114 &2831580040695350579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8490671138141000281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e3104cbce20d148885e65aa34b0cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_isFocusable: 1
+  m_gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &8532530279541175386
 GameObject:
   m_ObjectHideFlags: 0
@@ -4105,7 +4147,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
