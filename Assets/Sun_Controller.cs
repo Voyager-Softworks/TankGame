@@ -60,8 +60,8 @@ public class Sun_Controller : MonoBehaviour
 
             // Sun Intensity:
             // map the current time to the intensity value, sunrise = 0, 12 = 1, sunset = 0
-            float intensityLerp = Mathf.Abs(12.0f - m_currentTime) / 6.0f;
-            m_sunLight.intensity = Mathf.Lerp(m_midDayIntensity, m_sunsetIntensity, intensityLerp);
+            // float intensityLerp = Mathf.Abs(12.0f - m_currentTime) / 6.0f;
+            // m_sunLight.intensity = Mathf.Lerp(m_midDayIntensity, m_sunsetIntensity, intensityLerp);
         }
         // during night:
         else
@@ -74,11 +74,11 @@ public class Sun_Controller : MonoBehaviour
 
             // Sun Intensity:
             // lerp to 0, to prevent sudden change
-            m_sunLight.intensity = Mathf.Lerp(m_sunLight.intensity, 0.0f, Time.deltaTime);
-            if (m_sunLight.intensity < 0.01f)
-            {
-                m_sunLight.intensity = 0.0f;
-            }
+            // m_sunLight.intensity = Mathf.Lerp(m_sunLight.intensity, 0.0f, Time.deltaTime);
+            // if (m_sunLight.intensity < 0.01f)
+            // {
+            //     m_sunLight.intensity = 0.0f;
+            // }
         }
     }
 }
