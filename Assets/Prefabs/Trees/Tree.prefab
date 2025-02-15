@@ -1502,7 +1502,7 @@ MonoBehaviour:
     animationPrimary: 0.5
     animationSecondary: 0
     animationEdge: 1
-    visible: 1
+    visible: 0
     lockFlags: 0
     nodeIDs: 40000000
     parentGroupID: 1
