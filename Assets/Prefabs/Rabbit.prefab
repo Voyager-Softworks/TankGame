@@ -531,3 +531,9 @@ MonoBehaviour:
   m_rotateSpeed: 0.1
   m_dirRateOfChange: 100
   m_currentDirChange: 0
+  m_frontLeftFootprintDecal: {fileID: 3307510679732321157, guid: 7dd15234c08498043baeb1965502f65f, type: 3}
+  m_backLeftFootprintDecal: {fileID: 3307510679732321157, guid: 873f33a89b03a454086215d48a0a2b40, type: 3}
+  m_maxFootprints: 50
+  m_feedWidth: 0.1
+  m_footprintDistance: 1
+  m_lastFootprintDistance: 0

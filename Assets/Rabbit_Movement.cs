@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Basic movement for the rabbit
+/// </summary>
 public class Rabbit_Movement : MonoBehaviour
 {
     private Rigidbody m_rigidbody;
@@ -19,7 +22,24 @@ public class Rabbit_Movement : MonoBehaviour
     [SerializeField] private float m_dirRateOfChange = 2f;
     [SerializeField] private float m_currentDirChange = 0.0f;
 
-    private void OnDrawGizmos() {
+    private Vector3 m_lastPosition = Vector3.zero;
+    private float m_distanceTraveled = 0.0f;
+
+    [Header("Footprint Settings")]
+    [SerializeField] private GameObject m_frontLeftFootprintDecal = null;
+    [SerializeField] private GameObject m_backLeftFootprintDecal = null;
+
+    [SerializeField] private int m_maxFootprints = 10;
+
+    [SerializeField] private float m_feedWidth = 0.5f;
+    [SerializeField] private float m_footprintDistance = 0.5f;
+    [SerializeField] private float m_lastFootprintDistance = 0.0f;
+    private int m_footprintIndex = 0;
+
+    private List<GameObject> m_spawnedFootprints = new List<GameObject>();
+
+    private void OnDrawGizmos()
+    {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, m_moveDirection);
     }
@@ -32,6 +52,8 @@ public class Rabbit_Movement : MonoBehaviour
         m_jumpDelay = Random.Range(m_minJumpDelay, m_maxJumpDelay);
 
         m_moveDirection = transform.forward;
+
+        m_lastPosition = transform.position;
     }
 
     private void Update()
@@ -49,13 +71,21 @@ public class Rabbit_Movement : MonoBehaviour
         }
 
         Move();
+
+        Footprints();
     }
 
+    /// <summary>
+    /// Make the rabbit jump
+    /// </summary>
     private void Jump()
     {
         m_rigidbody.AddForce(Vector3.up * 5.0f, ForceMode.Impulse);
     }
 
+    /// <summary>
+    /// Move the rabbit in a random direction
+    /// </summary>
     private void Move()
     {
         // Rotate the rabbit
@@ -75,5 +105,75 @@ public class Rabbit_Movement : MonoBehaviour
 
         // Move the rabbit
         m_rigidbody.MovePosition(m_rigidbody.position + transform.forward * m_moveSpeed * Time.deltaTime);
+
+        // Update distance traveled (ignore y axis)
+        m_distanceTraveled += Vector3.Distance(new Vector3(transform.position.x, 0.0f, transform.position.z), new Vector3(m_lastPosition.x, 0.0f, m_lastPosition.z));
+        m_lastPosition = transform.position;
+    }
+
+    /// <summary>
+    /// Create footprints for the rabbit based on distance traveled
+    /// </summary>
+    private void Footprints()
+    {
+        if (m_distanceTraveled - m_lastFootprintDistance >= m_footprintDistance)
+        {
+            m_lastFootprintDistance = m_distanceTraveled;
+
+            // rabbits do front, then front, then both back
+
+            // raycast down to find ground
+            RaycastHit groundHit = new RaycastHit();
+            if (Physics.Raycast(transform.position, Vector3.down, out groundHit, 1.0f))
+            {
+                // index 0 = front left, index 1 = front right, index 2 = back left AND back right
+                if (m_footprintIndex == 0)
+                {
+                    GameObject fontLeftPrint = Instantiate(m_frontLeftFootprintDecal, groundHit.point, transform.rotation);
+                    // move slightly to the left
+                    fontLeftPrint.transform.position += -transform.right * m_feedWidth;
+
+                    // add to spawned footprints
+                    m_spawnedFootprints.Add(fontLeftPrint);
+                }
+                else if (m_footprintIndex == 1)
+                {
+                    GameObject frontRightPrint = Instantiate(m_frontLeftFootprintDecal, groundHit.point, transform.rotation);
+                    // move slightly to the right
+                    frontRightPrint.transform.position += transform.right * m_feedWidth;
+
+                    // add to spawned footprints
+                    m_spawnedFootprints.Add(frontRightPrint);
+                }
+                else if (m_footprintIndex == 2)
+                {
+                    GameObject backLeftPrint = Instantiate(m_backLeftFootprintDecal, groundHit.point, transform.rotation);
+                    GameObject backRightPrint = Instantiate(m_backLeftFootprintDecal, groundHit.point, transform.rotation);
+
+                    // move slightly to the left
+                    backLeftPrint.transform.position += -transform.right * m_feedWidth;
+                    // move slightly to the right
+                    backRightPrint.transform.position += transform.right * m_feedWidth;
+
+                    // add to spawned footprints
+                    m_spawnedFootprints.Add(backLeftPrint);
+                    m_spawnedFootprints.Add(backRightPrint);
+                }
+
+                // increment index
+                m_footprintIndex++;
+                if (m_footprintIndex > 2)
+                {
+                    m_footprintIndex = 0;
+                }
+
+                // remove old footprints
+                while (m_spawnedFootprints.Count > m_maxFootprints)
+                {
+                    Destroy(m_spawnedFootprints[0]);
+                    m_spawnedFootprints.RemoveAt(0);
+                }
+            }
+        }
     }
 }
