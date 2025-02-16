@@ -1,26 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Basic movement for the rabbit
 /// </summary>
 public class Rabbit_Movement : MonoBehaviour
 {
-    private Rigidbody m_rigidbody;
     private Health_Animal m_health;
 
-    [Header("Jump Settings")]
-    [SerializeField] private float m_minJumpDelay = 0.5f;
-    [SerializeField] private float m_maxJumpDelay = 1.5f;
-    [SerializeField] private float m_jumpDelay = 0.0f;
-
     [Header("Movement Settings")]
-    [SerializeField] private float m_moveSpeed = 1.0f;
-    [SerializeField] private Vector3 m_moveDirection = Vector3.zero;
-    [SerializeField] private float m_rotateSpeed = 0.1f;
-    [SerializeField] private float m_dirRateOfChange = 2f;
-    [SerializeField] private float m_currentDirChange = 0.0f;
+    [SerializeField] private Animator m_animator;
+    [SerializeField] private NavMeshAgent m_navMeshAgent;
+    [SerializeField] private float m_minSpeed = 0.5f;
+    [SerializeField] private float m_maxSpeed = 5.0f;
 
     private Vector3 m_lastPosition = Vector3.zero;
     private float m_distanceTraveled = 0.0f;
@@ -38,22 +32,13 @@ public class Rabbit_Movement : MonoBehaviour
 
     private List<GameObject> m_spawnedFootprints = new List<GameObject>();
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, m_moveDirection);
-    }
-
     private void Awake()
     {
-        m_rigidbody = GetComponent<Rigidbody>();
         m_health = GetComponent<Health_Animal>();
 
-        m_jumpDelay = Random.Range(m_minJumpDelay, m_maxJumpDelay);
-
-        m_moveDirection = transform.forward;
-
         m_lastPosition = transform.position;
+
+        m_health.OnDeath += OnDeath;
     }
 
     private void Update()
@@ -63,24 +48,9 @@ public class Rabbit_Movement : MonoBehaviour
             return;
         }
 
-        m_jumpDelay -= Time.deltaTime;
-        if (m_jumpDelay <= 0.0f)
-        {
-            Jump();
-            m_jumpDelay = Random.Range(m_minJumpDelay, m_maxJumpDelay);
-        }
-
         Move();
 
         Footprints();
-    }
-
-    /// <summary>
-    /// Make the rabbit jump
-    /// </summary>
-    private void Jump()
-    {
-        m_rigidbody.AddForce(Vector3.up * 5.0f, ForceMode.Impulse);
     }
 
     /// <summary>
@@ -88,23 +58,21 @@ public class Rabbit_Movement : MonoBehaviour
     /// </summary>
     private void Move()
     {
-        // Rotate the rabbit
-        Vector3 targetDirection = m_moveDirection;
-        targetDirection.y = 0.0f;
-        if (targetDirection != Vector3.zero)
+        // pick a random point to move to, and a random speed
+        if (m_navMeshAgent.remainingDistance <= 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-            m_rigidbody.MoveRotation(Quaternion.Slerp(m_rigidbody.rotation, targetRotation, m_rotateSpeed));
+            Vector3 randomDirection = Random.insideUnitSphere * 5.0f;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            NavMesh.SamplePosition(randomDirection, out hit, 5.0f, NavMesh.AllAreas);
+            m_navMeshAgent.SetDestination(hit.position);
+
+            m_navMeshAgent.speed = Random.Range(m_minSpeed, m_maxSpeed);
+
+            // set animator speed
+            float speed01 = m_navMeshAgent.speed / m_maxSpeed;
+            m_animator.SetFloat("Speed", speed01 * 2f);
         }
-
-        // Update current direction change
-        m_currentDirChange += Time.deltaTime * (Random.Range(-m_dirRateOfChange, m_dirRateOfChange));
-        m_currentDirChange = Mathf.Clamp(m_currentDirChange, -5.0f, 5.0f);
-        // add dir change to move direction
-        m_moveDirection = Quaternion.Euler(0.0f, m_currentDirChange, 0.0f) * transform.forward;
-
-        // Move the rabbit
-        m_rigidbody.MovePosition(m_rigidbody.position + transform.forward * m_moveSpeed * Time.deltaTime);
 
         // Update distance traveled (ignore y axis)
         m_distanceTraveled += Vector3.Distance(new Vector3(transform.position.x, 0.0f, transform.position.z), new Vector3(m_lastPosition.x, 0.0f, m_lastPosition.z));
@@ -174,6 +142,44 @@ public class Rabbit_Movement : MonoBehaviour
                     m_spawnedFootprints.RemoveAt(0);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Called when the rabbit dies
+    /// </summary>
+    /// <param name="_lastDamage"></param>
+    private void OnDeath(Health.DamageInfo _lastDamage)
+    {
+        // set dead bool
+        m_animator.SetBool("Dead", true);
+
+        // stop moving
+        m_navMeshAgent.isStopped = true;
+
+        StartCoroutine(DeathMove(_lastDamage.Direction));
+    }
+
+    /// <summary>
+    /// Short coroutine to move the rabbit in the direction of death
+    /// </summary>
+    private IEnumerator DeathMove(Vector3 _direction, float _speed = 5f, float _duration = 0.2f)
+    {
+        // also rotate so left faces the direction
+        Vector3 targetRightDir = -_direction;
+
+        float timer = 0.0f;
+        while (timer < _duration)
+        {
+            timer += Time.deltaTime;
+
+            // move
+            transform.position += _direction * _speed * Time.deltaTime;
+
+            // rotate
+            transform.right = Vector3.Lerp(transform.right, targetRightDir, Time.deltaTime * 5.0f);
+
+            yield return null;
         }
     }
 }

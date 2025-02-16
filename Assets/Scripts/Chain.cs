@@ -177,7 +177,7 @@ public class Chain : MonoBehaviour
     /// <summary>
     /// Called when a link in the chain dies.
     /// </summary>
-    private void OnLinkDeath()
+    private void OnLinkDeath(Health.DamageInfo _lastDamage)
     {
         // remove the hinge joint from dead links
         for (int i = 0; i < m_linkObjects.Count; i++)

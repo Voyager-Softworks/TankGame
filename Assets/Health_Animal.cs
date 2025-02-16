@@ -9,7 +9,7 @@ public class Health_Animal : Health
         OnDeath += Radgoll;
     }
 
-    private void Radgoll()
+    private void Radgoll(DamageInfo _lastDamage)
     {
         // Ragdoll the animal
         if (TryGetComponent(out Rigidbody rb))

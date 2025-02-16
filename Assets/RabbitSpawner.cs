@@ -57,7 +57,7 @@ public class RabbitSpawner : MonoBehaviour
         Health_Animal health = rabbit.GetComponent<Health_Animal>();
         if (health != null)
         {
-            health.OnDeath += () => RemoveRabbit(health);
+            health.OnDeath += (_) => RemoveRabbit(health);
         }
     }
 
