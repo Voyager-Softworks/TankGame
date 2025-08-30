@@ -15,6 +15,8 @@ public class Rabbit_Movement : MonoBehaviour
     [SerializeField] private NavMeshAgent m_navMeshAgent;
     [SerializeField] private float m_minSpeed = 0.5f;
     [SerializeField] private float m_maxSpeed = 5.0f;
+    [SerializeField] private float m_minWanderDistance = 5.0f;
+    [SerializeField] private float m_maxWanderDistance = 20.0f;
 
     private Vector3 m_lastPosition = Vector3.zero;
     private float m_distanceTraveled = 0.0f;
@@ -61,17 +63,26 @@ public class Rabbit_Movement : MonoBehaviour
         // pick a random point to move to, and a random speed
         if (m_navMeshAgent.remainingDistance <= 0.1f)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * 5.0f;
+            Vector3 randomDirection = Random.onUnitSphere * Random.Range(m_minWanderDistance, m_maxWanderDistance);
+            // ignore y axis
+            randomDirection.y = 0.0f;
+            // get distance for speed
+            float distance = randomDirection.magnitude;
+            // find world position
             randomDirection += transform.position;
             NavMeshHit hit;
             NavMesh.SamplePosition(randomDirection, out hit, 5.0f, NavMesh.AllAreas);
             m_navMeshAgent.SetDestination(hit.position);
 
-            m_navMeshAgent.speed = Random.Range(m_minSpeed, m_maxSpeed);
+            // set speed based on distance
+            m_navMeshAgent.speed = Mathf.Lerp(m_minSpeed, m_maxSpeed, distance / m_maxWanderDistance);
+            // add 25% variation to speed
+            float speedVariation = (m_maxSpeed - m_minSpeed) * 0.25f;
+            m_navMeshAgent.speed += Random.Range(-speedVariation, speedVariation);
+            m_navMeshAgent.speed = Mathf.Clamp(m_navMeshAgent.speed, m_minSpeed, m_maxSpeed);
 
-            // set animator speed
-            float speed01 = m_navMeshAgent.speed / m_maxSpeed;
-            m_animator.SetFloat("Speed", speed01 * 2f);
+            // set animator speed based
+            m_animator.SetFloat("Speed", m_navMeshAgent.speed);
         }
 
         // Update distance traveled (ignore y axis)

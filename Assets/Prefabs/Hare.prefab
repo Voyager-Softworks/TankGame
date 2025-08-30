@@ -55,6 +55,7 @@ MonoBehaviour:
   m_isDead: 0
   m_damageFX: {fileID: 0}
   m_deathFX: {fileID: 2998510461236160077, guid: 2f79b41c7211a6f4f906a959483b21c3, type: 3}
+  m_hitBloodDecal: {fileID: 3307510679732321157, guid: 3523bc5904ec40040bae9f52a64e634a, type: 3}
 --- !u!114 &1527699546772338421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,9 +70,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_animator: {fileID: 3087230727140842554}
   m_navMeshAgent: {fileID: 7655604152044197776}
-  m_target: {fileID: 0}
   m_minSpeed: 0.5
-  m_maxSpeed: 5
+  m_maxSpeed: 3
+  m_minWanderDistance: 5
+  m_maxWanderDistance: 20
   m_frontLeftFootprintDecal: {fileID: 3307510679732321157, guid: 7dd15234c08498043baeb1965502f65f, type: 3}
   m_backLeftFootprintDecal: {fileID: 3307510679732321157, guid: 873f33a89b03a454086215d48a0a2b40, type: 3}
   m_maxFootprints: 50
@@ -151,6 +153,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: f4084ae5a114b5d449ab9422de82bb4c, type: 3}
       propertyPath: m_Name
       value: Hare
+      objectReference: {fileID: 0}
+    - target: {fileID: 6264257943306272141, guid: f4084ae5a114b5d449ab9422de82bb4c, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 769
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

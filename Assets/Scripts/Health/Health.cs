@@ -17,9 +17,11 @@ public abstract class Health : MonoBehaviour
     public class DamageInfo
     {
         public float m_damage;
-        public GameObject m_sourceObject;
+        public Health m_damageTaker;
+        public GameObject m_damageDealer;
         public Vector3 m_originPoint;
-        public Vector3 m_hitPoint;
+        public Vector3 m_worldHitPoint;
+        public Vector3 m_localHitPoint;
         public Vector3 m_hitNormal;
         public float m_hitForce;
 
@@ -29,16 +31,18 @@ public abstract class Health : MonoBehaviour
         {
             get
             {
-                return (m_hitPoint - m_originPoint).normalized;
+                return (m_worldHitPoint - m_originPoint).normalized;
             }
         }
 
-        public DamageInfo(float damage, GameObject sourceObject, Vector3 originPoint, Vector3 hitPoint, Vector3 hitNormal, float hitForce)
+        public DamageInfo(float damage, Health damageTaker, GameObject damageDealer, Vector3 originPoint, Vector3 hitPoint, Vector3 hitNormal, float hitForce)
         {
             m_damage = damage;
-            m_sourceObject = sourceObject;
+            m_damageTaker = damageTaker;
+            m_damageDealer = damageDealer;
             m_originPoint = originPoint;
-            m_hitPoint = hitPoint;
+            m_worldHitPoint = hitPoint;
+            m_localHitPoint = hitPoint - damageTaker.transform.position;
             m_hitNormal = hitNormal;
             m_hitForce = hitForce;
             m_time = Time.time;
@@ -63,11 +67,27 @@ public abstract class Health : MonoBehaviour
     public GameObject m_deathFX = null;
 
     [Header("Events")]
-    public System.Action OnDamage;
+    public System.Action<DamageInfo> OnDamage;
     public System.Action OnHeal;
     public System.Action<DamageInfo> OnDeath;
 
     protected List<DamageInfo> m_damageHistory = new List<DamageInfo>();
+
+
+    void OnDrawGizmos()
+    {
+        foreach (var damage in m_damageHistory)
+        {
+            // world line
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(damage.m_originPoint, damage.m_worldHitPoint);
+
+            // local hit
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.position + damage.m_localHitPoint, 0.1f);
+            Gizmos.DrawRay(transform.position + damage.m_localHitPoint, damage.m_hitNormal);
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -109,10 +129,10 @@ public abstract class Health : MonoBehaviour
 
         if (m_damageFX != null)
         {
-            Instantiate(m_damageFX, _damageInfo.m_hitPoint, Quaternion.LookRotation(_damageInfo.m_hitNormal));
+            Instantiate(m_damageFX, _damageInfo.m_worldHitPoint, Quaternion.LookRotation(_damageInfo.m_hitNormal));
         }
 
-        OnDamage?.Invoke();
+        OnDamage?.Invoke(_damageInfo);
 
         if (m_currentHealth <= 0.0f)
         {
@@ -247,7 +267,7 @@ public abstract class Health : MonoBehaviour
 
             if (GUILayout.Button("Damage 10"))
             {
-                health.Damage(new DamageInfo(10.0f, null, Vector3.zero, Vector3.zero, Vector3.zero, 0f));
+                health.Damage(new DamageInfo(10.0f, health, null, Vector3.zero, Vector3.zero, Vector3.zero, 0f));
             }
 
             if (GUILayout.Button("Heal 10"))

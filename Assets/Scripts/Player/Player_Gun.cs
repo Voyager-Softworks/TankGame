@@ -456,15 +456,14 @@ public class Player_Gun : MonoBehaviour
 
 				// loop through hits
 				foreach (RaycastHit hit in hits)
-				{
-					// generate damage info
-					Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.Damage, gameObject, m_firePoint.position, hit.point, hit.normal, m_shellInChamber.HitForce);
-
-					// get health component in child&/parent
+				{                   // get health component in child&/parent
 					Health health = hit.collider.GetComponentInParent<Health>() ?? hit.collider.GetComponentInChildren<Health>();
 					if (health != null)
 					{
-						// damage health
+						// generate damage info
+						Health.DamageInfo damageInfo = new Health.DamageInfo(m_shellInChamber.Damage, health, gameObject, m_firePoint.position, hit.point, hit.normal, m_shellInChamber.HitForce);
+
+						// apply damage
 						health.Damage(damageInfo);
 					}
 
@@ -473,8 +472,9 @@ public class Player_Gun : MonoBehaviour
 					if (rb != null)
 					{
 						// add force
-						Vector3 force = damageInfo.Direction * damageInfo.m_hitForce;
-						rb.AddForceAtPosition(force, damageInfo.m_hitPoint, ForceMode.Impulse);
+						Vector3 direction = (hit.point - m_firePoint.position).normalized;
+						Vector3 force = direction * m_shellInChamber.HitForce;
+						rb.AddForceAtPosition(force, hit.point, ForceMode.Impulse);
 					}
 
 					// break after first hit (for now)

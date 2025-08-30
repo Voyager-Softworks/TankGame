@@ -3,7 +3,10 @@ guid: e5267aa085cb5fe4db4b47a308639e0e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_damageFX: {instanceID: 0}
+  - m_deathFX: {instanceID: 0}
+  - m_hitBloodDecal: {fileID: 3307510679732321157, guid: 3523bc5904ec40040bae9f52a64e634a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
